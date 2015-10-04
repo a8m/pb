@@ -1,8 +1,6 @@
 extern crate time;
 use time::{Timespec, Duration};
 use std::thread;
-use std::sync::{Arc, Mutex};
-use std::sync::mpsc::{self, channel};
 
 macro_rules! printfl {
     ($($tt:tt)*) => {{
@@ -17,33 +15,23 @@ pub struct ProgressBar {
     total: i64,
     current: i64,
     is_finish: bool,
-    more: mpsc::Sender<bool>,
 }
 
 impl ProgressBar {
-    pub fn new(total: i64) -> Arc<Mutex<ProgressBar>> {
-        let (tx, rx) = channel::<bool>();
-        let l1 = Arc::new(Mutex::new(
+    pub fn new(total: i64) -> ProgressBar {
             ProgressBar {
                 total: total,
                 current: 0,
                 start_time: time::get_time(),
                 is_finish: false,
-                more: tx,
-            }));
-        let l2 = l1.clone();
-        thread::spawn(|| ProgressBar::writer(l2, rx));
-        l1
+            }
     }
 
     fn add(&mut self, i: i64) -> i64 {
         self.current += i;
-        let more = if self.current > self.total {
-            false
-        } else {
-            true
+        if self.current <= self.total {
+            self.write()
         };
-        let _ = self.more.send(more);
         self.current
     }
 
@@ -94,36 +82,23 @@ impl ProgressBar {
         }
         printfl!("\r{}", out);
     }
-
-    fn writer(mu: Arc<Mutex<ProgressBar>>, rx: mpsc::Receiver<bool>) {
-        let mut prev = -1;
-        let mut more;
-        loop {
-            let pb = mu.lock().unwrap();
-            if pb.current != prev && pb.current > 0 {
-                prev = pb.current;
-                pb.write();
-            }
-            drop(pb);
-            more = rx.recv().unwrap();
-            if !more {
-                break;
-            }
-        }
-    }
     
     fn finish(&mut self) {
+        if self.current < self.total {
+            self.current = self.total;
+            self.write();
+        }
+        println!("");
         self.is_finish = true;
     }
 }
 
 fn main() {
-    let pb = ProgressBar::new(1000);
+    let mut pb = ProgressBar::new(1000);
     for _ in 0..1000 {
-        let mut pb = pb.lock().unwrap();
         pb.add(1);
-        thread::sleep_ms(200);
+        thread::sleep_ms(2);
     }
-    pb.lock().unwrap().finish();
-    println!("The end!");
+    pb.finish();
+    print!("The end!");
 }
