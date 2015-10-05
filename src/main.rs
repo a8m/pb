@@ -17,6 +17,11 @@ pub struct ProgressBar {
     total: usize,
     current: usize,
     is_finish: bool,
+    show_bar: bool,
+    show_speed: bool,
+    show_percent: bool,
+    show_counter: bool,
+    show_time_left: bool,
 }
 
 impl ProgressBar {
@@ -26,6 +31,11 @@ impl ProgressBar {
                 current: 0,
                 start_time: time::get_time(),
                 is_finish: false,
+                show_bar: true,
+                show_speed: false,
+                show_percent: true,
+                show_counter: true,
+                show_time_left: true,
             }
     }    
 
