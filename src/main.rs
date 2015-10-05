@@ -25,7 +25,7 @@ pub struct ProgressBar {
     show_counter: bool,
     show_time_left: bool,
     // Format
-    bar_start:  String,
+    bar_start: String,
     bar_current: String,
     bar_current_n: String,
     bar_remain: String,
@@ -34,24 +34,24 @@ pub struct ProgressBar {
 
 impl ProgressBar {
     pub fn new(total: usize) -> ProgressBar {
-            let v: Vec<&str> = FORMAT.split("").collect();
-            ProgressBar {
-                total: total,
-                current: 0,
-                start_time: time::get_time(),
-                is_finish: false,
-                show_bar: true,
-                show_speed: false,
-                show_percent: true,
-                show_counter: true,
-                show_time_left: true,
-                bar_start: v[1].to_string(),
-                bar_current: v[2].to_string(),
-                bar_current_n: v[3].to_string(),
-                bar_remain: v[4].to_string(),
-                bar_end: v[5].to_string(),
-            }
-    }    
+        let v: Vec<&str> = FORMAT.split("").collect();
+        ProgressBar {
+            total: total,
+            current: 0,
+            start_time: time::get_time(),
+            is_finish: false,
+            show_bar: true,
+            show_speed: false,
+            show_percent: true,
+            show_counter: true,
+            show_time_left: true,
+            bar_start: v[1].to_string(),
+            bar_current: v[2].to_string(),
+            bar_current_n: v[3].to_string(),
+            bar_remain: v[4].to_string(),
+            bar_end: v[5].to_string(),
+        }
+    }
 
     fn add(&mut self, i: usize) -> usize {
         self.current += i;
@@ -103,15 +103,23 @@ impl ProgressBar {
         if self.show_bar {
             let size = width - (prefix.len() + suffix.len() + 3);
             if size > 0 {
-                let curr_count = ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
+                let curr_count =
+                    ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
                 let rema_count = size - curr_count;
                 if rema_count > 0 {
-                    base = std::iter::repeat(self.bar_current.as_ref()).take(curr_count - 1).collect::<String>();
+                    base = std::iter::repeat(self.bar_current.as_ref())
+                               .take(curr_count - 1)
+                               .collect::<String>();
                     base = base + &self.bar_current_n;
                 } else {
-                   base = std::iter::repeat(self.bar_current.as_ref()).take(curr_count).collect::<String>();
+                    base = std::iter::repeat(self.bar_current.as_ref())
+                               .take(curr_count)
+                               .collect::<String>();
                 }
-                base = base + &std::iter::repeat(self.bar_remain.as_ref()).take(rema_count).collect::<String>();
+                base = base +
+                       &std::iter::repeat(self.bar_remain.as_ref())
+                            .take(rema_count)
+                            .collect::<String>();
                 base = self.bar_start.to_string() + &base + &self.bar_end;
             }
         }
@@ -124,7 +132,7 @@ impl ProgressBar {
         // print
         printfl!("\r{}", out);
     }
-    
+
     fn finish(&mut self) {
         if self.current < self.total {
             self.current = self.total;
@@ -137,13 +145,13 @@ impl ProgressBar {
 
 // Implement io::Writer
 impl Write for ProgressBar {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> { 
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
         self.add(n);
         Ok(buf.len())
     }
-    fn flush(&mut self) -> io::Result<()> { 
-        Ok(()) 
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
 
@@ -158,7 +166,7 @@ fn main() {
     }
     pb.finish();
     print!("The end!");
-    
+
 
     /*let name = "/usr/share/dict/words";
     let mut file = std::fs::File::open(name).unwrap();
