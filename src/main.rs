@@ -72,12 +72,13 @@ impl ProgressBar {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
             suffix = suffix + &format!(" {:.*} % ", 2, percent);
         }
-        // speed box: NOT WORKING RIGHT NOW + ADD KB FORMAT
-        if self.show_speed {
-            let from_start = time::get_time() - self.start_time;
-            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
-            let speed = (from_start / sec_nano) / self.current as i32;
-            suffix = suffix + &format!("{}/s", speed.num_nanoseconds().unwrap() as f64);
+        // speed box
+        // TODO: ADD KB FORMAT
+        if !self.show_speed {
+            let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
+            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
+            let speed = self.current as f64 / (from_start / sec_nano);
+            suffix = suffix + &format!("{}/s ", speed as usize);
         }
         // time left box
         if self.show_time_left {
@@ -94,6 +95,7 @@ impl ProgressBar {
         if self.show_counter {
             prefix = format!("{} / {} ", self.current, self.total);
         }
+        // bar box
         if self.show_bar {
             let size = width - (prefix.len() + suffix.len() + 3);
             if size > 0 {
@@ -110,11 +112,12 @@ impl ProgressBar {
             }
         }
         out = prefix + &base + &suffix;
-        // Print
+        // pad
         if out.len() < width {
             let gap = width - out.len();
             out = out + &std::iter::repeat(" ").take(gap as usize).collect::<String>();
         }
+        // print
         printfl!("\r{}", out);
     }
     
@@ -143,10 +146,10 @@ impl Write for ProgressBar {
 // TODO: Implement io::Reader
 
 fn main() {
-    let mut pb = ProgressBar::new(1000);
+    let mut pb = ProgressBar::new(10000);
     for _ in 0..1000 {
         pb.add(1);
-        thread::sleep_ms(200);
+        thread::sleep_ms(100);
     }
     pb.finish();
     print!("The end!");
