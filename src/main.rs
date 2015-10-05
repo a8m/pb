@@ -84,11 +84,15 @@ impl ProgressBar {
         if self.show_time_left {
             let from_start = time::get_time() - self.start_time;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
-            let per_entry = from_start / self.current as i32; // Why the hack
+            let per_entry = from_start / self.current as i32;
             let mut left = per_entry * (self.total - self.current) as i32;
             left = (left / sec_nano) * sec_nano;
             if left.num_seconds() > 0 {
-                suffix = suffix + &format!("{}s", left.num_seconds());
+                if left.num_seconds() < Duration::minutes(1).num_seconds() {
+                    suffix = suffix + &format!("{}s", left.num_seconds());
+                } else {
+                    suffix = suffix + &format!("{}m", left.num_minutes());
+                }
             }
         }
         // counter box
@@ -146,8 +150,9 @@ impl Write for ProgressBar {
 // TODO: Implement io::Reader
 
 fn main() {
-    let mut pb = ProgressBar::new(10000);
-    for _ in 0..1000 {
+    let count = 1000;
+    let mut pb = ProgressBar::new(count);
+    for _ in 0..count {
         pb.add(1);
         thread::sleep_ms(100);
     }
