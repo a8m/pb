@@ -12,6 +12,8 @@ macro_rules! printfl {
     }}
 }
 
+static FORMAT: &'static str = "[=>-]";
+
 pub struct ProgressBar {
     start_time: Timespec,
     total: usize,
@@ -22,10 +24,18 @@ pub struct ProgressBar {
     show_percent: bool,
     show_counter: bool,
     show_time_left: bool,
+    
+    // Format
+    bar_start:  String,
+    bar_current: String,
+    bar_current_n: String,
+    bar_remain: String,
+    bar_end: String,
 }
 
 impl ProgressBar {
     pub fn new(total: usize) -> ProgressBar {
+            let v: Vec<&str> = FORMAT.split("").collect();
             ProgressBar {
                 total: total,
                 current: 0,
@@ -36,6 +46,11 @@ impl ProgressBar {
                 show_percent: true,
                 show_counter: true,
                 show_time_left: true,
+                bar_start: v[1].to_string(),
+                bar_current: v[2].to_string(),
+                bar_current_n: v[3].to_string(),
+                bar_remain: v[4].to_string(),
+                bar_end: v[5].to_string(),
             }
     }    
 
@@ -49,6 +64,9 @@ impl ProgressBar {
 
     fn draw(&self) {
         let width = 143;    // replace to -> get_tty_size()
+        // start - countersBox
+        // middle - barBox
+        // end - percentBox + speedBox + timeLeftBox
         let percent_box;
         let counter_box;
         let mut time_left_box = format!("");
