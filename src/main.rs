@@ -24,7 +24,6 @@ pub struct ProgressBar {
     show_percent: bool,
     show_counter: bool,
     show_time_left: bool,
-    
     // Format
     bar_start:  String,
     bar_current: String,
@@ -63,48 +62,54 @@ impl ProgressBar {
     }
 
     fn draw(&self) {
-        let width = 143;    // replace to -> get_tty_size()
-        // start - countersBox
-        // middle - barBox
-        // end - percentBox + speedBox + timeLeftBox
-        let percent_box;
-        let counter_box;
-        let mut time_left_box = format!("");
-        let speed_box;
-        let mut bar_box = "[".to_string();
+        let width = 149;    // replace to -> get_tty_size()
+        let mut base = String::new();
+        let mut suffix = String::new();
+        let mut prefix = String::new();
         let mut out;
         // precent box
-        let percent = self.current as f64 / (self.total as f64 / 100f64);
-        percent_box = format!(" {:.*} % ", 2, percent);
-        // counter box
-        counter_box = format!("{} / {} ", self.current, self.total);
+        if self.show_percent {
+            let percent = self.current as f64 / (self.total as f64 / 100f64);
+            suffix = suffix + &format!(" {:.*} % ", 2, percent);
+        }
+        // speed box: NOT WORKING RIGHT NOW + ADD KB FORMAT
+        if self.show_speed {
+            let from_start = time::get_time() - self.start_time;
+            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
+            let speed = (from_start / sec_nano) / self.current as i32;
+            suffix = suffix + &format!("{}/s", speed.num_nanoseconds().unwrap() as f64);
+        }
         // time left box
-        let from_start = time::get_time() - self.start_time;
-        let per_entry = from_start / self.current as i32; // Why the hack
-        let mut left = per_entry * (self.total - self.current) as i32;
-        let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
-        left = (left / sec_nano) * sec_nano;
-        if left.num_seconds() > 0 {
-            time_left_box = format!("{}s", left.num_seconds());
+        if self.show_time_left {
+            let from_start = time::get_time() - self.start_time;
+            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
+            let per_entry = from_start / self.current as i32; // Why the hack
+            let mut left = per_entry * (self.total - self.current) as i32;
+            left = (left / sec_nano) * sec_nano;
+            if left.num_seconds() > 0 {
+                suffix = suffix + &format!("{}s", left.num_seconds());
+            }
         }
-        // NOT WORKING: speed box
-        let speed = (from_start / sec_nano) / self.current as i32;
-        speed_box = format!("{}/s", speed.num_nanoseconds().unwrap() as f64);
-        // bar_box - Add prefix & suffix(2)
-        let size = width -
-                   (percent_box.to_string() + &counter_box + &time_left_box + &speed_box).len();
-        // Test if size > 0
-        let curr_count = ((self.current as f64 / self.total as f64) * size as f64).ceil();
-        let err_count = size as f64 - curr_count;
-        bar_box = bar_box + &std::iter::repeat("=").take(curr_count as usize).collect::<String>();
-        if self.current < self.total {
-            bar_box = bar_box + ">";
-        } else {
-            bar_box = bar_box + "=";
+        // counter box
+        if self.show_counter {
+            prefix = format!("{} / {} ", self.current, self.total);
         }
-        bar_box = bar_box + &std::iter::repeat("-").take(err_count as usize).collect::<String>() +
-                  "]";
-        out = counter_box.to_string() + &bar_box + &percent_box + &time_left_box;
+        if self.show_bar {
+            let size = width - (prefix.len() + suffix.len() + 3);
+            if size > 0 {
+                let curr_count = ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
+                let rema_count = size - curr_count;
+                if rema_count > 0 {
+                    base = std::iter::repeat(self.bar_current.as_ref()).take(curr_count - 1).collect::<String>();
+                    base = base + &self.bar_current_n;
+                } else {
+                   base = std::iter::repeat(self.bar_current.as_ref()).take(curr_count).collect::<String>();
+                }
+                base = base + &std::iter::repeat(self.bar_remain.as_ref()).take(rema_count).collect::<String>();
+                base = self.bar_start.to_string() + &base + &self.bar_end;
+            }
+        }
+        out = prefix + &base + &suffix;
         // Print
         if out.len() < width {
             let gap = width - out.len();
@@ -141,7 +146,7 @@ fn main() {
     let mut pb = ProgressBar::new(1000);
     for _ in 0..1000 {
         pb.add(1);
-        thread::sleep_ms(2);
+        thread::sleep_ms(200);
     }
     pb.finish();
     print!("The end!");
