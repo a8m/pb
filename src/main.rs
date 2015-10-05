@@ -1,6 +1,8 @@
 extern crate time;
 use time::{Timespec, Duration};
 use std::thread;
+use std::ops::Add;
+use std::io::{self, Write, Read};
 
 macro_rules! printfl {
     ($($tt:tt)*) => {{
@@ -12,30 +14,30 @@ macro_rules! printfl {
 
 pub struct ProgressBar {
     start_time: Timespec,
-    total: i64,
-    current: i64,
+    total: usize,
+    current: usize,
     is_finish: bool,
 }
 
 impl ProgressBar {
-    pub fn new(total: i64) -> ProgressBar {
+    pub fn new(total: usize) -> ProgressBar {
             ProgressBar {
                 total: total,
                 current: 0,
                 start_time: time::get_time(),
                 is_finish: false,
             }
-    }
+    }    
 
-    fn add(&mut self, i: i64) -> i64 {
+    fn add(&mut self, i: usize) -> usize {
         self.current += i;
         if self.current <= self.total {
-            self.write()
+            self.draw()
         };
         self.current
     }
 
-    fn write(&self) {
+    fn draw(&self) {
         let width = 143;    // replace to -> get_tty_size()
         let percent_box;
         let counter_box;
@@ -86,12 +88,26 @@ impl ProgressBar {
     fn finish(&mut self) {
         if self.current < self.total {
             self.current = self.total;
-            self.write();
+            self.draw();
         }
         println!("");
         self.is_finish = true;
     }
 }
+
+// Implement io::Writer
+impl Write for ProgressBar {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> { 
+        let n = buf.len();
+        self.add(n);
+        Ok(buf.len())
+    }
+    fn flush(&mut self) -> io::Result<()> { 
+        Ok(()) 
+    }
+}
+
+// TODO: Implement io::Reader
 
 fn main() {
     let mut pb = ProgressBar::new(1000);
@@ -101,4 +117,14 @@ fn main() {
     }
     pb.finish();
     print!("The end!");
+    
+
+    /*let name = "/usr/share/dict/words";
+    let mut file = std::fs::File::open(name).unwrap();
+    let bytes = std::fs::metadata(name).unwrap().len() as i64;
+    let mut pb = ProgressBar::new(bytes);
+    std::io::copy(&mut file, &mut pb).unwrap();
+    println!("Done");
+    // Create example that use multiWriter and decorateWriter example too
+    */
 }
