@@ -12,6 +12,18 @@ macro_rules! printfl {
     }}
 }
 
+macro_rules! kb_fmt {
+    ($n: ident) => {{
+        let kb = 1024f64;
+        match $n {
+            $n if $n > kb.powf(4_f64) => {format!("{:.*} TG", 2, $n / kb.powf(4_f64))},
+            $n if $n > kb.powf(3_f64) => format!("{:.*} GB", 2, $n / kb.powf(3_f64)),
+            $n if $n > kb => format!("{:.*} KB", 2, $n / kb),
+            _ => format!("{:.*} B", 2, $n)
+        }
+    }}
+}
+
 static FORMAT: &'static str = "[=>-]";
 
 pub struct ProgressBar {
@@ -162,7 +174,7 @@ fn main() {
     let mut pb = ProgressBar::new(count);
     for _ in 0..count {
         pb.add(1);
-        thread::sleep_ms(100);
+        thread::sleep_ms(3);
     }
     pb.finish();
     print!("The end!");

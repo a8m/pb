@@ -1,0 +1,5 @@
+The biggest question:
+---------------------
+- Why not draw after incrementing ? or add ? 
+- Wht is usize ? I think it's some abstracttion on top of all the numbers
+We should use it.
