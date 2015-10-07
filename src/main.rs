@@ -52,8 +52,7 @@ pub struct ProgressBar {
 
 impl ProgressBar {
     pub fn new(total: usize) -> ProgressBar {
-        let v: Vec<&str> = FORMAT.split("").collect();
-        ProgressBar {
+        let mut pb = ProgressBar {
             total: total,
             current: 0,
             start_time: time::get_time(),
@@ -63,13 +62,26 @@ impl ProgressBar {
             show_percent: true,
             show_counter: true,
             show_time_left: true,
-            bar_start: v[1].to_string(),
-            bar_current: v[2].to_string(),
-            bar_current_n: v[3].to_string(),
-            bar_remain: v[4].to_string(),
-            bar_end: v[5].to_string(),
-        }
+            bar_start: String::new(),
+            bar_current: String::new(),
+            bar_current_n: String::new(),
+            bar_remain: String::new(),
+            bar_end: String::new(),
+        };
+        pb.format(FORMAT);
+        pb
     }
+    
+    fn format(&mut self, fmt: &str) {
+        if fmt.len() >= 5 {
+            let v: Vec<&str> = fmt.split("").collect();
+            self.bar_start = v[1].to_string();
+            self.bar_current = v[2].to_string();
+            self.bar_current_n = v[3].to_string();
+            self.bar_remain = v[4].to_string();
+            self.bar_end = v[5].to_string();
+        }
+    }    
 
     fn add(&mut self, i: usize) -> usize {
         self.current += i;
