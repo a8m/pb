@@ -24,6 +24,12 @@ macro_rules! kb_fmt {
     }}
 }
 
+macro_rules! repeat {
+    ($s: expr, $n: expr) => {{
+        &std::iter::repeat($s).take($n).collect::<String>()
+    }}
+}
+
 static FORMAT: &'static str = "[=>-]";
 
 pub struct ProgressBar {
@@ -118,28 +124,20 @@ impl ProgressBar {
                 let curr_count =
                     ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
                 let rema_count = size - curr_count;
+                base = self.bar_start.to_string();
                 if rema_count > 0 {
-                    base = std::iter::repeat(self.bar_current.as_ref())
-                               .take(curr_count - 1)
-                               .collect::<String>();
-                    base = base + &self.bar_current_n;
+                    base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) + &self.bar_current_n;
                 } else {
-                    base = std::iter::repeat(self.bar_current.as_ref())
-                               .take(curr_count)
-                               .collect::<String>();
+                    base = base + repeat!(self.bar_current.as_ref(), curr_count);
                 }
-                base = base +
-                       &std::iter::repeat(self.bar_remain.as_ref())
-                            .take(rema_count)
-                            .collect::<String>();
-                base = self.bar_start.to_string() + &base + &self.bar_end;
+                base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
             }
         }
         out = prefix + &base + &suffix;
         // pad
         if out.len() < width {
             let gap = width - out.len();
-            out = out + &std::iter::repeat(" ").take(gap as usize).collect::<String>();
+            out = out + repeat!(" ", gap);
         }
         // print
         printfl!("\r{}", out);
