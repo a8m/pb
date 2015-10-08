@@ -31,8 +31,16 @@ macro_rules! repeat {
 
 static FORMAT: &'static str = "[=>-]";
 
+// Output type format, indicate which format wil be used in 
+// the speed box.
+pub enum Units {
+    Default,
+    Bytes
+}
+
 pub struct ProgressBar {
     start_time: Timespec,
+    units: Units,
     total: usize,
     current: usize,
     is_finish: bool,
@@ -41,7 +49,6 @@ pub struct ProgressBar {
     show_percent: bool,
     show_counter: bool,
     show_time_left: bool,
-    // Format
     bar_start: String,
     bar_current: String,
     bar_current_n: String,
@@ -50,11 +57,13 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
+
     pub fn new(total: usize) -> ProgressBar {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
             start_time: time::get_time(),
+            units: Units::Default,
             is_finish: false,
             show_bar: true,
             show_speed: false,
@@ -69,6 +78,10 @@ impl ProgressBar {
         };
         pb.format(FORMAT);
         pb
+    }
+
+    pub fn set_units(&mut self, u: Units) {
+        self.units = u;
     }
 
     fn format(&mut self, fmt: &str) {
@@ -102,7 +115,7 @@ impl ProgressBar {
             suffix = suffix + &format!(" {:.*} % ", 2, percent);
         }
         // speed box
-        // TODO: ADD KB FORMAT
+        // TODO: ADD KB FORMAT, SHOULD BE IN THE COUNTER TOO.
         if !self.show_speed {
             let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
