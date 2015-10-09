@@ -120,7 +120,10 @@ impl ProgressBar {
             let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
             let speed = self.current as f64 / (from_start / sec_nano);
-            suffix = suffix + &format!("{}/s ", speed as usize);
+            suffix = suffix + match self.units {
+                Units::Default => &format!("{}/s ", speed as usize),
+                Units::Bytes => &format!("{}/s ", speed as usize),
+            };
         }
         // time left box
         if self.show_time_left {
