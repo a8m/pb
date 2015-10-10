@@ -31,11 +31,11 @@ macro_rules! repeat {
 
 static FORMAT: &'static str = "[=>-]";
 
-// Output type format, indicate which format wil be used in 
+// Output type format, indicate which format wil be used in
 // the speed box.
 pub enum Units {
     Default,
-    Bytes
+    Bytes,
 }
 
 pub struct ProgressBar {
