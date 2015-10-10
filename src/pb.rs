@@ -15,10 +15,10 @@ macro_rules! kb_fmt {
     ($n: ident) => {{
         let kb = 1024f64;
         match $n {
-            $n if $n > kb.powf(4_f64) => {format!("{:.*} TG", 2, $n / kb.powf(4_f64))},
+            $n if $n > kb.powf(4_f64) => format!("{:.*} TG", 2, $n / kb.powf(4_f64)),
             $n if $n > kb.powf(3_f64) => format!("{:.*} GB", 2, $n / kb.powf(3_f64)),
             $n if $n > kb => format!("{:.*} KB", 2, $n / kb),
-            _ => format!("{:.*} B", 2, $n)
+            _ => format!("{:.*} B", 0, $n)
         }
     }}
 }
@@ -104,7 +104,7 @@ impl ProgressBar {
     }
 
     fn draw(&self) {
-        let width = 149;    // replace to -> get_tty_size()
+        let width = 145;    // replace to -> get_tty_size()
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
@@ -115,14 +115,13 @@ impl ProgressBar {
             suffix = suffix + &format!(" {:.*} % ", 2, percent);
         }
         // speed box
-        // TODO: ADD KB FORMAT, SHOULD BE IN THE COUNTER TOO.
         if !self.show_speed {
             let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
             let speed = self.current as f64 / (from_start / sec_nano);
-            suffix = suffix + match self.units {
-                Units::Default => &format!("{}/s ", speed as usize),
-                Units::Bytes => &format!("{}/s ", speed as usize),
+            suffix = match self.units {
+                Units::Default => suffix + &format!("{}/s ", speed),
+                Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
             };
         }
         // time left box
@@ -142,7 +141,11 @@ impl ProgressBar {
         }
         // counter box
         if self.show_counter {
-            prefix = format!("{} / {} ", self.current, self.total);
+            let (c, t) = (self.current as f64, self.total as f64);
+            prefix = match self.units {
+                Units::Default => format!("{} / {} ", c, t),
+                Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
+            };
         }
         // bar box
         if self.show_bar {
