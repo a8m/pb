@@ -5,3 +5,4 @@ authors = ["Ariel Mashraki <ariel@mashraki.co.il>"]
 
 [dependencies]
 time = "0.1"
+libc = "*"
