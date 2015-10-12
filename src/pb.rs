@@ -1,12 +1,10 @@
-use std;
-use std::ops::Add;
-use std::io::{self, Write, Read};
+use std::iter::{repeat};
+use std::io::{self, Write};
 use time::{self, Timespec, Duration};
-use tty::{Width, Height, terminal_size};
+use tty::{Width, terminal_size};
 
 macro_rules! printfl {
     ($($tt:tt)*) => {{
-        use std::io::{self, Write};
         print!($($tt)*);
         io::stdout().flush().ok().expect("flush() fail");
     }}
@@ -26,7 +24,7 @@ macro_rules! kb_fmt {
 
 macro_rules! repeat {
     ($s: expr, $n: expr) => {{
-        &std::iter::repeat($s).take($n).collect::<String>()
+        &repeat($s).take($n).collect::<String>()
     }}
 }
 
@@ -245,3 +243,30 @@ impl Write for ProgressBar {
     }
 }
 
+#[cfg(test)]
+mod test {
+    use pb::{ProgressBar};
+
+    #[test]
+    fn add() {
+        let mut pb = ProgressBar::new(10);
+        pb.add(2);
+        assert!(pb.current == 2, "should add the given `n` to current");
+        assert!(pb.add(2) == pb.current, "add should return the current value");
+    }
+
+    #[test]
+    fn inc() {
+        let mut pb = ProgressBar::new(10);
+        pb.inc();
+        assert!(pb.current == 1, "should increment current by 1");
+    }
+
+    #[test]
+    fn format() {
+        let FORMAT = "[~> ]";
+        let mut pb = ProgressBar::new(1);
+        pb.format(FORMAT);
+        assert!(pb.bar_start + &pb.bar_current + &pb.bar_current_n + &pb.bar_remain + &pb.bar_end == FORMAT);
+    }
+}
