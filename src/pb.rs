@@ -2,6 +2,7 @@ use std;
 use std::ops::Add;
 use std::io::{self, Write, Read};
 use time::{self, Timespec, Duration};
+use tty::{Width, Height, terminal_size};
 
 macro_rules! printfl {
     ($($tt:tt)*) => {{
@@ -33,11 +34,13 @@ static FORMAT: &'static str = "[=>-]";
 
 // Output type format, indicate which format wil be used in
 // the speed box.
+#[derive(Debug)]
 pub enum Units {
     Default,
     Bytes,
 }
 
+#[derive(Debug)]
 pub struct ProgressBar {
     start_time: Timespec,
     units: Units,
@@ -57,7 +60,23 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
-
+    /// Create a new ProgressBar with default configuration.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use std::thread;
+    /// use pb::{ProgressBar, Units};
+    ///
+    /// let count = 1000;
+    /// let mut pb = ProgressBar::new(count);
+    /// pb.set_units(Units::Bytes);
+    ///
+    /// for _ in 0..count {
+    ///    pb.inc();
+    ///    thread::sleep_ms(100);
+    /// }
+    /// ```
     pub fn new(total: usize) -> ProgressBar {
         let mut pb = ProgressBar {
             total: total,
@@ -80,11 +99,28 @@ impl ProgressBar {
         pb
     }
 
+    /// set units, default is simple numbers
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use pb::{ProgressBar, Units};
+    ///
+    /// let mut pb = ProgressBar::new(n_bytes);
+    /// pb.set_units(Units::Bytes);
+    /// ```
     pub fn set_units(&mut self, u: Units) {
         self.units = u;
     }
 
-    fn format(&mut self, fmt: &str) {
+    /// Set custom format to the drawing bar, default is "[=>-]"
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// pb.format("[=>_]")
+    /// ```
+    pub fn format(&mut self, fmt: &str) {
         if fmt.len() >= 5 {
             let v: Vec<&str> = fmt.split("").collect();
             self.bar_start = v[1].to_string();
@@ -95,6 +131,7 @@ impl ProgressBar {
         }
     }
 
+    /// Add to current value
     pub fn add(&mut self, i: usize) -> usize {
         self.current += i;
         if self.current <= self.total {
@@ -103,8 +140,18 @@ impl ProgressBar {
         self.current
     }
 
+    /// Increment current value
+    pub fn inc(&mut self) -> usize {
+        return self.add(1);
+    }
+
     fn draw(&self) {
-        let width = 145;    // replace to -> get_tty_size()
+        let tty_size = terminal_size();
+        let width = if let Some((Width(w), _)) = tty_size {
+            w as usize
+        } else {
+            80
+        };
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
@@ -174,6 +221,8 @@ impl ProgressBar {
         printfl!("\r{}", out);
     }
 
+    /// Calling finish manually will set current to total and draw
+    /// the last time
     pub fn finish(&mut self) {
         if self.current < self.total {
             self.current = self.total;
@@ -196,4 +245,3 @@ impl Write for ProgressBar {
     }
 }
 
-// TODO: Implement io::Reader
