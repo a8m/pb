@@ -1,10 +1,9 @@
-// Code taken from https://github.com/eminence/terminal-size
 extern crate libc;
 use super::{Width, Height};
 use std::os::raw::*;
 
-#[cfg(target_os = "unix")] 
-const TIOCGWINSZ: c_ulong = 0x00005413;
+#[cfg(not(target_os = "macos"))]
+const TIOCGWINSZ: c_int = 0x00005413;
 #[cfg(target_os = "macos")] 
 const TIOCGWINSZ: c_ulong = 1074295912;
 
