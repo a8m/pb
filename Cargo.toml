@@ -2,7 +2,14 @@
 name = "pb"
 version = "0.1.0"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>"]
+description = "Console progress bar for Rust"
+documentation = ""
+repository = "https://github.com/eminence/terminal-size"
+keywords = ["cli", "progress"]
+license = "MIT"
 
 [dependencies]
 time = "0.1"
-libc = "*"
+libc = "0.1"
+winapi = "0.2"
+kernel32-sys = "0.1"
