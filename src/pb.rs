@@ -269,4 +269,12 @@ mod test {
         pb.format(FORMAT);
         assert!(pb.bar_start + &pb.bar_current + &pb.bar_current_n + &pb.bar_remain + &pb.bar_end == FORMAT);
     }
+
+    #[test]
+    fn finish() {
+        let mut pb = ProgressBar::new(10);
+        pb.finish();
+        assert!(pb.current == pb.total, "should set current to total");
+        assert!(pb.is_finish, "should set is_finish to true");
+    }
 }
