@@ -175,7 +175,7 @@ impl ProgressBar {
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
             let speed = self.current as f64 / (from_start / sec_nano);
             suffix = match self.units {
-                Units::Default => suffix + &format!("{}/s ", speed),
+                Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
                 Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
             };
         }
