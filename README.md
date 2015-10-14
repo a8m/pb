@@ -19,16 +19,18 @@ fn main() {
         pb.inc();
         thread::sleep_ms(200);
     }
-    println("done!");
+    println!("done!");
 }
 ```
 
 2. Broadcast writing(simple file copying)
 
 ```rust
+#![feature(io)]
 extern crate pbr;
 
 use std::io::copy;
+use std::io::prelude::*;
 use std::fs::{self, File};
 use pbr::{ProgressBar, Units};
 
@@ -37,7 +39,7 @@ fn main() {
     let mut file = File::open(fname).unwrap();
     let n_bytes = fs::metadata(fname).unwrap().len() as usize;
     let mut pb = ProgressBar::new(n_bytes);
-    pb.set_units(pb::Units::Bytes);
+    pb.set_units(Units::Bytes);
     let mut dfile = File::create("copy-words").unwrap();
     let mut handle = dfile.broadcast(&mut pb);
     copy(&mut file, &mut handle).unwrap();
