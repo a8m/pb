@@ -237,7 +237,7 @@ impl Write for ProgressBar {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
         self.add(n);
-        Ok(buf.len())
+        Ok(n)
     }
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
