@@ -65,7 +65,7 @@ impl ProgressBar {
     ///
     /// ```no_run
     /// use std::thread;
-    /// use pb::{ProgressBar, Units};
+    /// use pbr::{ProgressBar, Units};
     ///
     /// let count = 1000;
     /// let mut pb = ProgressBar::new(count);
@@ -103,7 +103,7 @@ impl ProgressBar {
     /// # Examples
     ///
     /// ```no_run
-    /// use pb::{ProgressBar, Units};
+    /// use pbr::{ProgressBar, Units};
     ///
     /// let mut pb = ProgressBar::new(n_bytes);
     /// pb.set_units(Units::Bytes);

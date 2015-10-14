@@ -3,8 +3,8 @@ name = "pbr"
 version = "0.0.1"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>"]
 description = "Console progress bar for Rust"
-documentation = "https://github.com/a8m/pbr"
-repository = "https://github.com/a8m/pbr"
+documentation = "https://github.com/a8m/pb"
+repository = "https://github.com/a8m/pb"
 keywords = ["cli", "progress"]
 license = "MIT"
 
