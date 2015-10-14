@@ -14,9 +14,10 @@ macro_rules! kb_fmt {
     ($n: ident) => {{
         let kb = 1024f64;
         match $n {
-            $n if $n > kb.powf(4_f64) => format!("{:.*} TG", 2, $n / kb.powf(4_f64)),
-            $n if $n > kb.powf(3_f64) => format!("{:.*} GB", 2, $n / kb.powf(3_f64)),
-            $n if $n > kb => format!("{:.*} KB", 2, $n / kb),
+            $n if $n >= kb.powf(4_f64) => format!("{:.*} TB", 2, $n / kb.powf(4_f64)),
+            $n if $n >= kb.powf(3_f64) => format!("{:.*} GB", 2, $n / kb.powf(3_f64)),
+            $n if $n >= kb.powf(2_f64) => format!("{:.*} MB", 2, $n / kb.powf(2_f64)),
+            $n if $n >= kb => format!("{:.*} KB", 2, $n / kb),
             _ => format!("{:.*} B", 0, $n)
         }
     }}
@@ -276,5 +277,17 @@ mod test {
         pb.finish();
         assert!(pb.current == pb.total, "should set current to total");
         assert!(pb.is_finish, "should set is_finish to true");
+    }
+
+    #[test]
+    fn kb_fmt() {
+        let kb = 1024f64;
+        let mb = kb.powf(2f64);
+        let gb = kb.powf(3f64);
+        let tb = kb.powf(4f64);
+        assert_eq!(kb_fmt!(kb), "1.00 KB");
+        assert_eq!(kb_fmt!(mb), "1.00 MB");
+        assert_eq!(kb_fmt!(gb), "1.00 GB");
+        assert_eq!(kb_fmt!(tb), "1.00 TB");
     }
 }
