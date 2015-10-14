@@ -2,4 +2,7 @@
 //!
 //! Support and tested on MacOS, Linux, Windows will be some day.
 //!
-pub mod pb;
+extern crate time;
+mod tty;
+mod pb;
+pub use pb::{ProgressBar, Units};

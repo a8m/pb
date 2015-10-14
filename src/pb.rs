@@ -267,11 +267,11 @@ mod test {
 
     #[test]
     fn format() {
-        let FORMAT = "[~> ]";
+        let fmt = "[~> ]";
         let mut pb = ProgressBar::new(1);
-        pb.format(FORMAT);
+        pb.format(fmt);
         assert!(pb.bar_start + &pb.bar_current + &pb.bar_current_n + &pb.bar_remain +
-                &pb.bar_end == FORMAT);
+                &pb.bar_end == fmt);
     }
 
     #[test]
