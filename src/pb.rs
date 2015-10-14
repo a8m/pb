@@ -1,4 +1,4 @@
-use std::iter::{repeat};
+use std::iter::repeat;
 use std::io::{self, Write};
 use time::{self, Timespec, Duration};
 use tty::{Width, terminal_size};
@@ -246,14 +246,16 @@ impl Write for ProgressBar {
 
 #[cfg(test)]
 mod test {
-    use pb::{ProgressBar};
+    use pb::ProgressBar;
 
     #[test]
     fn add() {
         let mut pb = ProgressBar::new(10);
         pb.add(2);
-        assert!(pb.current == 2, "should add the given `n` to current");
-        assert!(pb.add(2) == pb.current, "add should return the current value");
+        assert!(pb.current == 2,
+                "should add the given `n` to current");
+        assert!(pb.add(2) == pb.current,
+                "add should return the current value");
     }
 
     #[test]
@@ -268,14 +270,16 @@ mod test {
         let FORMAT = "[~> ]";
         let mut pb = ProgressBar::new(1);
         pb.format(FORMAT);
-        assert!(pb.bar_start + &pb.bar_current + &pb.bar_current_n + &pb.bar_remain + &pb.bar_end == FORMAT);
+        assert!(pb.bar_start + &pb.bar_current + &pb.bar_current_n + &pb.bar_remain +
+                &pb.bar_end == FORMAT);
     }
 
     #[test]
     fn finish() {
         let mut pb = ProgressBar::new(10);
         pb.finish();
-        assert!(pb.current == pb.total, "should set current to total");
+        assert!(pb.current == pb.total,
+                "should set current to total");
         assert!(pb.is_finish, "should set is_finish to true");
     }
 
