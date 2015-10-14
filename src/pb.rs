@@ -112,12 +112,13 @@ impl ProgressBar {
         self.units = u;
     }
 
-    /// Set custom format to the drawing bar, default is "[=>-]"
+    /// Set custom format to the drawing bar, default is `[=>-]`
     ///
     /// # Examples
     ///
     /// ```no_run
-    /// pb.format("[=>_]")
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.format("[=>_]");
     /// ```
     pub fn format(&mut self, fmt: &str) {
         if fmt.len() >= 5 {
