@@ -1,8 +1,8 @@
 //! Most of the code in this module(tty) taken from:
 //! https://github.com/eminence/terminal-size
 //!
-//! A simple utility for getting the size of a terminal.  
-//! 
+//! A simple utility for getting the size of a terminal.
+//!
 //! Supports both Linux and Windows, but help is needed to test other platforms
 //!
 //! # Example
