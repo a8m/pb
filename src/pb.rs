@@ -132,6 +132,14 @@ impl ProgressBar {
     }
 
     /// Add to current value
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// let mut pb = ProgressBar::new(10);
+    /// pb.add(5);
+    /// pb.finish();
+    /// ```
     pub fn add(&mut self, i: usize) -> usize {
         self.current += i;
         if self.current <= self.total {
