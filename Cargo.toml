@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>"]
 description = "Console progress bar for Rust"
 documentation = ""
-repository = "https://github.com/eminence/terminal-size"
+repository = "https://github.com/a8m/pb"
 keywords = ["cli", "progress"]
 license = "MIT"
 
