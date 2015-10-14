@@ -45,17 +45,17 @@ pub struct ProgressBar {
     units: Units,
     total: usize,
     current: usize,
-    is_finish: bool,
-    show_bar: bool,
-    show_speed: bool,
-    show_percent: bool,
-    show_counter: bool,
-    show_time_left: bool,
     bar_start: String,
     bar_current: String,
     bar_current_n: String,
     bar_remain: String,
     bar_end: String,
+    pub is_finish: bool,
+    pub show_bar: bool,
+    pub show_speed: bool,
+    pub show_percent: bool,
+    pub show_counter: bool,
+    pub show_time_left: bool,
 }
 
 impl ProgressBar {
@@ -84,7 +84,7 @@ impl ProgressBar {
             units: Units::Default,
             is_finish: false,
             show_bar: true,
-            show_speed: false,
+            show_speed: true,
             show_percent: true,
             show_counter: true,
             show_time_left: true,
@@ -170,7 +170,7 @@ impl ProgressBar {
             suffix = suffix + &format!(" {:.*} % ", 2, percent);
         }
         // speed box
-        if !self.show_speed {
+        if self.show_speed {
             let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
             let speed = self.current as f64 / (from_start / sec_nano);
