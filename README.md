@@ -1,15 +1,15 @@
 # Console progress bar for Rust
 
-Console progress bar for Rust Inspired from [pb.go](github.com/cheggaaa/pb), support and 
+Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb), support and 
 tested on MacOS and Linux(should work on Windows too, but not tested yet).
 
 ### Examples
 1. simple example
 
 ```rust
-extern crate pb;
+extern crate pbr;
 
-use pb::ProgressBar;
+use pbr::ProgressBar;
 use std::thread;
 
 fn main() {
@@ -26,11 +26,11 @@ fn main() {
 2. Broadcast writing(simple file copying)
 
 ```rust
-extern crate pb;
+extern crate pbr;
 
 use std::io::copy;
 use std::fs::{self, File};
-use pb::{ProgressBar, Units};
+use pbr::{ProgressBar, Units};
 
 fn main() {
     let fname = "/usr/share/dict/words";
