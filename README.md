@@ -5,6 +5,8 @@ tested on MacOS and Linux(should work on Windows too, but not tested yet).
 
 ![Screenshot](https://github.com/a8m/pb/blob/master/gif/rec.gif)
 
+[Documentation](http://a8m.github.io/pb/doc/pbr/index.html)
+
 ### Examples
 1. simple example
 

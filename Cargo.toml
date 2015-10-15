@@ -1,11 +1,11 @@
 [package]
 name = "pbr"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>"]
 description = "Console progress bar for Rust"
-documentation = "https://github.com/a8m/pb"
+documentation = "http://a8m.github.io/pb/doc/pbr/index.html"
 repository = "https://github.com/a8m/pb"
-keywords = ["cli", "progress"]
+keywords = ["cli", "progress", "terminal", "pb"]
 license = "MIT"
 
 [dependencies]
