@@ -150,7 +150,7 @@ impl ProgressBar {
 
     /// Increment current value
     pub fn inc(&mut self) -> usize {
-        return self.add(1);
+        self.add(1)
     }
 
     fn draw(&self) {
