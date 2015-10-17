@@ -123,11 +123,11 @@ impl ProgressBar {
     pub fn format(&mut self, fmt: &str) {
         if fmt.len() >= 5 {
             let v: Vec<&str> = fmt.split("").collect();
-            self.bar_start = v[1].to_string();
-            self.bar_current = v[2].to_string();
-            self.bar_current_n = v[3].to_string();
-            self.bar_remain = v[4].to_string();
-            self.bar_end = v[5].to_string();
+            self.bar_start = v[1].to_owned();
+            self.bar_current = v[2].to_owned();
+            self.bar_current_n = v[3].to_owned();
+            self.bar_remain = v[4].to_owned();
+            self.bar_end = v[5].to_owned();
         }
     }
 
@@ -209,7 +209,7 @@ impl ProgressBar {
                 let curr_count =
                     ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
                 let rema_count = size - curr_count;
-                base = self.bar_start.to_string();
+                base = self.bar_start.clone();
                 if rema_count > 0 {
                     base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
                            &self.bar_current_n;
