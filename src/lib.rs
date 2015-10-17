@@ -33,17 +33,15 @@
 //! 
 //! use std::io::copy;
 //! use std::io::prelude::*;
-//! use std::fs::{self, File};
+//! use std::fs::File;
 //! use pbr::{ProgressBar, Units};
 //! 
 //! fn main() {
-//!     let fname = "/usr/share/dict/words";
-//!     let mut file = File::open(fname).unwrap();
-//!     let n_bytes = fs::metadata(fname).unwrap().len() as usize;
+//!     let mut file = File::open("/usr/share/dict/words").unwrap();
+//!     let n_bytes = file.metadata().unwrap().len() as usize;
 //!     let mut pb = ProgressBar::new(n_bytes);
 //!     pb.set_units(Units::Bytes);
-//!     let mut dfile = File::create("copy-words").unwrap();
-//!     let mut handle = dfile.broadcast(&mut pb);
+//!     let mut handle = File::create("copy-words").unwrap().broadcast(&mut pb);
 //!     copy(&mut file, &mut handle).unwrap();
 //!     println!("done!");
 //! }
