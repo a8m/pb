@@ -239,6 +239,12 @@ impl ProgressBar {
         println!("");
         self.is_finish = true;
     }
+
+    /// Call finish and write string 's'
+    pub fn finish_print(&mut self, s: &str) {
+        self.finish();
+        println!("{}", s)
+    }
 }
 
 // Implement io::Writer
