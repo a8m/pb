@@ -19,6 +19,7 @@ use std::thread;
 fn main() {
     let count = 1000;
     let mut pb = ProgressBar::new(count);
+    pb.format("╢▌▌░╟");
     for _ in 0..count {
         pb.inc();
         thread::sleep_ms(200);
