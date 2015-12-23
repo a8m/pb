@@ -105,6 +105,7 @@ impl ProgressBar {
     /// ```no_run
     /// use pbr::{ProgressBar, Units};
     ///
+    /// let n_bytes = 100;
     /// let mut pb = ProgressBar::new(n_bytes);
     /// pb.set_units(Units::Bytes);
     /// ```
@@ -116,7 +117,7 @@ impl ProgressBar {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// let mut pb = ProgressBar::new(...);
     /// pb.format("[=>_]");
     /// ```
@@ -136,6 +137,8 @@ impl ProgressBar {
     /// # Examples
     ///
     /// ```no_run
+    /// use pbr::ProgressBar;
+    ///
     /// let mut pb = ProgressBar::new(10);
     /// pb.add(5);
     /// pb.finish();
