@@ -27,7 +27,7 @@
 //! 
 //! 2. Broadcast writing(simple file copying)
 //! 
-//! ```no_run
+//! ```ignore
 //! #![feature(io)]
 //! extern crate pbr;
 //! 
@@ -50,3 +50,35 @@ extern crate time;
 mod tty;
 mod pb;
 pub use pb::{ProgressBar, Units};
+
+
+pub struct PbIter<I> where
+    I: Iterator,
+{
+    iter: I,
+    progress_bar: ProgressBar,
+}
+
+impl<I> PbIter<I> where
+    I: Iterator
+{
+    pub fn new(iter: I) -> Self {
+        let size = iter.size_hint().0;
+        PbIter {iter: iter, progress_bar: ProgressBar::new(size)}
+    }
+}
+
+impl<I> Iterator for PbIter<I> where
+    I: Iterator
+{
+    type Item = I::Item;
+
+    fn next(&mut self) -> Option<I::Item> {
+        self.progress_bar.inc();
+        self.iter.next()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.iter.size_hint()
+    }
+}
