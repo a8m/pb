@@ -43,8 +43,8 @@ pub enum Units {
 pub struct ProgressBar {
     start_time: Timespec,
     units: Units,
-    total: usize,
-    current: usize,
+    total: u64,
+    current: u64,
     bar_start: String,
     bar_current: String,
     bar_current_n: String,
@@ -76,7 +76,7 @@ impl ProgressBar {
     ///    thread::sleep_ms(100);
     /// }
     /// ```
-    pub fn new(total: usize) -> ProgressBar {
+    pub fn new(total: u64) -> ProgressBar {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
@@ -143,7 +143,7 @@ impl ProgressBar {
     /// pb.add(5);
     /// pb.finish();
     /// ```
-    pub fn add(&mut self, i: usize) -> usize {
+    pub fn add(&mut self, i: u64) -> u64 {
         self.current += i;
         if self.current <= self.total {
             self.draw()
@@ -152,7 +152,7 @@ impl ProgressBar {
     }
 
     /// Increment current value
-    pub fn inc(&mut self) -> usize {
+    pub fn inc(&mut self) -> u64 {
         self.add(1)
     }
 
@@ -254,7 +254,7 @@ impl ProgressBar {
 impl Write for ProgressBar {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
-        self.add(n);
+        self.add(n as u64);
         Ok(n)
     }
     fn flush(&mut self) -> io::Result<()> {
