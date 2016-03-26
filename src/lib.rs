@@ -74,8 +74,13 @@ impl<I> Iterator for PbIter<I> where
     type Item = I::Item;
 
     fn next(&mut self) -> Option<I::Item> {
-        self.progress_bar.inc();
-        self.iter.next()
+        match self.iter.next() {
+            Some(i) => {
+                self.progress_bar.inc();
+                Some(i)
+            }
+            None => None,
+        }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
