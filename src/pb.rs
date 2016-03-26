@@ -1,6 +1,7 @@
-use std::iter::repeat;
 use std::io::{self, Write};
-use time::{SteadyTime, Duration};
+use std::iter::repeat;
+use std::time::Duration;
+use time::{self, SteadyTime};
 use tty::{Width, terminal_size};
 
 macro_rules! printfl {
@@ -29,7 +30,8 @@ macro_rules! repeat {
     }}
 }
 
-static FORMAT: &'static str = "[=>-]";
+const FORMAT: &'static str = "[=>-]";
+const NANOS_PER_SEC: u32 = 1_000_000_000;
 
 // Output type format, indicate which format wil be used in
 // the speed box.
@@ -157,7 +159,8 @@ impl ProgressBar {
     }
 
     fn draw(&self) {
-        let now = SteadyTime::now();
+        let time_elapsed = time_to_std(SteadyTime::now() - self.start_time);
+        let per_entry = div_u64(time_elapsed, self.current);
 
         let tty_size = terminal_size();
         let width = if let Some((Width(w), _)) = tty_size {
@@ -176,9 +179,9 @@ impl ProgressBar {
         }
         // speed box
         if self.show_speed {
-            let from_start = (now - self.start_time).num_nanoseconds().unwrap() as f64;
-            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
-            let speed = self.current as f64 / (from_start / sec_nano);
+            let per_entry = per_entry.as_secs() as f64 +
+                per_entry.subsec_nanos() as f64 / NANOS_PER_SEC as f64;
+            let speed = 1. / per_entry;
             suffix = match self.units {
                 Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
                 Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
@@ -186,16 +189,12 @@ impl ProgressBar {
         }
         // time left box
         if self.show_time_left {
-            let from_start = now - self.start_time;
-            let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
-            let per_entry = from_start / self.current as i32;
-            let mut left = per_entry * (self.total - self.current) as i32;
-            left = (left / sec_nano) * sec_nano;
-            if left.num_seconds() > 0 {
-                if left.num_seconds() < Duration::minutes(1).num_seconds() {
-                    suffix = suffix + &format!("{}s", left.num_seconds());
+            if self.total > self.current {
+                let left = mul_u64(per_entry, self.total - self.current);
+                if left < Duration::from_secs(60) {
+                    suffix = suffix + &format!("{}s", left.as_secs());
                 } else {
-                    suffix = suffix + &format!("{}m", left.num_minutes());
+                    suffix = suffix + &format!("{}m", left.as_secs() / 60);
                 }
             }
         }
@@ -262,6 +261,40 @@ impl Write for ProgressBar {
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
+}
+
+fn time_to_std(d: time::Duration) -> Duration {
+    assert!(d > time::Duration::zero());
+
+    let secs = d.num_seconds();
+    let nsecs = (d - time::Duration::seconds(secs)).num_nanoseconds().unwrap();
+    Duration::new(secs as u64, nsecs as u32)
+}
+
+// Copied from rust-lang/rust#32515
+fn div_u64(d: Duration, rhs: u64) -> Duration {
+    let secs = d.as_secs() / rhs;
+    let carry = d.as_secs() - secs * rhs;
+    let extra_nanos = carry * (NANOS_PER_SEC as u64) / rhs;
+    let nanos = (d.subsec_nanos() as u64 / rhs + extra_nanos) as u32;
+    debug_assert!(nanos < NANOS_PER_SEC);
+    Duration::new(secs, nanos)
+}
+
+fn mul_u64(d: Duration, rhs: u64) -> Duration {
+    // for nanos, treat rhs as (NANOS_PER_SEC * a + b), where b < NANOS_PER_SEC
+    let a = rhs / NANOS_PER_SEC as u64;
+    let b = rhs % NANOS_PER_SEC as u64;
+    let total_nanos = d.subsec_nanos() as u64 * b; // can't overflow
+    let nanos = (total_nanos % NANOS_PER_SEC as u64) as u32;
+
+    let secs = d.as_secs()
+                .checked_mul(rhs)
+                .and_then(|s| s.checked_add(total_nanos / NANOS_PER_SEC as u64))
+                .and_then(|s| s.checked_add(d.subsec_nanos() as u64 * a))
+                .expect("overflow when multiplying duration");
+    debug_assert!(nanos < NANOS_PER_SEC);
+    Duration::new(secs, nanos)
 }
 
 #[cfg(test)]
