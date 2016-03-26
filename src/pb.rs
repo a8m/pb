@@ -1,6 +1,6 @@
 use std::iter::repeat;
 use std::io::{self, Write};
-use time::{self, Timespec, Duration};
+use time::{SteadyTime, Duration};
 use tty::{Width, terminal_size};
 
 macro_rules! printfl {
@@ -41,7 +41,7 @@ pub enum Units {
 
 #[derive(Debug)]
 pub struct ProgressBar {
-    start_time: Timespec,
+    start_time: SteadyTime,
     units: Units,
     total: u64,
     current: u64,
@@ -80,7 +80,7 @@ impl ProgressBar {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
-            start_time: time::get_time(),
+            start_time: SteadyTime::now(),
             units: Units::Default,
             is_finish: false,
             show_bar: true,
@@ -157,6 +157,8 @@ impl ProgressBar {
     }
 
     fn draw(&self) {
+        let now = SteadyTime::now();
+
         let tty_size = terminal_size();
         let width = if let Some((Width(w), _)) = tty_size {
             w as usize
@@ -174,7 +176,7 @@ impl ProgressBar {
         }
         // speed box
         if self.show_speed {
-            let from_start = (time::get_time() - self.start_time).num_nanoseconds().unwrap() as f64;
+            let from_start = (now - self.start_time).num_nanoseconds().unwrap() as f64;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as f64;
             let speed = self.current as f64 / (from_start / sec_nano);
             suffix = match self.units {
@@ -184,7 +186,7 @@ impl ProgressBar {
         }
         // time left box
         if self.show_time_left {
-            let from_start = time::get_time() - self.start_time;
+            let from_start = now - self.start_time;
             let sec_nano = Duration::seconds(1).num_nanoseconds().unwrap() as i32;
             let per_entry = from_start / self.current as i32;
             let mut left = per_entry * (self.total - self.current) as i32;
