@@ -1,6 +1,7 @@
 extern crate pbr;
 
 use pbr::{ProgressBar, PbIter};
+use std::time::Duration;
 use std::thread;
 
 #[test]
@@ -10,7 +11,7 @@ fn simple_example() {
     pb.format("╢▌▌░╟");
     for _ in 0..count {
         pb.inc();
-        thread::sleep_ms(1);
+        thread::sleep(Duration::from_millis(1));
     }
     println!("done!");
 }
@@ -18,7 +19,7 @@ fn simple_example() {
 #[test]
 fn simple_iter_example(){
     for _ in PbIter::new(0..1000) {
-        thread::sleep_ms(1);
+        thread::sleep(Duration::from_millis(1));
     }
     println!("done!");
 }
