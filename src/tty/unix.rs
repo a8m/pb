@@ -2,11 +2,6 @@ extern crate libc;
 use super::{Width, Height};
 use std::os::raw::*;
 
-#[cfg(not(target_os = "macos"))]
-const TIOCGWINSZ: c_int = 0x00005413;
-#[cfg(target_os = "macos")]
-const TIOCGWINSZ: c_ulong = 1074295912;
-
 #[derive(Debug)]
 struct WinSize {
     ws_row: c_ushort,
@@ -19,7 +14,7 @@ struct WinSize {
 ///
 /// If STDOUT is not a tty, returns `None`
 pub fn terminal_size() -> Option<(Width, Height)> {
-    use self::libc::{ioctl, isatty, STDOUT_FILENO};
+    use self::libc::{ioctl, isatty, STDOUT_FILENO, TIOCGWINSZ};
     let is_tty: bool = unsafe { isatty(STDOUT_FILENO) == 1 };
 
     if !is_tty {
