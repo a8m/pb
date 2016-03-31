@@ -10,6 +10,6 @@ license = "MIT"
 
 [dependencies]
 time = "0.1"
-libc = "0.2"
+libc = "0.2.9"
 winapi = "0.2"
 kernel32-sys = "0.2"
