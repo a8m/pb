@@ -160,7 +160,7 @@ impl ProgressBar {
 
     fn draw(&self) {
         let time_elapsed = time_to_std(SteadyTime::now() - self.start_time);
-        let per_entry = div_u64(time_elapsed, self.current);
+        let speed = self.current as f64 / fract_dur(time_elapsed);
 
         let tty_size = terminal_size();
         let width = if let Some((Width(w), _)) = tty_size {
@@ -179,9 +179,6 @@ impl ProgressBar {
         }
         // speed box
         if self.show_speed {
-            let per_entry = per_entry.as_secs() as f64 +
-                per_entry.subsec_nanos() as f64 / NANOS_PER_SEC as f64;
-            let speed = 1. / per_entry;
             suffix = match self.units {
                 Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
                 Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
@@ -190,11 +187,11 @@ impl ProgressBar {
         // time left box
         if self.show_time_left {
             if self.total > self.current {
-                let left = mul_u64(per_entry, self.total - self.current);
-                if left < Duration::from_secs(60) {
-                    suffix = suffix + &format!("{}s", left.as_secs());
+                let left = 1. / speed * (self.total - self.current) as f64;
+                if left < 60. {
+                    suffix = suffix + &format!("{:.0}s", left);
                 } else {
-                    suffix = suffix + &format!("{}m", left.as_secs() / 60);
+                    suffix = suffix + &format!("{:.0}m", left / 60.);
                 }
             }
         }
@@ -271,30 +268,8 @@ fn time_to_std(d: time::Duration) -> Duration {
     Duration::new(secs as u64, nsecs as u32)
 }
 
-// Copied from rust-lang/rust#32515
-fn div_u64(d: Duration, rhs: u64) -> Duration {
-    let secs = d.as_secs() / rhs;
-    let carry = d.as_secs() - secs * rhs;
-    let extra_nanos = carry * (NANOS_PER_SEC as u64) / rhs;
-    let nanos = (d.subsec_nanos() as u64 / rhs + extra_nanos) as u32;
-    debug_assert!(nanos < NANOS_PER_SEC);
-    Duration::new(secs, nanos)
-}
-
-fn mul_u64(d: Duration, rhs: u64) -> Duration {
-    // for nanos, treat rhs as (NANOS_PER_SEC * a + b), where b < NANOS_PER_SEC
-    let a = rhs / NANOS_PER_SEC as u64;
-    let b = rhs % NANOS_PER_SEC as u64;
-    let total_nanos = d.subsec_nanos() as u64 * b; // can't overflow
-    let nanos = (total_nanos % NANOS_PER_SEC as u64) as u32;
-
-    let secs = d.as_secs()
-                .checked_mul(rhs)
-                .and_then(|s| s.checked_add(total_nanos / NANOS_PER_SEC as u64))
-                .and_then(|s| s.checked_add(d.subsec_nanos() as u64 * a))
-                .expect("overflow when multiplying duration");
-    debug_assert!(nanos < NANOS_PER_SEC);
-    Duration::new(secs, nanos)
+fn fract_dur(d: Duration) -> f64 {
+    d.as_secs() as f64 + d.subsec_nanos() as f64 / NANOS_PER_SEC as f64
 }
 
 #[cfg(test)]
