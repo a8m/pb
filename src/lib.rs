@@ -1,19 +1,19 @@
 //! # Console progress bar for Rust
-//! 
-//! Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb).  
+//!
+//! Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb).
 //! support and tested on MacOS and Linux(should work on Windows too, but not tested yet).
-//! 
+//!
 //! ![Screenshot](https://raw.githubusercontent.com/a8m/pb/master/gif/rec.gif)
-//! 
+//!
 //! ### Examples
 //! 1. simple example
-//! 
+//!
 //! ```no_run
 //! extern crate pbr;
-//! 
+//!
 //! use pbr::ProgressBar;
 //! use std::thread;
-//! 
+//!
 //! fn main() {
 //!     let count = 1000;
 //!     let mut pb = ProgressBar::new(count);
@@ -24,18 +24,18 @@
 //!     println!("done!");
 //! }
 //! ```
-//! 
+//!
 //! 2. Broadcast writing(simple file copying)
-//! 
+//!
 //! ```ignore
 //! #![feature(io)]
 //! extern crate pbr;
-//! 
+//!
 //! use std::io::copy;
 //! use std::io::prelude::*;
 //! use std::fs::File;
 //! use pbr::{ProgressBar, Units};
-//! 
+//!
 //! fn main() {
 //!     let mut file = File::open("/usr/share/dict/words").unwrap();
 //!     let n_bytes = file.metadata().unwrap().len() as usize;
@@ -52,24 +52,27 @@ mod pb;
 pub use pb::{ProgressBar, Units};
 
 
-pub struct PbIter<I> where
-    I: Iterator,
+pub struct PbIter<I>
+    where I: Iterator
 {
     iter: I,
     progress_bar: ProgressBar,
 }
 
-impl<I> PbIter<I> where
-    I: Iterator
+impl<I> PbIter<I>
+    where I: Iterator
 {
     pub fn new(iter: I) -> Self {
         let size = iter.size_hint().0;
-        PbIter {iter: iter, progress_bar: ProgressBar::new(size as u64)}
+        PbIter {
+            iter: iter,
+            progress_bar: ProgressBar::new(size as u64),
+        }
     }
 }
 
-impl<I> Iterator for PbIter<I> where
-    I: Iterator
+impl<I> Iterator for PbIter<I>
+    where I: Iterator
 {
     type Item = I::Item;
 

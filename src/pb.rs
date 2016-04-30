@@ -31,6 +31,7 @@ macro_rules! repeat {
 }
 
 const FORMAT: &'static str = "[=>-]";
+const TICK_FORMAT: &'static str = "\\|/-";
 const NANOS_PER_SEC: u32 = 1_000_000_000;
 
 // Output type format, indicate which format wil be used in
@@ -52,12 +53,18 @@ pub struct ProgressBar {
     bar_current_n: String,
     bar_remain: String,
     bar_end: String,
+    tick: Vec<String>,
+    tick_state: usize,
+    tick_len: usize,
+    message: String,
     pub is_finish: bool,
     pub show_bar: bool,
     pub show_speed: bool,
     pub show_percent: bool,
     pub show_counter: bool,
     pub show_time_left: bool,
+    pub show_tick: bool,
+    pub show_message: bool,
 }
 
 impl ProgressBar {
@@ -90,17 +97,24 @@ impl ProgressBar {
             show_percent: true,
             show_counter: true,
             show_time_left: true,
+            show_tick: false,
+            show_message: true,
             bar_start: String::new(),
             bar_current: String::new(),
             bar_current_n: String::new(),
             bar_remain: String::new(),
             bar_end: String::new(),
+            tick: Vec::new(),
+            tick_state: 0,
+            tick_len: 4,
+            message: String::new(),
         };
         pb.format(FORMAT);
+        pb.tick_format(TICK_FORMAT);
         pb
     }
 
-    /// set units, default is simple numbers
+    /// Set units, default is simple numbers
     ///
     /// # Examples
     ///
@@ -134,6 +148,72 @@ impl ProgressBar {
         }
     }
 
+    /// Set message to display in the prefix, call with "" to stop printing a message.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(20);
+    ///
+    /// for x in 0..20 {
+    ///    match x {
+    ///       0 => pb.message("Doing 1st Quarter"),
+    ///       5 => pb.message("Doing 2nd Quarter"),
+    ///       10 => pb.message("Doing 3rd Quarter"),
+    ///       15 => pb.message("Doing 4th Quarter"),
+    ///    }
+    ///    pb.inc().
+    /// }
+    ///
+    /// ```
+    pub fn message(&mut self, message: &str) {
+        self.message = message.to_owned()
+    }
+
+    /// Set tick format for the progressBar, default is \\|/-
+    ///
+    /// Format is not limited to 4 characters, any string can
+    /// be used as a tick format (the tick will successively
+    /// take the value of each char but won't loop backwards).
+    ///
+    ///
+    /// # Examples
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.tick_format("▀▐▄▌")
+    /// ```
+    pub fn tick_format(&mut self, tick_fmt: &str) {
+        if tick_fmt != TICK_FORMAT {
+            self.show_tick = true;
+        };
+        self.tick = tick_fmt.split("").map(|x| x.to_owned()).filter(|x| x != "").collect();
+        self.tick_len = self.tick.len();
+    }
+
+    /// Update progress bar even though no progress are made
+    /// Useful to see if a program is bricked or just
+    /// not doing any progress.
+    ///
+    /// tick is not needed with add or inc
+    /// as performed operation take place
+    /// in draw function.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.inc();
+    /// for _ in ... {
+    ///    ...do something
+    ///    pb.tick();
+    /// }
+    /// pb.finish();
+    /// ```
+    pub fn tick(&mut self) {
+        self.tick_state = (self.tick_state + 1) % self.tick_len;
+        if self.current <= self.total {
+            self.draw()
+        };
+    }
+
     /// Add to current value
     ///
     /// # Examples
@@ -147,9 +227,7 @@ impl ProgressBar {
     /// ```
     pub fn add(&mut self, i: u64) -> u64 {
         self.current += i;
-        if self.current <= self.total {
-            self.draw()
-        };
+        self.tick();
         self.current
     }
 
@@ -172,6 +250,7 @@ impl ProgressBar {
         let mut suffix = String::new();
         let mut prefix = String::new();
         let mut out;
+
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
@@ -195,20 +274,29 @@ impl ProgressBar {
                 }
             }
         }
+        // message box
+        if self.show_message {
+            prefix = prefix + &format!("{}", self.message)
+        }
         // counter box
         if self.show_counter {
             let (c, t) = (self.current as f64, self.total as f64);
-            prefix = match self.units {
+            prefix = prefix +
+                     &match self.units {
                 Units::Default => format!("{} / {} ", c, t),
                 Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
             };
+        }
+        // tick box
+        if self.show_tick {
+            prefix = prefix + &format!("{} ", self.tick[self.tick_state]);
         }
         // bar box
         if self.show_bar {
             let size = width - (prefix.len() + suffix.len() + 3);
             if size > 0 {
-                let curr_count =
-                    ((self.current as f64 / self.total as f64) * size as f64).ceil() as usize;
+                let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
+                                     .ceil() as usize;
                 let rema_count = size - curr_count;
                 base = self.bar_start.clone();
                 if rema_count > 0 {
@@ -280,8 +368,7 @@ mod test {
     fn add() {
         let mut pb = ProgressBar::new(10);
         pb.add(2);
-        assert!(pb.current == 2,
-                "should add the given `n` to current");
+        assert!(pb.current == 2, "should add the given `n` to current");
         assert!(pb.add(2) == pb.current,
                 "add should return the current value");
     }
@@ -306,8 +393,7 @@ mod test {
     fn finish() {
         let mut pb = ProgressBar::new(10);
         pb.finish();
-        assert!(pb.current == pb.total,
-                "should set current to total");
+        assert!(pb.current == pb.total, "should set current to total");
         assert!(pb.is_finish, "should set is_finish to true");
     }
 
