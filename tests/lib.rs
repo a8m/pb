@@ -6,19 +6,19 @@ use std::thread;
 
 #[test]
 fn simple_example() {
-    let count = 1000;
+    let count = 5000;
     let mut pb = ProgressBar::new(count);
     pb.format("╢▌▌░╟");
     for _ in 0..count {
         pb.inc();
-        thread::sleep(Duration::from_millis(1));
+        thread::sleep(Duration::from_millis(5));
     }
     println!("done!");
 }
 
 #[test]
 fn simple_iter_example(){
-    for _ in PbIter::new(0..1000) {
+    for _ in PbIter::new(0..20000) {
         thread::sleep(Duration::from_millis(1));
     }
     println!("done!");
@@ -26,7 +26,7 @@ fn simple_iter_example(){
 
 #[test]
 fn timeout_example() {
-    let count = 100;
+    let count = 10;
     let mut pb = ProgressBar::new(count*20);
     pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
     pb.show_message = true;
@@ -40,7 +40,7 @@ fn timeout_example() {
         for _ in 0..20 {
             pb.message("Connected: ");
             thread::sleep(Duration::from_millis(50));
-            pb.inc();   
+            pb.inc();
         }
     }
     for _ in 0..10 {
@@ -54,7 +54,7 @@ fn timeout_example() {
 
 #[test]
 fn npm_bar() {
-   let count = 20;
+   let count = 30;
     let mut pb = ProgressBar::new(count*5);
     pb.tick_format("\\|/-");
     pb.format("|#--|");
@@ -73,7 +73,7 @@ fn npm_bar() {
         for _ in 0..5 {
             pb.message("fuzz -> tree       ");
             thread::sleep(Duration::from_millis(80));
-            pb.inc();   
+            pb.inc();
         }
     }
     pb.finish();
