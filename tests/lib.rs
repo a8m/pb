@@ -17,7 +17,7 @@ fn simple_example() {
 }
 
 #[test]
-fn simple_iter_example(){
+fn simple_iter_example() {
     for _ in PbIter::new(0..20000) {
         thread::sleep(Duration::from_millis(1));
     }
@@ -27,7 +27,7 @@ fn simple_iter_example(){
 #[test]
 fn timeout_example() {
     let count = 10;
-    let mut pb = ProgressBar::new(count*20);
+    let mut pb = ProgressBar::new(count * 20);
     pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
     pb.show_message = true;
     pb.inc();
@@ -52,10 +52,28 @@ fn timeout_example() {
     println!("done!");
 }
 
+
+#[test]
+// see: issue #11
+fn tick_before_start() {
+    let count = 100;
+    let mut pb = ProgressBar::new(count);
+    pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
+    pb.tick();
+    for _ in 0..count {
+        pb.tick();
+        thread::sleep(Duration::from_millis(50));
+    }
+    for _ in 0..count {
+        pb.inc();
+        thread::sleep(Duration::from_millis(50));
+    }
+}
+
 #[test]
 fn npm_bar() {
-   let count = 30;
-    let mut pb = ProgressBar::new(count*5);
+    let count = 30;
+    let mut pb = ProgressBar::new(count * 5);
     pb.tick_format("\\|/-");
     pb.format("|#--|");
     pb.show_tick = true;
