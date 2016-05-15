@@ -209,6 +209,10 @@ impl ProgressBar {
     /// ```
     pub fn tick(&mut self) {
         self.tick_state = (self.tick_state + 1) % self.tick_len;
+        // see issue #11.
+        if self.current == 0 {
+            self.current += 1;
+        }
         if self.current <= self.total {
             self.draw()
         };
@@ -389,6 +393,14 @@ mod test {
                 &pb.bar_end == fmt);
     }
 
+    #[test]
+    fn tick() {
+        let mut pb = ProgressBar::new(100);
+        pb.tick();
+        assert!(pb.current == 1, "should have set current to 1");
+        pb.tick();
+        assert!(pb.current == 1, "should current still be at 1");
+    }
     #[test]
     fn finish() {
         let mut pb = ProgressBar::new(10);
