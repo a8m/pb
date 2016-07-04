@@ -46,7 +46,7 @@ pub enum Units {
 pub struct ProgressBar<T: Write> {
     start_time: SteadyTime,
     units: Units,
-    total: u64,
+    pub total: u64,
     current: u64,
     bar_start: String,
     bar_current: String,
@@ -301,19 +301,22 @@ impl<T: Write> ProgressBar<T> {
         }
         // bar box
         if self.show_bar {
-            let size = width - (prefix.len() + suffix.len() + 3);
-            if size > 0 {
-                let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
-                    .ceil() as usize;
-                let rema_count = size - curr_count;
-                base = self.bar_start.clone();
-                if rema_count > 0 && curr_count > 0 {
-                    base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                           &self.bar_current_n;
-                } else {
-                    base = base + repeat!(self.bar_current.as_ref(), curr_count);
+            let p = prefix.len() + suffix.len() + 3;
+            if p <= width {
+                let size = width - p;
+                if size > 0 {
+                    let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
+                        .ceil() as usize;
+                    let rema_count = size - curr_count;
+                    base = self.bar_start.clone();
+                    if rema_count > 0 && curr_count > 0 {
+                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
+                               &self.bar_current_n;
+                    } else {
+                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                    }
+                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
                 }
-                base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
             }
         }
         out = prefix + &base + &suffix;
