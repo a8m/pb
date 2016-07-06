@@ -69,7 +69,6 @@ pub struct ProgressBar<T: Write> {
 }
 
 impl ProgressBar<Stdout> {
-
     /// Create a new ProgressBar with default configuration.
     ///
     /// # Examples
@@ -94,7 +93,6 @@ impl ProgressBar<Stdout> {
 }
 
 impl<T: Write> ProgressBar<T> {
-
     /// Create a new ProgressBar with default configuration but
     /// pass an arbitrary writer.
     ///
@@ -329,15 +327,17 @@ impl<T: Write> ProgressBar<T> {
                 if size > 0 {
                     let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
                         .ceil() as usize;
-                    let rema_count = size - curr_count;
-                    base = self.bar_start.clone();
-                    if rema_count > 0 && curr_count > 0 {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                               &self.bar_current_n;
-                    } else {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                    if size > curr_count {
+                        let rema_count = size - curr_count;
+                        base = self.bar_start.clone();
+                        if rema_count > 0 && curr_count > 0 {
+                            base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
+                                   &self.bar_current_n;
+                        } else {
+                            base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        }
+                        base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
                     }
-                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
                 }
             }
         }
