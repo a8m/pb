@@ -68,7 +68,8 @@ pub struct ProgressBar<T: Write> {
     handle: T,
 }
 
-impl<T: Write> ProgressBar<T> {
+impl ProgressBar<Stdout> {
+
     /// Create a new ProgressBar with default configuration.
     ///
     /// # Examples
@@ -86,13 +87,34 @@ impl<T: Write> ProgressBar<T> {
     ///    thread::sleep_ms(100);
     /// }
     /// ```
-    pub fn stdout(total: u64) -> ProgressBar<Stdout> {
+    pub fn new(total: u64) -> ProgressBar<Stdout> {
         let handle = ::std::io::stdout();
-        let pb = ProgressBar::new(handle, total);
-        pb
+        ProgressBar::on(handle, total)
     }
+}
 
-    pub fn new(handle: T, total: u64) -> ProgressBar<T> {
+impl<T: Write> ProgressBar<T> {
+
+    /// Create a new ProgressBar with default configuration but
+    /// pass an arbitrary writer.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use std::thread;
+    /// use std::io::stderr;
+    /// use pbr::{ProgressBar, Units};
+    ///
+    /// let count = 1000;
+    /// let mut pb = ProgressBar::on(stderr(), count);
+    /// pb.set_units(Units::Bytes);
+    ///
+    /// for _ in 0..count {
+    ///    pb.inc();
+    ///    thread::sleep_ms(100);
+    /// }
+    /// ```
+    pub fn on(handle: T, total: u64) -> ProgressBar<T> {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
