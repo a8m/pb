@@ -50,29 +50,37 @@ extern crate time;
 mod tty;
 mod pb;
 pub use pb::{ProgressBar, Units};
+use std::io::{Write, Stdout, stdout};
 
-
-pub struct PbIter<I>
-    where I: Iterator
+pub struct PbIter<T, I>
+where I: Iterator,
+      T: Write
 {
     iter: I,
-    progress_bar: ProgressBar,
+    progress_bar: ProgressBar<T>,
 }
 
-impl<I> PbIter<I>
-    where I: Iterator
+impl<I> PbIter<Stdout, I>
+where I: Iterator
 {
     pub fn new(iter: I) -> Self {
-        let size = iter.size_hint().0;
-        PbIter {
-            iter: iter,
-            progress_bar: ProgressBar::new(size as u64),
-        }
+        Self::on(stdout(), iter)
     }
 }
 
-impl<I> Iterator for PbIter<I>
-    where I: Iterator
+impl<T, I> PbIter<T, I>
+where I: Iterator,
+      T: Write
+{
+    pub fn on(handle: T, iter: I) -> Self {
+        let size = iter.size_hint().0;
+        PbIter {iter: iter, progress_bar: ProgressBar::on(handle, size as u64)}
+    }
+}
+
+impl<T, I> Iterator for PbIter<T, I>
+where I: Iterator,
+      T: Write
 {
     type Item = I::Item;
 
