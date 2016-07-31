@@ -30,8 +30,8 @@ pub fn terminal_size() -> Option<(Width, Height)> {
     };
     let success: bool = unsafe { GetConsoleScreenBufferInfo(hand, &mut csbi) != 0 };
     if success {
-        let w: Width = Width((csbi.srWindow.Right - csbi.srWindow.Left + 1) as u16);
-        let h: Height = Height((csbi.srWindow.Bottom - csbi.srWindow.Top + 1) as u16);
+        let w: Width = Width((csbi.srWindow.Right - csbi.srWindow.Left) as u16);
+        let h: Height = Height((csbi.srWindow.Bottom - csbi.srWindow.Top) as u16);
         Some((w, h))
     } else {
         None
