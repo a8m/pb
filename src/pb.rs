@@ -56,6 +56,7 @@ pub struct ProgressBar<T: Write> {
     tick: Vec<String>,
     tick_state: usize,
     tick_len: usize,
+    width: Option<usize>,
     message: String,
     pub is_finish: bool,
     pub show_bar: bool,
@@ -134,6 +135,7 @@ impl<T: Write> ProgressBar<T> {
             tick: Vec::new(),
             tick_state: 0,
             tick_len: 4,
+            width: None,
             message: String::new(),
             handle: handle,
         };
@@ -217,6 +219,18 @@ impl<T: Write> ProgressBar<T> {
         self.tick_len = self.tick.len();
     }
 
+    /// Set width, or `None` for default.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.set_width(Some(80));
+    /// ```
+    pub fn set_width(&mut self, w: Option<usize>) {
+        self.width = w;
+    }
+
     /// Update progress bar even though no progress are made
     /// Useful to see if a program is bricked or just
     /// not doing any progress.
@@ -269,7 +283,9 @@ impl<T: Write> ProgressBar<T> {
         let speed = self.current as f64 / fract_dur(time_elapsed);
 
         let tty_size = terminal_size();
-        let width = if let Some((Width(w), _)) = tty_size {
+        let width = if let Some(w) = self.width {
+            w
+        } else if let Some((Width(w), _)) = tty_size {
             w as usize
         } else {
             80
