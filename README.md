@@ -24,7 +24,7 @@ fn main() {
         pb.inc();
         thread::sleep_ms(200);
     }
-    println!("done!");
+    pb.finish_print("done");
 }
 ```
 
@@ -46,7 +46,7 @@ fn main() {
     pb.set_units(Units::Bytes);
     let mut handle = File::create("copy-words").unwrap().broadcast(&mut pb);
     copy(&mut file, &mut handle).unwrap();
-    println!("done!");
+    pb.finish_print("done");
 }
 ```
 
