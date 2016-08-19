@@ -363,7 +363,7 @@ impl<T: Write> ProgressBar<T> {
     /// Call finish and write string 's'
     pub fn finish_print(&mut self, s: &str) {
         self.finish();
-        printfl!(self.handle, "{}", s)
+        printfl!(self.handle, "\n{}", s)
     }
 }
 
