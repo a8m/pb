@@ -282,10 +282,9 @@ impl<T: Write> ProgressBar<T> {
         let time_elapsed = time_to_std(SteadyTime::now() - self.start_time);
         let speed = self.current as f64 / fract_dur(time_elapsed);
 
-        let tty_size = terminal_size();
         let width = if let Some(w) = self.width {
             w
-        } else if let Some((Width(w), _)) = tty_size {
+        } else if let Some((Width(w), _)) = terminal_size() {
             w as usize
         } else {
             80
