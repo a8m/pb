@@ -13,15 +13,27 @@ fn simple_example() {
         pb.inc();
         thread::sleep(Duration::from_millis(5));
     }
-    println!("done!");
+    pb.finish_print("done!");
+}
+
+#[test]
+fn custom_width_example() {
+    let count = 500;
+    let mut pb = ProgressBar::new(count);
+    pb.set_width(Some(80));
+    pb.format("╢▌▌░╟");
+    for _ in 0..count {
+        pb.inc();
+        thread::sleep(Duration::from_millis(5));
+    }
+    pb.finish_print("done!");
 }
 
 #[test]
 fn simple_iter_example() {
-    for _ in PbIter::new(0..20000) {
+    for _ in PbIter::new(0..2000) {
         thread::sleep(Duration::from_millis(1));
     }
-    println!("done!");
 }
 
 #[test]
@@ -48,8 +60,7 @@ fn timeout_example() {
         thread::sleep(Duration::from_millis(50));
         pb.tick();
     }
-    pb.finish();
-    println!("done!");
+    pb.finish_print("done!");
 }
 
 
@@ -94,6 +105,5 @@ fn npm_bar() {
             pb.inc();
         }
     }
-    pb.finish();
-    println!("done!");
+    pb.finish_print("done!");
 }
