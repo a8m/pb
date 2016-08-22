@@ -299,7 +299,7 @@ impl<T: Write> ProgressBar<T> {
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix + &format!(" {:.*} % ", 2, percent);
+            suffix = suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
         }
         // speed box
         if self.show_speed {
