@@ -51,10 +51,11 @@ mod tty;
 mod pb;
 pub use pb::{ProgressBar, Units};
 use std::io::{Write, Stdout, stdout};
+use std::any::Any;
 
 pub struct PbIter<T, I>
 where I: Iterator,
-      T: Write
+      T: Write + Any
 {
     iter: I,
     progress_bar: ProgressBar<T>,
@@ -70,7 +71,7 @@ where I: Iterator
 
 impl<T, I> PbIter<T, I>
 where I: Iterator,
-      T: Write
+      T: Write + Any
 {
     pub fn on(handle: T, iter: I) -> Self {
         let size = iter.size_hint().0;
@@ -80,7 +81,7 @@ where I: Iterator,
 
 impl<T, I> Iterator for PbIter<T, I>
 where I: Iterator,
-      T: Write
+      T: Write + Any
 {
     type Item = I::Item;
 

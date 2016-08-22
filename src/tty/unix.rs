@@ -1,5 +1,6 @@
 extern crate libc;
 use super::{Width, Height};
+use std::io::Write;
 
 /// Returns the size of the terminal, if available.
 ///
@@ -37,6 +38,25 @@ pub fn terminal_size() -> Option<(Width, Height)> {
         Some((Width(cols), Height(rows)))
     } else {
         None
+    }
+}
+
+/// Sometimes save cursor position for restore;
+///
+/// Magic for use with `restore_cursor_pos_or_move_cursor_n_up()`.
+///
+/// Do **not** rely on this to return the actual cursor position.
+pub fn save_cursor_pos(_: bool) -> (usize, usize) {
+    (0, 0)
+}
+
+/// Either restore cursor position saved with `save_cursor_pos()` or move the cursor `n` lines up.
+///
+/// 300% magic.
+pub fn restore_cursor_pos_or_move_cursor_n_up<W: Write>(out: &mut W, _: (usize, usize), n: usize, _: bool) {
+    if n != 0 {
+        write!(out, "\x1B[{}A", n).ok().expect("write() fail");
+        out.flush().ok().expect("flush() fail");
     }
 }
 

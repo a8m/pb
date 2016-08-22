@@ -2,8 +2,9 @@ use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
-use std::io::Stdout;
-use tty::{Width, terminal_size};
+use std::io::{Stdout, Stderr, StdoutLock, StderrLock};
+use std::any::Any;
+use tty::{Width, terminal_size, save_cursor_pos, restore_cursor_pos_or_move_cursor_n_up};
 
 macro_rules! printfl {
    ($w:expr, $($tt:tt)*) => {{
@@ -67,7 +68,10 @@ pub struct ProgressBar<T: Write> {
     pub show_time_left: bool,
     pub show_tick: bool,
     pub show_message: bool,
+    is_console_output: bool,
     handle: T,
+    level: usize,
+    enter_level: String,
 }
 
 impl ProgressBar<Stdout> {
@@ -92,9 +96,19 @@ impl ProgressBar<Stdout> {
         let handle = ::std::io::stdout();
         ProgressBar::on(handle, total)
     }
+
+    /// Create a new ProgressBar with default configuration on a specified level.
+    ///
+    /// # Examples
+    ///
+    /// See `examples/multi.rs` for multiple progress bars or [`new()`](#new) for generic creation info
+    pub fn new_level(total: u64, level: usize) -> ProgressBar<Stdout> {
+        let handle = ::std::io::stdout();
+        ProgressBar::on_level(handle, total, level)
+    }
 }
 
-impl<T: Write> ProgressBar<T> {
+impl<T: Write + Any> ProgressBar<T> {
     /// Create a new ProgressBar with default configuration but
     /// pass an arbitrary writer.
     ///
@@ -115,6 +129,16 @@ impl<T: Write> ProgressBar<T> {
     /// }
     /// ```
     pub fn on(handle: T, total: u64) -> ProgressBar<T> {
+        ProgressBar::on_level(handle, total, 0)
+    }
+
+    /// Create a new ProgressBar with default configuration on a specified level but
+    /// pass an arbitrary writer.
+    ///
+    /// # Examples
+    ///
+    /// See `examples/multi.rs` for multiple progress bars or [`on()`](#on) for generic creation info
+    pub fn on_level(handle: T, total: u64, level: usize) -> ProgressBar<T> {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
@@ -139,7 +163,13 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
+            is_console_output: (&handle as &Any).is::<Stdout>() || (&handle as &Any).is::<Stderr>() ||
+                               (&handle as &Any).is::<StdoutLock>() || (&handle as &Any).is::<StderrLock>() ||
+                               (&handle as &Any).is::<&mut Stdout>() || (&handle as &Any).is::<&mut Stderr>() ||
+                               (&handle as &Any).is::<&mut StdoutLock>() || (&handle as &Any).is::<&mut StderrLock>(),
             handle: handle,
+            level: level,
+            enter_level: repeat!("\n", level).clone(),
         };
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);
@@ -386,7 +416,9 @@ impl<T: Write> ProgressBar<T> {
             out = out + repeat!(" ", gap);
         }
         // print
-        printfl!(self.handle, "\r{}", out);
+        let term_pos = save_cursor_pos(self.is_console_output);
+        printfl!(self.handle, "{}\r{}", self.enter_level, out);
+        restore_cursor_pos_or_move_cursor_n_up(&mut self.handle, term_pos, self.level, self.is_console_output);
 
         self.last_refresh_time = SteadyTime::now();
     }
@@ -424,7 +456,7 @@ impl<T: Write> ProgressBar<T> {
 }
 
 // Implement io::Writer
-impl<T: Write> Write for ProgressBar<T> {
+impl<T: Write + Any> Write for ProgressBar<T> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
         self.add(n as u64);
