@@ -180,6 +180,8 @@ impl<T: Write> ProgressBar<T> {
 
     /// Set message to display in the prefix, call with "" to stop printing a message.
     ///
+    /// All newlines are replaced with spaces.
+    ///
     /// # Examples
     /// ```ignore
     /// let mut pb = ProgressBar::new(20);
@@ -196,7 +198,7 @@ impl<T: Write> ProgressBar<T> {
     ///
     /// ```
     pub fn message(&mut self, message: &str) {
-        self.message = message.to_owned()
+        self.message = message.to_owned().replace("\n", " ").replace("\r", " ")
     }
 
     /// Set tick format for the progressBar, default is \\|/-
