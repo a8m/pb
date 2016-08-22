@@ -58,6 +58,8 @@ pub struct ProgressBar<T: Write> {
     tick_len: usize,
     width: Option<usize>,
     message: String,
+    last_refresh_time: SteadyTime,
+    max_refresh_rate: Option<time::Duration>,
     pub is_finish: bool,
     pub show_bar: bool,
     pub show_speed: bool,
@@ -137,6 +139,8 @@ impl<T: Write> ProgressBar<T> {
             tick_len: 4,
             width: None,
             message: String::new(),
+            last_refresh_time: SteadyTime::now(),
+            max_refresh_rate: None,
             handle: handle,
         };
         pb.format(FORMAT);
@@ -233,6 +237,21 @@ impl<T: Write> ProgressBar<T> {
         self.width = w;
     }
 
+    /// Set max refresh rate, above which the progress bar will not redraw, or `None` for none.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.set_max_refresh_rate(Some(Duration::from_millis(100)));
+    /// ```
+    pub fn set_max_refresh_rate(&mut self, w: Option<Duration>) {
+        self.max_refresh_rate = w.map(time::Duration::from_std).map(Result::unwrap);
+        if let Some(dur) = self.max_refresh_rate {
+            self.last_refresh_time = self.last_refresh_time - dur;
+        }
+    }
+
     /// Update progress bar even though no progress are made
     /// Useful to see if a program is bricked or just
     /// not doing any progress.
@@ -281,7 +300,14 @@ impl<T: Write> ProgressBar<T> {
     }
 
     fn draw(&mut self) {
-        let time_elapsed = time_to_std(SteadyTime::now() - self.start_time);
+        let now = SteadyTime::now();
+        if let Some(mrr) = self.max_refresh_rate {
+            if now - self.last_refresh_time < mrr {
+                return;
+            }
+        }
+
+        let time_elapsed = time_to_std(now - self.start_time);
         let speed = self.current as f64 / fract_dur(time_elapsed);
 
         let width = if let Some(w) = self.width {
@@ -364,15 +390,31 @@ impl<T: Write> ProgressBar<T> {
         }
         // print
         printfl!(self.handle, "\r{}", out);
+
+        self.last_refresh_time = SteadyTime::now();
     }
 
     /// Calling finish manually will set current to total and draw
     /// the last time
     pub fn finish(&mut self) {
+        let mut redraw = false;
+
+        if let Some(mrr) = self.max_refresh_rate {
+            if SteadyTime::now() - self.last_refresh_time < mrr {
+                self.max_refresh_rate = None;
+                redraw = true;
+            }
+        }
+
         if self.current < self.total {
             self.current = self.total;
+            redraw = true;
+        }
+
+        if redraw {
             self.draw();
         }
+
         printfl!(self.handle, "");
         self.is_finish = true;
     }
