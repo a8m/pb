@@ -55,7 +55,6 @@ pub struct ProgressBar<T: Write> {
     bar_end: String,
     tick: Vec<String>,
     tick_state: usize,
-    tick_len: usize,
     width: Option<usize>,
     message: String,
     last_refresh_time: SteadyTime,
@@ -136,7 +135,6 @@ impl<T: Write> ProgressBar<T> {
             bar_end: String::new(),
             tick: Vec::new(),
             tick_state: 0,
-            tick_len: 4,
             width: None,
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
@@ -220,9 +218,8 @@ impl<T: Write> ProgressBar<T> {
     pub fn tick_format(&mut self, tick_fmt: &str) {
         if tick_fmt != TICK_FORMAT {
             self.show_tick = true;
-        };
+        }
         self.tick = tick_fmt.split("").map(|x| x.to_owned()).filter(|x| x != "").collect();
-        self.tick_len = self.tick.len();
     }
 
     /// Set width, or `None` for default.
@@ -271,10 +268,10 @@ impl<T: Write> ProgressBar<T> {
     /// pb.finish();
     /// ```
     pub fn tick(&mut self) {
-        self.tick_state = (self.tick_state + 1) % self.tick_len;
+        self.tick_state = (self.tick_state + 1) % self.tick.len();
         if self.current <= self.total {
             self.draw()
-        };
+        }
     }
 
     /// Add to current value
