@@ -353,7 +353,7 @@ impl<T: Write + Any> ProgressBar<T> {
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            suffix = format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
         }
         // speed box
         if self.show_speed {
@@ -367,28 +367,27 @@ impl<T: Write + Any> ProgressBar<T> {
             if self.total > self.current {
                 let left = 1. / speed * (self.total - self.current) as f64;
                 if left < 60. {
-                    suffix = suffix + &format!("{:.0}s", left);
+                    suffix.push_str(&format!("{:.0}s", left));
                 } else {
-                    suffix = suffix + &format!("{:.0}m", left / 60.);
+                    suffix.push_str(&format!("{:.0}m", left / 60.));
                 }
             }
         }
         // message box
         if self.show_message {
-            prefix = prefix + &format!("{}", self.message)
+            prefix.push_str(&format!("{}", self.message));
         }
         // counter box
         if self.show_counter {
             let (c, t) = (self.current as f64, self.total as f64);
-            prefix = prefix +
-                     &match self.units {
+            prefix.push_str(&match self.units {
                 Units::Default => format!("{} / {} ", c, t),
                 Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
-            };
+            });
         }
         // tick box
         if self.show_tick {
-            prefix = prefix + &format!("{} ", self.tick[self.tick_state]);
+            prefix.push_str(&format!("{} ", self.tick[self.tick_state]));
         }
         // bar box
         if self.show_bar {
@@ -401,12 +400,13 @@ impl<T: Write + Any> ProgressBar<T> {
                     let rema_count = size - curr_count;
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                                &self.bar_current_n;
+                        base.push_str(repeat!(self.bar_current.as_ref(), curr_count - 1));
+                        base.push_str(&self.bar_current_n);
                     } else {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        base.push_str(repeat!(self.bar_current.as_ref(), curr_count));
                     }
-                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
+                    base.push_str(repeat!(self.bar_remain.as_ref(), rema_count));
+                    base.push_str(&self.bar_end);
                 }
             }
         }
