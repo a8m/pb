@@ -2,12 +2,14 @@ extern crate winapi;
 extern crate kernel32;
 use super::{Width, Height};
 
+/// Position restoration struct for `move_cursor_up_method()`.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RestorePos {
     pos: (usize, usize),
 }
 
 impl RestorePos {
+    /// Restore the cursor's position, see `move_cursor_up_method()` for details.
     pub fn move_up(self) {
         use self::kernel32::SetConsoleCursorPosition;
         use self::winapi::COORD;
