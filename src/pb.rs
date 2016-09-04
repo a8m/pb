@@ -4,7 +4,7 @@ use std::time::Duration;
 use time::{self, SteadyTime};
 use std::io::{Stdout, Stderr, StdoutLock, StderrLock};
 use std::any::Any;
-use tty::{Width, terminal_size, save_cursor_pos, restore_cursor_pos_or_move_cursor_n_up};
+use tty::{Width, terminal_size, move_cursor_up_method};
 
 macro_rules! printfl {
    ($w:expr, $($tt:tt)*) => {{
@@ -102,6 +102,8 @@ impl ProgressBar<Stdout> {
     /// # Examples
     ///
     /// See `examples/multi.rs` for multiple progress bars or [`new()`](#new) for generic creation info
+    ///
+    /// See `examples/multi-parallel.rs` for using multiple progress bars on multiple threads and pitfalls thereof.
     pub fn new_level(total: u64, level: usize) -> ProgressBar<Stdout> {
         let handle = ::std::io::stdout();
         ProgressBar::on_level(handle, total, level)
@@ -347,7 +349,6 @@ impl<T: Write + Any> ProgressBar<T> {
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
-        let mut out;
 
         // precent box
         if self.show_percent {
@@ -409,16 +410,24 @@ impl<T: Write + Any> ProgressBar<T> {
                 }
             }
         }
-        out = prefix + &base + &suffix;
+        let mut out = prefix + &base + &suffix;
         // pad
         if out.len() < width {
             let gap = width - out.len();
-            out = out + repeat!(" ", gap);
+            out.push_str(repeat!(" ", gap));
         }
         // print
-        let term_pos = save_cursor_pos(self.is_console_output);
+        let restore_level_f = match move_cursor_up_method(self.level, self.is_console_output) {
+            Ok(restore_level_s) => {
+                out.push_str(&restore_level_s);
+                None
+            }
+            Err(restore_level_f) => Some(restore_level_f),
+        };
         printfl!(self.handle, "{}\r{}", self.enter_level, out);
-        restore_cursor_pos_or_move_cursor_n_up(&mut self.handle, term_pos, self.level, self.is_console_output);
+        if let Some(restore_level_f) = restore_level_f {
+            restore_level_f.move_up();
+        }
 
         self.last_refresh_time = SteadyTime::now();
     }

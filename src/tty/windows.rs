@@ -1,8 +1,27 @@
 extern crate winapi;
 extern crate kernel32;
-
 use super::{Width, Height};
-use std::io::Write;
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct RestorePos {
+    pos: (usize, usize),
+}
+
+impl RestorePos {
+    pub fn move_up(self) {
+        use self::kernel32::SetConsoleCursorPosition;
+        use self::winapi::COORD;
+
+        if let Some((hand, _)) = get_csbi() {
+            unsafe {
+                SetConsoleCursorPosition(hand, COORD {
+                    X: self.pos.0 as i16,
+                    Y: self.pos.1 as i16,
+                });
+            }
+        }
+    }
+}
 
 /// Returns the size of the terminal, if available.
 ///
@@ -18,40 +37,24 @@ pub fn terminal_size() -> Option<(Width, Height)> {
     }
 }
 
-/// Sometimes save cursor position for restore;
+/// How to move the cursor up after printing the draw string.
 ///
-/// Magic for use with `restore_cursor_pos_or_move_cursor_n_up()`.
+/// If this returns `Ok(str)` append `str` to the draw string so it's internally synchronised (non-Windows).
 ///
-/// Do **not** rely on this to return the actual cursor position.
-pub fn save_cursor_pos(console_out: bool) -> (usize, usize) {
+/// If this returns `Err(str)` call `str.move_up()` after printing the draw string
+/// to restore the cursor to the position before it got moved by printing (Windows).
+///
+/// Note: this creates desync issues mentioned in https://github.com/a8m/pb/pull/27#issuecomment-244564706 on platforms returning `Err()`
+pub fn move_cursor_up_method(_: usize, console_out: bool) -> Result<String, RestorePos> {
     if console_out {
         if let Some((_, csbi)) = get_csbi() {
-            (csbi.dwCursorPosition.X as usize, csbi.dwCursorPosition.Y as usize)
-        } else {
-            (0, 0)
-        }
-    } else {
-        (0, 0)
-    }
-}
-
-/// Either restore cursor position saved with `save_cursor_pos()` or move the cursor `n` lines up.
-///
-/// 300% magic.
-pub fn restore_cursor_pos_or_move_cursor_n_up<W: Write>(_: &mut W, pos: (usize, usize), _: usize, console_out: bool) {
-    use self::kernel32::SetConsoleCursorPosition;
-    use self::winapi::COORD;
-
-    if console_out {
-        if let Some((hand, _)) = get_csbi() {
-            unsafe {
-                SetConsoleCursorPosition(hand, COORD {
-                    X: pos.0 as i16,
-                    Y: pos.1 as i16,
-                });
-            }
+            return Err(RestorePos {
+                pos: (csbi.dwCursorPosition.X as usize, csbi.dwCursorPosition.Y as usize),
+            });
         }
     }
+
+    Ok("".to_string())
 }
 
 fn get_csbi() -> Option<(self::winapi::HANDLE, self::winapi::CONSOLE_SCREEN_BUFFER_INFO)> {

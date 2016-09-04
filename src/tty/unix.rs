@@ -1,6 +1,12 @@
 extern crate libc;
 use super::{Width, Height};
-use std::io::Write;
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct MoveUpDummy;
+
+impl MoveUpDummy {
+    pub fn move_up(self) {}
+}
 
 /// Returns the size of the terminal, if available.
 ///
@@ -41,22 +47,19 @@ pub fn terminal_size() -> Option<(Width, Height)> {
     }
 }
 
-/// Sometimes save cursor position for restore;
+/// How to move the cursor up after printing the draw string.
 ///
-/// Magic for use with `restore_cursor_pos_or_move_cursor_n_up()`.
+/// If this returns `Ok(str)` append `str` to the draw string so it's internally synchronised (non-Windows).
 ///
-/// Do **not** rely on this to return the actual cursor position.
-pub fn save_cursor_pos(_: bool) -> (usize, usize) {
-    (0, 0)
-}
-
-/// Either restore cursor position saved with `save_cursor_pos()` or move the cursor `n` lines up.
+/// If this returns `Err(str)` call `str.move_up()` after printing the draw string
+/// to restore the cursor to the position before it got moved by printing (Windows).
 ///
-/// 300% magic.
-pub fn restore_cursor_pos_or_move_cursor_n_up<W: Write>(out: &mut W, _: (usize, usize), n: usize, _: bool) {
+/// Note: this creates desync issues mentioned in https://github.com/a8m/pb/pull/27#issuecomment-244564706 on platforms returning `Err()`
+pub fn move_cursor_up_method(n: usize, _: bool) -> Result<String, MoveUpDummy> {
     if n != 0 {
-        write!(out, "\x1B[{}A", n).ok().expect("write() fail");
-        out.flush().ok().expect("flush() fail");
+        Ok(format!("\x1B[{}A", n))
+    } else {
+        Ok(MoveUpDummy)
     }
 }
 
