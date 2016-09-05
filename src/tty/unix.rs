@@ -2,7 +2,7 @@ extern crate libc;
 use super::{Width, Height};
 
 /// Dummy struct for `move_cursor_up_method()`.
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MoveUpDummy;
 
 impl MoveUpDummy {
