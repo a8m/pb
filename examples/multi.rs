@@ -16,25 +16,25 @@ fn main() {
         pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
         pb.show_message = true;
         thread::spawn(move || {
-            for _ in 0..count/20 {
+            for _ in 0..count / 20 {
                 for _ in 0..20 {
-            	    pb.message("Waiting  : ");
-            	    thread::sleep(Duration::from_millis(50));
-            	    pb.tick();
-        	    }
-        	    for _ in 0..20 {
+                    pb.message("Waiting  : ");
+                    thread::sleep(Duration::from_millis(50));
+                    pb.tick();
+                }
+                for _ in 0..20 {
                     let n = rand::thread_rng().gen_range(0, 100 * i);
-            	    pb.message("Connected: ");
-            	    thread::sleep(Duration::from_millis(n));
-            	    pb.inc();
-        	    }
+                    pb.message("Connected: ");
+                    thread::sleep(Duration::from_millis(n));
+                    pb.inc();
+                }
             }
-    	    for _ in 0..20 {
-        	    pb.message("Cleaning :");
-        	    thread::sleep(Duration::from_millis(100));
-            	pb.tick();
-        	}
-        	pb.message("Completed! ");
+            for _ in 0..20 {
+                pb.message("Cleaning :");
+                thread::sleep(Duration::from_millis(100));
+                pb.tick();
+            }
+            pb.message("Completed! ");
             pb.tick();
             pb.finish();
         });
@@ -52,7 +52,7 @@ fn main() {
             for _ in 0..count {
                 pb.inc();
                 let n = rand::thread_rng().gen_range(0, 100 * i);
-        	    thread::sleep(Duration::from_millis(n));
+                thread::sleep(Duration::from_millis(n));
             }
             pb.finish();
         });
