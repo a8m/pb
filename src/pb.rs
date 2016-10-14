@@ -5,13 +5,6 @@ use time::{self, SteadyTime};
 use std::io::Stdout;
 use tty::{Width, terminal_size};
 
-macro_rules! printfl {
-   ($w:expr, $($tt:tt)*) => {{
-        $w.write(&format!($($tt)*).as_bytes()).ok().expect("write() fail");
-        $w.flush().ok().expect("flush() fail");
-    }}
-}
-
 macro_rules! kb_fmt {
     ($n: ident) => {{
         let kb = 1024f64;
