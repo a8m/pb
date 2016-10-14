@@ -4,7 +4,7 @@ use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 
-pub struct MultiBar<T: Write>{
+pub struct MultiBar<T: Write> {
     nlines: usize,
 
     lines: Vec<String>,
@@ -114,7 +114,7 @@ impl<T: Write> MultiBar<T> {
     /// ```
     pub fn println(&mut self, s: &str) {
         self.lines.push(s.to_owned());
-        self.nlines+=1;
+        self.nlines += 1;
     }
 
     /// create_bar creates new `ProgressBar` with `Pipe` as the writer.
@@ -151,9 +151,10 @@ impl<T: Write> MultiBar<T> {
         self.println("");
         self.nbars += 1;
         let mut p = ProgressBar::on(Pipe {
-            level: self.nlines - 1,
-            chan: self.chan.0.clone(),
-        }, total);
+                                        level: self.nlines - 1,
+                                        chan: self.chan.0.clone(),
+                                    },
+                                    total);
         p.add(0);
         p
     }
@@ -195,7 +196,7 @@ impl<T: Write> MultiBar<T> {
             let msg = self.chan.1.recv().unwrap();
             if msg.done {
                 nbars -= 1;
-                continue
+                continue;
             }
             self.lines[msg.level] = msg.string;
 
@@ -223,12 +224,14 @@ pub struct Pipe {
 impl Write for Pipe {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
         let s = from_utf8(buf).unwrap().to_owned();
-        self.chan.send(WriteMsg{
-            // finish method emit empty string
-            done: s == "",
-            level: self.level,
-            string: s,
-        }).unwrap();
+        self.chan
+            .send(WriteMsg {
+                // finish method emit empty string
+                done: s == "",
+                level: self.level,
+                string: s,
+            })
+            .unwrap();
         Ok(1)
     }
 
