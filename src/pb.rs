@@ -2,8 +2,9 @@ use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
-use std::io::Stdout;
-use tty::{Width, terminal_size};
+use std::io::{Stdout, Stderr, StdoutLock, StderrLock};
+use std::any::Any;
+use tty::{Width, terminal_size, move_cursor_up_method};
 
 macro_rules! printfl {
    ($w:expr, $($tt:tt)*) => {{
@@ -67,7 +68,10 @@ pub struct ProgressBar<T: Write> {
     pub show_time_left: bool,
     pub show_tick: bool,
     pub show_message: bool,
+    is_console_output: bool,
     handle: T,
+    level: usize,
+    enter_level: String,
 }
 
 impl ProgressBar<Stdout> {
@@ -92,9 +96,21 @@ impl ProgressBar<Stdout> {
         let handle = ::std::io::stdout();
         ProgressBar::on(handle, total)
     }
+
+    /// Create a new ProgressBar with default configuration on a specified level.
+    ///
+    /// # Examples
+    ///
+    /// See `examples/multi.rs` for multiple progress bars or [`new()`](#new) for generic creation info
+    ///
+    /// See `examples/multi-parallel.rs` for using multiple progress bars on multiple threads and pitfalls thereof.
+    pub fn new_level(total: u64, level: usize) -> ProgressBar<Stdout> {
+        let handle = ::std::io::stdout();
+        ProgressBar::on_level(handle, total, level)
+    }
 }
 
-impl<T: Write> ProgressBar<T> {
+impl<T: Write + Any> ProgressBar<T> {
     /// Create a new ProgressBar with default configuration but
     /// pass an arbitrary writer.
     ///
@@ -115,6 +131,16 @@ impl<T: Write> ProgressBar<T> {
     /// }
     /// ```
     pub fn on(handle: T, total: u64) -> ProgressBar<T> {
+        ProgressBar::on_level(handle, total, 0)
+    }
+
+    /// Create a new ProgressBar with default configuration on a specified level but
+    /// pass an arbitrary writer.
+    ///
+    /// # Examples
+    ///
+    /// See `examples/multi.rs` for multiple progress bars or [`on()`](#on) for generic creation info
+    pub fn on_level(handle: T, total: u64, level: usize) -> ProgressBar<T> {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
@@ -139,7 +165,13 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
+            is_console_output: (&handle as &Any).is::<Stdout>() || (&handle as &Any).is::<Stderr>() ||
+                               (&handle as &Any).is::<StdoutLock>() || (&handle as &Any).is::<StderrLock>() ||
+                               (&handle as &Any).is::<&mut Stdout>() || (&handle as &Any).is::<&mut Stderr>() ||
+                               (&handle as &Any).is::<&mut StdoutLock>() || (&handle as &Any).is::<&mut StderrLock>(),
             handle: handle,
+            level: level,
+            enter_level: repeat!("\n", level).clone(),
         };
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);
@@ -317,12 +349,11 @@ impl<T: Write> ProgressBar<T> {
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
-        let mut out;
 
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            suffix = format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
         }
         // speed box
         if self.show_speed {
@@ -336,28 +367,27 @@ impl<T: Write> ProgressBar<T> {
             if self.total > self.current {
                 let left = 1. / speed * (self.total - self.current) as f64;
                 if left < 60. {
-                    suffix = suffix + &format!("{:.0}s", left);
+                    suffix.push_str(&format!("{:.0}s", left));
                 } else {
-                    suffix = suffix + &format!("{:.0}m", left / 60.);
+                    suffix.push_str(&format!("{:.0}m", left / 60.));
                 }
             }
         }
         // message box
         if self.show_message {
-            prefix = prefix + &format!("{}", self.message)
+            prefix.push_str(&format!("{}", self.message));
         }
         // counter box
         if self.show_counter {
             let (c, t) = (self.current as f64, self.total as f64);
-            prefix = prefix +
-                     &match self.units {
+            prefix.push_str(&match self.units {
                 Units::Default => format!("{} / {} ", c, t),
                 Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
-            };
+            });
         }
         // tick box
         if self.show_tick {
-            prefix = prefix + &format!("{} ", self.tick[self.tick_state]);
+            prefix.push_str(&format!("{} ", self.tick[self.tick_state]));
         }
         // bar box
         if self.show_bar {
@@ -370,23 +400,34 @@ impl<T: Write> ProgressBar<T> {
                     let rema_count = size - curr_count;
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                                &self.bar_current_n;
+                        base.push_str(repeat!(self.bar_current.as_ref(), curr_count - 1));
+                        base.push_str(&self.bar_current_n);
                     } else {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        base.push_str(repeat!(self.bar_current.as_ref(), curr_count));
                     }
-                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
+                    base.push_str(repeat!(self.bar_remain.as_ref(), rema_count));
+                    base.push_str(&self.bar_end);
                 }
             }
         }
-        out = prefix + &base + &suffix;
+        let mut out = prefix + &base + &suffix;
         // pad
         if out.len() < width {
             let gap = width - out.len();
-            out = out + repeat!(" ", gap);
+            out.push_str(repeat!(" ", gap));
         }
         // print
-        printfl!(self.handle, "\r{}", out);
+        let restore_level_f = match move_cursor_up_method(self.level, self.is_console_output) {
+            Ok(restore_level_s) => {
+                out.push_str(&restore_level_s);
+                None
+            }
+            Err(restore_level_f) => Some(restore_level_f),
+        };
+        printfl!(self.handle, "{}\r{}", self.enter_level, out);
+        if let Some(restore_level_f) = restore_level_f {
+            restore_level_f.move_up();
+        }
 
         self.last_refresh_time = SteadyTime::now();
     }
@@ -424,7 +465,7 @@ impl<T: Write> ProgressBar<T> {
 }
 
 // Implement io::Writer
-impl<T: Write> Write for ProgressBar<T> {
+impl<T: Write + Any> Write for ProgressBar<T> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
         self.add(n as u64);

@@ -1,6 +1,15 @@
 extern crate libc;
 use super::{Width, Height};
 
+/// Dummy struct for `move_cursor_up_method()`.
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct MoveUpDummy;
+
+impl MoveUpDummy {
+    /// It's a dummy, it doesn't do anything.
+    pub fn move_up(self) {}
+}
+
 /// Returns the size of the terminal, if available.
 ///
 /// If STDOUT is not a tty, returns `None`
@@ -37,6 +46,22 @@ pub fn terminal_size() -> Option<(Width, Height)> {
         Some((Width(cols), Height(rows)))
     } else {
         None
+    }
+}
+
+/// How to move the cursor up after printing the draw string.
+///
+/// If this returns `Ok(str)` append `str` to the draw string so it's internally synchronised (non-Windows).
+///
+/// If this returns `Err(str)` call `str.move_up()` after printing the draw string
+/// to restore the cursor to the position before it got moved by printing (Windows).
+///
+/// Note: this creates desync issues mentioned in https://github.com/a8m/pb/pull/27#issuecomment-244564706 on platforms returning `Err()`
+pub fn move_cursor_up_method(n: usize, _: bool) -> Result<String, MoveUpDummy> {
+    if n != 0 {
+        Ok(format!("\x1B[{}A", n))
+    } else {
+        Ok(MoveUpDummy)
     }
 }
 
