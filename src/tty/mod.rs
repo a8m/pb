@@ -1,7 +1,7 @@
-//! Most of the code in this module(tty) taken from:
+//! Most of the code in for the `terminal_size()` function taken from:
 //! https://github.com/eminence/terminal-size
 //!
-//! A simple utility for getting the size of a terminal.
+//! A simple utility for getting the size of a terminal, and moving `n` lines up.
 //!
 //! Supports both Linux and Windows, but help is needed to test other platforms
 //!
@@ -15,9 +15,9 @@ pub struct Height(pub u16);
 #[cfg(unix)]
 mod unix;
 #[cfg(unix)]
-pub use self::unix::terminal_size;
+pub use self::unix::*;
 
 #[cfg(windows)]
 mod windows;
 #[cfg(windows)]
-pub use self::windows::terminal_size;
+pub use self::windows::*;

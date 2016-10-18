@@ -40,6 +40,11 @@ pub fn terminal_size() -> Option<(Width, Height)> {
     }
 }
 
+/// Return string that move the cursor `n` lines up.
+pub fn move_cursor_up(n: usize) -> String {
+    format!("\x1B[{}A", n)
+}
+
 #[test]
 /// Compare with the output of `stty size`
 fn compare_with_stty() {
