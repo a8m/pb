@@ -1,5 +1,6 @@
 use pb::ProgressBar;
 use std::str::from_utf8;
+use tty::move_cursor_up;
 use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
@@ -202,9 +203,8 @@ impl<T: Write> MultiBar<T> {
 
             // and draw
             let mut out = String::new();
-            // TODO: implement tty::move_cursor_up(lines), and use it here
             if !first {
-                out.push_str(&format!("\x1B[{}A", self.nlines));
+                out += &move_cursor_up(self.nlines);
             } else {
                 first = false;
             }
