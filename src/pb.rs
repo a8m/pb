@@ -409,8 +409,27 @@ impl<T: Write> ProgressBar<T> {
         self.is_finish = true;
     }
 
-    /// Call finish and write string 's'
+
+    /// Call finish and write string 's' that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
+        self.finish();
+        let width = if let Some(w) = self.width {
+            w
+        } else if let Some((Width(w), _)) = terminal_size() {
+            w as usize
+        } else {
+            80
+        };
+        let mut out = format!("{}", s);
+        if s.len() < width {
+            out += repeat!(" ", width-s.len());
+        };
+        printfl!(self.handle, "\r{}", out);
+    }
+
+
+    /// Call finish and write string 's' below the progress bar.
+    pub fn finish_println(&mut self, s: &str) {
         self.finish();
         printfl!(self.handle, "\n{}", s)
     }

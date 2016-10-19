@@ -34,9 +34,7 @@ fn main() {
                 thread::sleep(Duration::from_millis(100));
                 pb.tick();
             }
-            pb.message("Completed! ");
-            pb.tick();
-            pb.finish();
+            pb.finish_print(&format!("Bar {} completed !", i));
         });
     }
 
