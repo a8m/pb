@@ -299,14 +299,8 @@ impl<T: Write> ProgressBar<T> {
 
         let time_elapsed = time_to_std(now - self.start_time);
         let speed = self.current as f64 / fract_dur(time_elapsed);
+        let width = self.width();
 
-        let width = if let Some(w) = self.width {
-            w
-        } else if let Some((Width(w), _)) = terminal_size() {
-            w as usize
-        } else {
-            80
-        };
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
@@ -413,13 +407,7 @@ impl<T: Write> ProgressBar<T> {
     /// Call finish and write string 's' that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
         self.finish();
-        let width = if let Some(w) = self.width {
-            w
-        } else if let Some((Width(w), _)) = terminal_size() {
-            w as usize
-        } else {
-            80
-        };
+        let width = self.width();
         let mut out = format!("{}", s);
         if s.len() < width {
             out += repeat!(" ", width-s.len());
@@ -432,6 +420,17 @@ impl<T: Write> ProgressBar<T> {
     pub fn finish_println(&mut self, s: &str) {
         self.finish();
         printfl!(self.handle, "\n{}", s)
+    }
+
+    /// Get terminal width, from configuration, terminal size, or default(80)
+    fn width(&mut self) -> usize {
+        if let Some(w) = self.width {
+            w
+        } else if let Some((Width(w), _)) = terminal_size() {
+            w as usize
+        } else {
+            80
+        }
     }
 }
 
