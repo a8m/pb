@@ -34,7 +34,7 @@ fn main() {
                 thread::sleep(Duration::from_millis(100));
                 pb.tick();
             }
-            pb.finish_print(&format!("Bar {} completed !", i));
+            pb.finish_print(&format!("{}: Pull complete", rand_string()));
         });
     }
 
@@ -59,4 +59,16 @@ fn main() {
     mb.listen();
 
     println!("\nall bars done!\n");
+}
+
+fn rand_string() -> String {
+    let mut v = Vec::new();
+    while v.len() < 12 {
+        let b = rand::random::<u8>();
+        // [0-9a-f]
+        if b > 47 && b < 58 || b > 96 && b < 103 {
+            v.push(b);
+        }
+    }
+    std::str::from_utf8(&v).unwrap().to_string()
 }
