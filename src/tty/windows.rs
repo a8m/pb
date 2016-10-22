@@ -24,10 +24,11 @@ pub fn move_cursor_up(n: usize) -> String {
     use self::winapi::COORD;
     if let Some((hand, csbi)) = get_csbi() {
         unsafe {
-            SetConsoleCursorPosition(hand, COORD {
-                X: 0,
-                Y: csbi.dwCursorPosition.Y - n as i16,
-            });
+            SetConsoleCursorPosition(hand,
+                                     COORD {
+                                         X: 0,
+                                         Y: csbi.dwCursorPosition.Y - n as i16,
+                                     });
         }
     }
     "".to_string()

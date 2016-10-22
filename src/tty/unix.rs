@@ -55,10 +55,10 @@ fn compare_with_stty() {
         args[0] = "-f"
     }
     let output = Command::new("stty")
-                     .args(&args)
-                     .stderr(Stdio::inherit())
-                     .output()
-                     .unwrap();
+        .args(&args)
+        .stderr(Stdio::inherit())
+        .output()
+        .unwrap();
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(output.status.success());
 
