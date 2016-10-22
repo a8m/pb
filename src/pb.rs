@@ -309,7 +309,8 @@ impl<T: Write> ProgressBar<T> {
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            suffix = suffix +
+                     &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
         }
         // speed box
         if self.show_speed {
@@ -358,7 +359,7 @@ impl<T: Write> ProgressBar<T> {
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
                         base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                                &self.bar_current_n;
+                               &self.bar_current_n;
                     } else {
                         base = base + repeat!(self.bar_current.as_ref(), curr_count);
                     }
@@ -378,9 +379,9 @@ impl<T: Write> ProgressBar<T> {
         self.last_refresh_time = SteadyTime::now();
     }
 
-    /// Calling finish manually will set current to total and draw
-    /// the last time
-    pub fn finish(&mut self) {
+    // finish_draw ensure that the progress bar is reached to its end, and do the
+    // last drawing if needed.
+    fn finish_draw(&mut self) {
         let mut redraw = false;
 
         if let Some(mrr) = self.max_refresh_rate {
@@ -398,28 +399,37 @@ impl<T: Write> ProgressBar<T> {
         if redraw {
             self.draw();
         }
-
-        printfl!(self.handle, "");
         self.is_finish = true;
+    }
+
+    /// Calling finish manually will set current to total and draw
+    /// the last time
+    pub fn finish(&mut self) {
+        self.finish_draw();
+        printfl!(self.handle, "");
     }
 
 
     /// Call finish and write string 's' that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
-        self.finish();
+        self.finish_draw();
         let width = self.width();
         let mut out = format!("{}", s);
         if s.len() < width {
-            out += repeat!(" ", width-s.len());
+            out += repeat!(" ", width - s.len());
         };
         printfl!(self.handle, "\r{}", out);
+        self.finish();
     }
 
 
     /// Call finish and write string 's' below the progress bar.
+    ///
+    /// If the ProgressBar is part of MultiBar instance, you should use
+    /// `finish_print` to print message.
     pub fn finish_println(&mut self, s: &str) {
-        self.finish();
-        printfl!(self.handle, "\n{}", s)
+        self.finish_draw();
+        printfl!(self.handle, "\n{}", s);
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
