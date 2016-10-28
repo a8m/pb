@@ -53,6 +53,7 @@ pub struct ProgressBar<T: Write> {
     last_refresh_time: SteadyTime,
     max_refresh_rate: Option<time::Duration>,
     pub is_finish: bool,
+    pub is_multibar: bool,
     pub show_bar: bool,
     pub show_speed: bool,
     pub show_percent: bool,
@@ -114,6 +115,7 @@ impl<T: Write> ProgressBar<T> {
             start_time: SteadyTime::now(),
             units: Units::Default,
             is_finish: false,
+            is_multibar: false,
             show_bar: true,
             show_speed: true,
             show_percent: true,
@@ -428,6 +430,11 @@ impl<T: Write> ProgressBar<T> {
     /// If the ProgressBar is part of MultiBar instance, you should use
     /// `finish_print` to print message.
     pub fn finish_println(&mut self, s: &str) {
+        // `finish_println` does not allow in MultiBar mode, because printing
+        // new line will break the multiBar output.
+        if self.is_multibar {
+            return self.finish_print(s);
+        }
         self.finish_draw();
         printfl!(self.handle, "\n{}", s);
     }

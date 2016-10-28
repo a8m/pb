@@ -156,6 +156,7 @@ impl<T: Write> MultiBar<T> {
                                         chan: self.chan.0.clone(),
                                     },
                                     total);
+        p.is_multibar = true;
         p.add(0);
         p
     }
