@@ -11,7 +11,7 @@ fn main() {
     mb.println("");
 
     for i in 1..6 {
-        let count = 100 * i;
+        let count = 50 * i;
         let mut pb = mb.create_bar(count);
         pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
         pb.show_message = true;
@@ -23,7 +23,7 @@ fn main() {
                     pb.tick();
                 }
                 for _ in 0..20 {
-                    let n = rand::thread_rng().gen_range(0, 100 * i);
+                    let n = rand::thread_rng().gen_range(0, 100);
                     pb.message("Connected: ");
                     thread::sleep(Duration::from_millis(n));
                     pb.inc();
@@ -49,7 +49,7 @@ fn main() {
         thread::spawn(move || {
             for _ in 0..count {
                 pb.inc();
-                let n = rand::thread_rng().gen_range(0, 100 * i);
+                let n = rand::thread_rng().gen_range(0, 100);
                 thread::sleep(Duration::from_millis(n));
             }
             pb.finish();
