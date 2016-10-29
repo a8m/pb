@@ -11,7 +11,7 @@ fn main() {
     mb.println("");
 
     for i in 1..6 {
-        let count = 50 * i;
+        let count = 100 * i;
         let mut pb = mb.create_bar(count);
         pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
         pb.show_message = true;
