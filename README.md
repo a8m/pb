@@ -28,7 +28,49 @@ fn main() {
 }
 ```
 
-2. Broadcast writing(simple file copying)
+2. MultiBar example. see full example [here](https://github.com/a8m/pb/blob/master/examples/multi.rs)
+```rust
+extern crate pbr;
+
+use std::thread;
+use pbr::MultiBar;
+use std::time::Duration;
+
+fn main() {
+    let mut mb = MultiBar::new();
+    let count = 100;
+    mb.println("Application header:");
+
+    let mut p1 = mb.create_bar(count);
+    let _ = thread::spawn(move || {
+        for _ in 0..count {
+            p1.inc();
+            thread::sleep(Duration::from_millis(100));
+        }
+        // notify the multibar that this bar finished.
+        p1.finish();
+    });
+
+    mb.println("add a separator between the two bars");
+
+    let mut p2 = mb.create_bar(count * 2);
+    let _ = thread::spawn(move || {
+        for _ in 0..count * 2 {
+            p2.inc();
+            thread::sleep(Duration::from_millis(100));
+        }
+        // notify the multibar that this bar finished.
+        p2.finish();
+    });
+
+    // start listen to all bars changes.
+    // this is a blocking operation, until all bars will finish.
+    // to ignore blocking, you can run it in a different thread.
+    mb.listen();
+}
+```
+
+3. Broadcast writing(simple file copying)
 
 ```rust
 #![feature(io)]
