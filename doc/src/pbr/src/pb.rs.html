@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -498,6 +499,75 @@
 <span id="455">455</span>
 <span id="456">456</span>
 <span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
@@ -505,13 +575,6 @@
 <span class='kw'>use</span> <span class='ident'>time</span>::{<span class='self'>self</span>, <span class='ident'>SteadyTime</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Stdout</span>;
 <span class='kw'>use</span> <span class='ident'>tty</span>::{<span class='ident'>Width</span>, <span class='ident'>terminal_size</span>};
-
-<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>printfl</span> {
-   (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>:<span class='ident'>expr</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tt</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {{
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>.<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tt</span>)<span class='op'>*</span>).<span class='ident'>as_bytes</span>()).<span class='ident'>ok</span>().<span class='ident'>expect</span>(<span class='string'>&quot;write() fail&quot;</span>);
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>.<span class='ident'>flush</span>().<span class='ident'>ok</span>().<span class='ident'>expect</span>(<span class='string'>&quot;flush() fail&quot;</span>);
-    }}
-}
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>kb_fmt</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>n</span>: <span class='ident'>ident</span>) <span class='op'>=&gt;</span> {{
@@ -556,10 +619,12 @@
     <span class='ident'>bar_end</span>: <span class='ident'>String</span>,
     <span class='ident'>tick</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='ident'>tick_state</span>: <span class='ident'>usize</span>,
-    <span class='ident'>tick_len</span>: <span class='ident'>usize</span>,
     <span class='ident'>width</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>,
     <span class='ident'>message</span>: <span class='ident'>String</span>,
+    <span class='ident'>last_refresh_time</span>: <span class='ident'>SteadyTime</span>,
+    <span class='ident'>max_refresh_rate</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>time</span>::<span class='ident'>Duration</span><span class='op'>&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>is_finish</span>: <span class='ident'>bool</span>,
+    <span class='kw'>pub</span> <span class='ident'>is_multibar</span>: <span class='ident'>bool</span>,
     <span class='kw'>pub</span> <span class='ident'>show_bar</span>: <span class='ident'>bool</span>,
     <span class='kw'>pub</span> <span class='ident'>show_speed</span>: <span class='ident'>bool</span>,
     <span class='kw'>pub</span> <span class='ident'>show_percent</span>: <span class='ident'>bool</span>,
@@ -620,14 +685,15 @@
             <span class='ident'>current</span>: <span class='number'>0</span>,
             <span class='ident'>start_time</span>: <span class='ident'>SteadyTime</span>::<span class='ident'>now</span>(),
             <span class='ident'>units</span>: <span class='ident'>Units</span>::<span class='ident'>Default</span>,
-            <span class='ident'>is_finish</span>: <span class='boolval'>false</span>,
-            <span class='ident'>show_bar</span>: <span class='boolval'>true</span>,
-            <span class='ident'>show_speed</span>: <span class='boolval'>true</span>,
-            <span class='ident'>show_percent</span>: <span class='boolval'>true</span>,
-            <span class='ident'>show_counter</span>: <span class='boolval'>true</span>,
-            <span class='ident'>show_time_left</span>: <span class='boolval'>true</span>,
-            <span class='ident'>show_tick</span>: <span class='boolval'>false</span>,
-            <span class='ident'>show_message</span>: <span class='boolval'>true</span>,
+            <span class='ident'>is_finish</span>: <span class='bool-val'>false</span>,
+            <span class='ident'>is_multibar</span>: <span class='bool-val'>false</span>,
+            <span class='ident'>show_bar</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>show_speed</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>show_percent</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>show_counter</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>show_time_left</span>: <span class='bool-val'>true</span>,
+            <span class='ident'>show_tick</span>: <span class='bool-val'>false</span>,
+            <span class='ident'>show_message</span>: <span class='bool-val'>true</span>,
             <span class='ident'>bar_start</span>: <span class='ident'>String</span>::<span class='ident'>new</span>(),
             <span class='ident'>bar_current</span>: <span class='ident'>String</span>::<span class='ident'>new</span>(),
             <span class='ident'>bar_current_n</span>: <span class='ident'>String</span>::<span class='ident'>new</span>(),
@@ -635,9 +701,10 @@
             <span class='ident'>bar_end</span>: <span class='ident'>String</span>::<span class='ident'>new</span>(),
             <span class='ident'>tick</span>: <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
             <span class='ident'>tick_state</span>: <span class='number'>0</span>,
-            <span class='ident'>tick_len</span>: <span class='number'>4</span>,
             <span class='ident'>width</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>message</span>: <span class='ident'>String</span>::<span class='ident'>new</span>(),
+            <span class='ident'>last_refresh_time</span>: <span class='ident'>SteadyTime</span>::<span class='ident'>now</span>(),
+            <span class='ident'>max_refresh_rate</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>handle</span>: <span class='ident'>handle</span>,
         };
         <span class='ident'>pb</span>.<span class='ident'>format</span>(<span class='ident'>FORMAT</span>);
@@ -681,6 +748,8 @@
 
     <span class='doccomment'>/// Set message to display in the prefix, call with &quot;&quot; to stop printing a message.</span>
     <span class='doccomment'>///</span>
+    <span class='doccomment'>/// All newlines are replaced with spaces.</span>
+    <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples</span>
     <span class='doccomment'>/// ```ignore</span>
     <span class='doccomment'>/// let mut pb = ProgressBar::new(20);</span>
@@ -697,7 +766,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>message</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>message</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) {
-        <span class='self'>self</span>.<span class='ident'>message</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>to_owned</span>()
+        <span class='self'>self</span>.<span class='ident'>message</span> <span class='op'>=</span> <span class='ident'>message</span>.<span class='ident'>to_owned</span>().<span class='ident'>replace</span>(<span class='string'>&quot;\n&quot;</span>, <span class='string'>&quot; &quot;</span>).<span class='ident'>replace</span>(<span class='string'>&quot;\r&quot;</span>, <span class='string'>&quot; &quot;</span>)
     }
 
     <span class='doccomment'>/// Set tick format for the progressBar, default is \\|/-</span>
@@ -714,10 +783,9 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>tick_format</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>tick_fmt</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) {
         <span class='kw'>if</span> <span class='ident'>tick_fmt</span> <span class='op'>!=</span> <span class='ident'>TICK_FORMAT</span> {
-            <span class='self'>self</span>.<span class='ident'>show_tick</span> <span class='op'>=</span> <span class='boolval'>true</span>;
-        };
+            <span class='self'>self</span>.<span class='ident'>show_tick</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
+        }
         <span class='self'>self</span>.<span class='ident'>tick</span> <span class='op'>=</span> <span class='ident'>tick_fmt</span>.<span class='ident'>split</span>(<span class='string'>&quot;&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>to_owned</span>()).<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>!=</span> <span class='string'>&quot;&quot;</span>).<span class='ident'>collect</span>();
-        <span class='self'>self</span>.<span class='ident'>tick_len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>tick</span>.<span class='ident'>len</span>();
     }
 
     <span class='doccomment'>/// Set width, or `None` for default.</span>
@@ -730,6 +798,21 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_width</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>=</span> <span class='ident'>w</span>;
+    }
+
+    <span class='doccomment'>/// Set max refresh rate, above which the progress bar will not redraw, or `None` for none.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Examples</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ```ignore</span>
+    <span class='doccomment'>/// let mut pb = ProgressBar::new(...);</span>
+    <span class='doccomment'>/// pb.set_max_refresh_rate(Some(Duration::from_millis(100)));</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_max_refresh_rate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Duration</span><span class='op'>&gt;</span>) {
+        <span class='self'>self</span>.<span class='ident'>max_refresh_rate</span> <span class='op'>=</span> <span class='ident'>w</span>.<span class='ident'>map</span>(<span class='ident'>time</span>::<span class='ident'>Duration</span>::<span class='ident'>from_std</span>).<span class='ident'>map</span>(<span class='prelude-ty'>Result</span>::<span class='ident'>unwrap</span>);
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>dur</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>max_refresh_rate</span> {
+            <span class='self'>self</span>.<span class='ident'>last_refresh_time</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_refresh_time</span> <span class='op'>-</span> <span class='ident'>dur</span>;
+        }
     }
 
     <span class='doccomment'>/// Update progress bar even though no progress are made</span>
@@ -751,10 +834,10 @@
     <span class='doccomment'>/// pb.finish();</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>tick</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>tick_state</span> <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>tick_state</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>tick_len</span>;
+        <span class='self'>self</span>.<span class='ident'>tick_state</span> <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>tick_state</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>tick</span>.<span class='ident'>len</span>();
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>&lt;=</span> <span class='self'>self</span>.<span class='ident'>total</span> {
             <span class='self'>self</span>.<span class='ident'>draw</span>()
-        };
+        }
     }
 
     <span class='doccomment'>/// Add to current value</span>
@@ -780,16 +863,17 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>let</span> <span class='ident'>time_elapsed</span> <span class='op'>=</span> <span class='ident'>time_to_std</span>(<span class='ident'>SteadyTime</span>::<span class='ident'>now</span>() <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>start_time</span>);
-        <span class='kw'>let</span> <span class='ident'>speed</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>fract_dur</span>(<span class='ident'>time_elapsed</span>);
+        <span class='kw'>let</span> <span class='ident'>now</span> <span class='op'>=</span> <span class='ident'>SteadyTime</span>::<span class='ident'>now</span>();
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>mrr</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>max_refresh_rate</span> {
+            <span class='kw'>if</span> <span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>last_refresh_time</span> <span class='op'>&lt;</span> <span class='ident'>mrr</span> {
+                <span class='kw'>return</span>;
+            }
+        }
 
-        <span class='kw'>let</span> <span class='ident'>width</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>w</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span> {
-            <span class='ident'>w</span>
-        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>Width</span>(<span class='ident'>w</span>), _)) <span class='op'>=</span> <span class='ident'>terminal_size</span>() {
-            <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>usize</span>
-        } <span class='kw'>else</span> {
-            <span class='number'>80</span>
-        };
+        <span class='kw'>let</span> <span class='ident'>time_elapsed</span> <span class='op'>=</span> <span class='ident'>time_to_std</span>(<span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>start_time</span>);
+        <span class='kw'>let</span> <span class='ident'>speed</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>fract_dur</span>(<span class='ident'>time_elapsed</span>);
+        <span class='kw'>let</span> <span class='ident'>width</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span>();
+
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>base</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>suffix</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>prefix</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
@@ -798,7 +882,8 @@
         <span class='comment'>// precent box</span>
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>show_percent</span> {
             <span class='kw'>let</span> <span class='ident'>percent</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>total</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='number'>100f64</span>);
-            <span class='ident'>suffix</span> <span class='op'>=</span> <span class='ident'>suffix</span> <span class='op'>+</span> <span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot; {:.*} % &quot;</span>, <span class='number'>2</span>, <span class='ident'>percent</span>);
+            <span class='ident'>suffix</span> <span class='op'>=</span> <span class='ident'>suffix</span> <span class='op'>+</span>
+                     <span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot; {:.*} % &quot;</span>, <span class='number'>2</span>, <span class='kw'>if</span> <span class='ident'>percent</span>.<span class='ident'>is_nan</span>() { <span class='number'>0.0</span> } <span class='kw'>else</span> { <span class='ident'>percent</span> });
         }
         <span class='comment'>// speed box</span>
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>show_speed</span> {
@@ -847,7 +932,7 @@
                     <span class='ident'>base</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bar_start</span>.<span class='ident'>clone</span>();
                     <span class='kw'>if</span> <span class='ident'>rema_count</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>curr_count</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
                         <span class='ident'>base</span> <span class='op'>=</span> <span class='ident'>base</span> <span class='op'>+</span> <span class='macro'>repeat</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>bar_current</span>.<span class='ident'>as_ref</span>(), <span class='ident'>curr_count</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>+</span>
-                                <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>bar_current_n</span>;
+                               <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>bar_current_n</span>;
                     } <span class='kw'>else</span> {
                         <span class='ident'>base</span> <span class='op'>=</span> <span class='ident'>base</span> <span class='op'>+</span> <span class='macro'>repeat</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>bar_current</span>.<span class='ident'>as_ref</span>(), <span class='ident'>curr_count</span>);
                     }
@@ -863,23 +948,77 @@
         }
         <span class='comment'>// print</span>
         <span class='macro'>printfl</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handle</span>, <span class='string'>&quot;\r{}&quot;</span>, <span class='ident'>out</span>);
+
+        <span class='self'>self</span>.<span class='ident'>last_refresh_time</span> <span class='op'>=</span> <span class='ident'>SteadyTime</span>::<span class='ident'>now</span>();
+    }
+
+    <span class='comment'>// finish_draw ensure that the progress bar is reached to its end, and do the</span>
+    <span class='comment'>// last drawing if needed.</span>
+    <span class='kw'>fn</span> <span class='ident'>finish_draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>redraw</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
+
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>mrr</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>max_refresh_rate</span> {
+            <span class='kw'>if</span> <span class='ident'>SteadyTime</span>::<span class='ident'>now</span>() <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>last_refresh_time</span> <span class='op'>&lt;</span> <span class='ident'>mrr</span> {
+                <span class='self'>self</span>.<span class='ident'>max_refresh_rate</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
+                <span class='ident'>redraw</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
+            }
+        }
+
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>total</span> {
+            <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>total</span>;
+            <span class='ident'>redraw</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
+        }
+
+        <span class='kw'>if</span> <span class='ident'>redraw</span> {
+            <span class='self'>self</span>.<span class='ident'>draw</span>();
+        }
+        <span class='self'>self</span>.<span class='ident'>is_finish</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
     }
 
     <span class='doccomment'>/// Calling finish manually will set current to total and draw</span>
     <span class='doccomment'>/// the last time</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>finish</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>total</span> {
-            <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>total</span>;
-            <span class='self'>self</span>.<span class='ident'>draw</span>();
-        }
+        <span class='self'>self</span>.<span class='ident'>finish_draw</span>();
         <span class='macro'>printfl</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handle</span>, <span class='string'>&quot;&quot;</span>);
-        <span class='self'>self</span>.<span class='ident'>is_finish</span> <span class='op'>=</span> <span class='boolval'>true</span>;
     }
 
-    <span class='doccomment'>/// Call finish and write string &#39;s&#39;</span>
+
+    <span class='doccomment'>/// Call finish and write string &#39;s&#39; that will replace the progress bar.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>finish_print</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) {
+        <span class='self'>self</span>.<span class='ident'>finish_draw</span>();
+        <span class='kw'>let</span> <span class='ident'>width</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>s</span>);
+        <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>width</span> {
+            <span class='ident'>out</span> <span class='op'>+=</span> <span class='macro'>repeat</span><span class='macro'>!</span>(<span class='string'>&quot; &quot;</span>, <span class='ident'>width</span> <span class='op'>-</span> <span class='ident'>s</span>.<span class='ident'>len</span>());
+        };
+        <span class='macro'>printfl</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handle</span>, <span class='string'>&quot;\r{}&quot;</span>, <span class='ident'>out</span>);
         <span class='self'>self</span>.<span class='ident'>finish</span>();
-        <span class='macro'>printfl</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handle</span>, <span class='string'>&quot;\n{}&quot;</span>, <span class='ident'>s</span>)
+    }
+
+
+    <span class='doccomment'>/// Call finish and write string &#39;s&#39; below the progress bar.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If the ProgressBar is part of MultiBar instance, you should use</span>
+    <span class='doccomment'>/// `finish_print` to print message.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>finish_println</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) {
+        <span class='comment'>// `finish_println` does not allow in MultiBar mode, because printing</span>
+        <span class='comment'>// new line will break the multiBar output.</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_multibar</span> {
+            <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>finish_print</span>(<span class='ident'>s</span>);
+        }
+        <span class='self'>self</span>.<span class='ident'>finish_draw</span>();
+        <span class='macro'>printfl</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>handle</span>, <span class='string'>&quot;\n{}&quot;</span>, <span class='ident'>s</span>);
+    }
+
+    <span class='doccomment'>/// Get terminal width, from configuration, terminal size, or default(80)</span>
+    <span class='kw'>fn</span> <span class='ident'>width</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>w</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span> {
+            <span class='ident'>w</span>
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>Width</span>(<span class='ident'>w</span>), _)) <span class='op'>=</span> <span class='ident'>terminal_size</span>() {
+            <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>usize</span>
+        } <span class='kw'>else</span> {
+            <span class='number'>80</span>
+        }
     }
 }
 
@@ -980,6 +1119,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

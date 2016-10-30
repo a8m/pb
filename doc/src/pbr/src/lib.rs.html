@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -141,18 +142,91 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! # Console progress bar for Rust</span>
+<span class='doccomment'>//! # Terminal progress bar for Rust</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb).</span>
-<span class='doccomment'>//! support and tested on MacOS and Linux(should work on Windows too, but not tested yet).</span>
+<span class='doccomment'>//! Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb), support and</span>
+<span class='doccomment'>//! tested on MacOS, Linux and Windows</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ![Screenshot](https://raw.githubusercontent.com/a8m/pb/master/gif/rec_v2.gif)</span>
+<span class='doccomment'>//! ![Screenshot](https://raw.githubusercontent.com/a8m/pb/master/gif/rec_v3.gif)</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! [Documentation](http://a8m.github.io/pb/doc/pbr/index.html)</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ### Examples</span>
 <span class='doccomment'>//! 1. simple example</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! extern crate pbr;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! use pbr::ProgressBar;</span>
@@ -161,15 +235,59 @@
 <span class='doccomment'>//! fn main() {</span>
 <span class='doccomment'>//!     let count = 1000;</span>
 <span class='doccomment'>//!     let mut pb = ProgressBar::new(count);</span>
+<span class='doccomment'>//!     pb.format(&quot;╢▌▌░╟&quot;);</span>
 <span class='doccomment'>//!     for _ in 0..count {</span>
 <span class='doccomment'>//!         pb.inc();</span>
 <span class='doccomment'>//!         thread::sleep_ms(200);</span>
 <span class='doccomment'>//!     }</span>
-<span class='doccomment'>//!     println!(&quot;done!&quot;);</span>
+<span class='doccomment'>//!     pb.finish_print(&quot;done&quot;);</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! 2. Broadcast writing(simple file copying)</span>
+<span class='doccomment'>//! 2. MultiBar example. see full example [here](https://github.com/a8m/pb/blob/master/examples/multi.rs)</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```ignore</span>
+<span class='doccomment'>//! extern crate pbr;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! use std::thread;</span>
+<span class='doccomment'>//! use pbr::MultiBar;</span>
+<span class='doccomment'>//! use std::time::Duration;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! fn main() {</span>
+<span class='doccomment'>//!     let mut mb = MultiBar::new();</span>
+<span class='doccomment'>//!     let count = 100;</span>
+<span class='doccomment'>//!     mb.println(&quot;Application header:&quot;);</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!     let mut p1 = mb.create_bar(count);</span>
+<span class='doccomment'>//!     let _ = thread::spawn(move || {</span>
+<span class='doccomment'>//!         for _ in 0..count {</span>
+<span class='doccomment'>//!             p1.inc();</span>
+<span class='doccomment'>//!             thread::sleep(Duration::from_millis(100));</span>
+<span class='doccomment'>//!         }</span>
+<span class='doccomment'>//!         // notify the multibar that this bar finished.</span>
+<span class='doccomment'>//!         p1.finish();</span>
+<span class='doccomment'>//!     });</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!     mb.println(&quot;add a separator between the two bars&quot;);</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!     let mut p2 = mb.create_bar(count * 2);</span>
+<span class='doccomment'>//!     let _ = thread::spawn(move || {</span>
+<span class='doccomment'>//!         for _ in 0..count * 2 {</span>
+<span class='doccomment'>//!             p2.inc();</span>
+<span class='doccomment'>//!             thread::sleep(Duration::from_millis(100));</span>
+<span class='doccomment'>//!         }</span>
+<span class='doccomment'>//!         // notify the multibar that this bar finished.</span>
+<span class='doccomment'>//!         p2.finish();</span>
+<span class='doccomment'>//!     });</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!     // start listen to all bars changes.</span>
+<span class='doccomment'>//!     // this is a blocking operation, until all bars will finish.</span>
+<span class='doccomment'>//!     // to ignore blocking, you can run it in a different thread.</span>
+<span class='doccomment'>//!     mb.listen();</span>
+<span class='doccomment'>//! }</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! 3. Broadcast writing(simple file copying)</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! #![feature(io)]</span>
@@ -187,44 +305,69 @@
 <span class='doccomment'>//!     pb.set_units(Units::Bytes);</span>
 <span class='doccomment'>//!     let mut handle = File::create(&quot;copy-words&quot;).unwrap().broadcast(&amp;mut pb);</span>
 <span class='doccomment'>//!     copy(&amp;mut file, &amp;mut handle).unwrap();</span>
-<span class='doccomment'>//!     println!(&quot;done!&quot;);</span>
+<span class='doccomment'>//!     pb.finish_print(&quot;done&quot;);</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//! ```</span>
+
+<span class='comment'>// Macro for writing to the giving writer.</span>
+<span class='comment'>// Used in both pb.rs and multi.rs modules.</span>
+<span class='comment'>//</span>
+<span class='comment'>// # Examples</span>
+<span class='comment'>//</span>
+<span class='comment'>// ```</span>
+<span class='comment'>// let w = io::stdout();</span>
+<span class='comment'>// printfl!(w, &quot;&quot;);</span>
+<span class='comment'>// printfl!(w, &quot;\r{}&quot;, out);</span>
+<span class='comment'>//</span>
+<span class='comment'>// ```</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>printfl</span> {
+   (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>:<span class='ident'>expr</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tt</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {{
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>.<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tt</span>)<span class='op'>*</span>).<span class='ident'>as_bytes</span>()).<span class='ident'>ok</span>().<span class='ident'>expect</span>(<span class='string'>&quot;write() fail&quot;</span>);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>w</span>.<span class='ident'>flush</span>().<span class='ident'>ok</span>().<span class='ident'>expect</span>(<span class='string'>&quot;flush() fail&quot;</span>);
+    }}
+}
+
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 <span class='kw'>mod</span> <span class='ident'>tty</span>;
 <span class='kw'>mod</span> <span class='ident'>pb</span>;
+<span class='kw'>mod</span> <span class='ident'>multi</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>pb</span>::{<span class='ident'>ProgressBar</span>, <span class='ident'>Units</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>multi</span>::<span class='ident'>MultiBar</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Write</span>, <span class='ident'>Stdout</span>, <span class='ident'>stdout</span>};
 
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PbIter</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
-      <span class='ident'>T</span>: <span class='ident'>Write</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
+          <span class='ident'>T</span>: <span class='ident'>Write</span>
 {
     <span class='ident'>iter</span>: <span class='ident'>I</span>,
     <span class='ident'>progress_bar</span>: <span class='ident'>ProgressBar</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span> <span class='ident'>PbIter</span><span class='op'>&lt;</span><span class='ident'>Stdout</span>, <span class='ident'>I</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>
 {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
-        <span class='ident'>Self</span>::<span class='ident'>on</span>(<span class='ident'>stdout</span>(), <span class='ident'>iter</span>)
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
+        <span class='self'>Self</span>::<span class='ident'>on</span>(<span class='ident'>stdout</span>(), <span class='ident'>iter</span>)
     }
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span> <span class='ident'>PbIter</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
-      <span class='ident'>T</span>: <span class='ident'>Write</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
+          <span class='ident'>T</span>: <span class='ident'>Write</span>
 {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>on</span>(<span class='ident'>handle</span>: <span class='ident'>T</span>, <span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>on</span>(<span class='ident'>handle</span>: <span class='ident'>T</span>, <span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>size_hint</span>().<span class='number'>0</span>;
-        <span class='ident'>PbIter</span> {<span class='ident'>iter</span>: <span class='ident'>iter</span>, <span class='ident'>progress_bar</span>: <span class='ident'>ProgressBar</span>::<span class='ident'>on</span>(<span class='ident'>handle</span>, <span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>u64</span>)}
+        <span class='ident'>PbIter</span> {
+            <span class='ident'>iter</span>: <span class='ident'>iter</span>,
+            <span class='ident'>progress_bar</span>: <span class='ident'>ProgressBar</span>::<span class='ident'>on</span>(<span class='ident'>handle</span>, <span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>u64</span>),
+        }
     }
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>PbIter</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span>
-<span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
-      <span class='ident'>T</span>: <span class='ident'>Write</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>,
+          <span class='ident'>T</span>: <span class='ident'>Write</span>
 {
     <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>I</span>::<span class='ident'>Item</span>;
 
@@ -266,6 +409,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
