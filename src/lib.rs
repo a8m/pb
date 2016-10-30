@@ -29,6 +29,7 @@
 //! ```
 //!
 //! 2. MultiBar example. see full example [here](https://github.com/a8m/pb/blob/master/examples/multi.rs)
+//!
 //! ```ignore
 //! extern crate pbr;
 //!
