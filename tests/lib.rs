@@ -13,7 +13,7 @@ fn simple_example() {
         pb.inc();
         thread::sleep(Duration::from_millis(5));
     }
-    pb.finish_print("done!");
+    pb.finish_println("done!");
 }
 
 #[test]
@@ -26,7 +26,7 @@ fn custom_width_example() {
         pb.inc();
         thread::sleep(Duration::from_millis(5));
     }
-    pb.finish_print("done!");
+    pb.finish_println("done!");
 }
 
 #[test]
@@ -60,7 +60,7 @@ fn timeout_example() {
         thread::sleep(Duration::from_millis(50));
         pb.tick();
     }
-    pb.finish_print("done!");
+    pb.finish_println("done!");
 }
 
 
@@ -105,5 +105,5 @@ fn npm_bar() {
             pb.inc();
         }
     }
-    pb.finish_print("done!");
+    pb.finish_println("done!");
 }

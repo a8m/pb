@@ -23,7 +23,7 @@ fn main() {
                     pb.tick();
                 }
                 for _ in 0..20 {
-                    let n = rand::thread_rng().gen_range(0, 100 * i);
+                    let n = rand::thread_rng().gen_range(0, 100);
                     pb.message("Connected: ");
                     thread::sleep(Duration::from_millis(n));
                     pb.inc();
@@ -34,9 +34,7 @@ fn main() {
                 thread::sleep(Duration::from_millis(100));
                 pb.tick();
             }
-            pb.message("Completed! ");
-            pb.tick();
-            pb.finish();
+            pb.finish_print(&format!("{}: Pull complete", rand_string()));
         });
     }
 
@@ -51,7 +49,7 @@ fn main() {
         thread::spawn(move || {
             for _ in 0..count {
                 pb.inc();
-                let n = rand::thread_rng().gen_range(0, 100 * i);
+                let n = rand::thread_rng().gen_range(0, 100);
                 thread::sleep(Duration::from_millis(n));
             }
             pb.finish();
@@ -61,4 +59,16 @@ fn main() {
     mb.listen();
 
     println!("\nall bars done!\n");
+}
+
+fn rand_string() -> String {
+    let mut v = Vec::new();
+    while v.len() < 12 {
+        let b = rand::random::<u8>();
+        // [0-9a-f]
+        if b > 47 && b < 58 || b > 96 && b < 103 {
+            v.push(b);
+        }
+    }
+    std::str::from_utf8(&v).unwrap().to_string()
 }

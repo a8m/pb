@@ -53,6 +53,7 @@ pub struct ProgressBar<T: Write> {
     last_refresh_time: SteadyTime,
     max_refresh_rate: Option<time::Duration>,
     pub is_finish: bool,
+    pub is_multibar: bool,
     pub show_bar: bool,
     pub show_speed: bool,
     pub show_percent: bool,
@@ -114,6 +115,7 @@ impl<T: Write> ProgressBar<T> {
             start_time: SteadyTime::now(),
             units: Units::Default,
             is_finish: false,
+            is_multibar: false,
             show_bar: true,
             show_speed: true,
             show_percent: true,
@@ -299,14 +301,8 @@ impl<T: Write> ProgressBar<T> {
 
         let time_elapsed = time_to_std(now - self.start_time);
         let speed = self.current as f64 / fract_dur(time_elapsed);
+        let width = self.width();
 
-        let width = if let Some(w) = self.width {
-            w
-        } else if let Some((Width(w), _)) = terminal_size() {
-            w as usize
-        } else {
-            80
-        };
         let mut base = String::new();
         let mut suffix = String::new();
         let mut prefix = String::new();
@@ -315,7 +311,8 @@ impl<T: Write> ProgressBar<T> {
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            suffix = suffix +
+                     &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
         }
         // speed box
         if self.show_speed {
@@ -364,7 +361,7 @@ impl<T: Write> ProgressBar<T> {
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
                         base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                                &self.bar_current_n;
+                               &self.bar_current_n;
                     } else {
                         base = base + repeat!(self.bar_current.as_ref(), curr_count);
                     }
@@ -384,9 +381,9 @@ impl<T: Write> ProgressBar<T> {
         self.last_refresh_time = SteadyTime::now();
     }
 
-    /// Calling finish manually will set current to total and draw
-    /// the last time
-    pub fn finish(&mut self) {
+    // finish_draw ensure that the progress bar is reached to its end, and do the
+    // last drawing if needed.
+    fn finish_draw(&mut self) {
         let mut redraw = false;
 
         if let Some(mrr) = self.max_refresh_rate {
@@ -404,15 +401,53 @@ impl<T: Write> ProgressBar<T> {
         if redraw {
             self.draw();
         }
-
-        printfl!(self.handle, "");
         self.is_finish = true;
     }
 
-    /// Call finish and write string 's'
+    /// Calling finish manually will set current to total and draw
+    /// the last time
+    pub fn finish(&mut self) {
+        self.finish_draw();
+        printfl!(self.handle, "");
+    }
+
+
+    /// Call finish and write string 's' that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
+        self.finish_draw();
+        let width = self.width();
+        let mut out = format!("{}", s);
+        if s.len() < width {
+            out += repeat!(" ", width - s.len());
+        };
+        printfl!(self.handle, "\r{}", out);
         self.finish();
-        printfl!(self.handle, "\n{}", s)
+    }
+
+
+    /// Call finish and write string 's' below the progress bar.
+    ///
+    /// If the ProgressBar is part of MultiBar instance, you should use
+    /// `finish_print` to print message.
+    pub fn finish_println(&mut self, s: &str) {
+        // `finish_println` does not allow in MultiBar mode, because printing
+        // new line will break the multiBar output.
+        if self.is_multibar {
+            return self.finish_print(s);
+        }
+        self.finish_draw();
+        printfl!(self.handle, "\n{}", s);
+    }
+
+    /// Get terminal width, from configuration, terminal size, or default(80)
+    fn width(&mut self) -> usize {
+        if let Some(w) = self.width {
+            w
+        } else if let Some((Width(w), _)) = terminal_size() {
+            w as usize
+        } else {
+            80
+        }
     }
 }
 
