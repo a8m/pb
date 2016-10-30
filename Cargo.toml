@@ -15,4 +15,4 @@ winapi = "0.2"
 kernel32-sys = "0.2"
 
 [dev-dependencies]
-rand = "*"
+rand = "0.3.14"
