@@ -3,7 +3,7 @@
 //! Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb), support and
 //! tested on MacOS, Linux and Windows
 //!
-//! ![Screenshot](https://github.com/a8m/pb/blob/master/gif/rec_v3.gif)
+//! ![Screenshot](https://raw.githubusercontent.com/a8m/pb/master/gif/rec_v3.gif)
 //!
 //! [Documentation](http://a8m.github.io/pb/doc/pbr/index.html)
 //!
