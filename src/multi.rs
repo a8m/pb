@@ -89,8 +89,6 @@ impl<T: Write> MultiBar<T> {
     /// for example: you could add a header to your application,
     /// or text separators between bars.
     ///
-    ///   /// Create a new MultiBar with stdout as a writer.
-    ///
     /// # Examples
     ///
     /// ```no_run
@@ -124,8 +122,8 @@ impl<T: Write> MultiBar<T> {
     /// the first call, you get a progress bar in level 1, in the 2nd call,
     /// you get a progress bar in level 2, and so on.
     ///
-    /// ProgressBar that finish its work, must call `finish()` to
-    /// notify the MultiBar about it.
+    /// ProgressBar that finish its work, must call `finish()` (or `finish_print`)
+    /// to notify the `MultiBar` about it.
     ///
     /// # Examples
     ///
@@ -164,8 +162,8 @@ impl<T: Write> MultiBar<T> {
 
     /// listen start listen to all bars changes.
     ///
-    /// ProgressBar that finish its work, must call `finish()` to
-    /// notify the MultiBar about it.
+    /// `ProgressBar` that finish its work, must call `finish()` (or `finish_print`)
+    /// to notify the `MultiBar` about it.
     ///
     /// This is a blocking operation and blocks until all bars will
     /// finish.

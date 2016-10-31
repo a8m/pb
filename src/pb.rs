@@ -412,7 +412,7 @@ impl<T: Write> ProgressBar<T> {
     }
 
 
-    /// Call finish and write string 's' that will replace the progress bar.
+    /// Call finish and write string `s` that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
         self.finish_draw();
         let width = self.width();
@@ -425,7 +425,7 @@ impl<T: Write> ProgressBar<T> {
     }
 
 
-    /// Call finish and write string 's' below the progress bar.
+    /// Call finish and write string `s` below the progress bar.
     ///
     /// If the ProgressBar is part of MultiBar instance, you should use
     /// `finish_print` to print message.
