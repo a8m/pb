@@ -88,7 +88,7 @@
 <span class='comment'>// this is a blocking operation, until all bars will finish.</span>
 <span class='comment'>// to ignore blocking, you can run it in a different thread.</span>
 <span class='ident'>mb</span>.<span class='ident'>listen</span>();</pre>
-</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-306' class='srclink' href='../src/pbr/src/multi.rs.html#64-218' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-306' class='srclink' href='../src/pbr/src/multi.rs.html#64-216' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.on' class='method'><code>fn <a href='#method.on' class='fnname'>on</a>(handle: T) -&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></h4>
 <div class='docblock'><p>Create a new MultiBar with an arbitrary writer.</p>
 
@@ -105,8 +105,6 @@
 <div class='docblock'><p>println used to add text lines between the bars.
 for example: you could add a header to your application,
 or text separators between bars.</p>
-
-<p>/// Create a new MultiBar with stdout as a writer.</p>
 
 <h1 id='examples-2' class='section-header'><a href='#examples-2'>Examples</a></h1>
 <pre class='rust rust-example-rendered'>
@@ -135,8 +133,8 @@ or text separators between bars.</p>
 the first call, you get a progress bar in level 1, in the 2nd call,
 you get a progress bar in level 2, and so on.</p>
 
-<p>ProgressBar that finish its work, must call <code>finish()</code> to
-notify the MultiBar about it.</p>
+<p>ProgressBar that finish its work, must call <code>finish()</code> (or <code>finish_print</code>)
+to notify the <code>MultiBar</code> about it.</p>
 
 <h1 id='examples-3' class='section-header'><a href='#examples-3'>Examples</a></h1>
 <pre class='rust rust-example-rendered'>
@@ -160,8 +158,8 @@ notify the MultiBar about it.</p>
 </div><h4 id='method.listen' class='method'><code>fn <a href='#method.listen' class='fnname'>listen</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>listen start listen to all bars changes.</p>
 
-<p>ProgressBar that finish its work, must call <code>finish()</code> to
-notify the MultiBar about it.</p>
+<p><code>ProgressBar</code> that finish its work, must call <code>finish()</code> (or <code>finish_print</code>)
+to notify the <code>MultiBar</code> about it.</p>
 
 <p>This is a blocking operation and blocks until all bars will
 finish.

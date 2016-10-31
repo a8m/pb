@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/Users/arielm/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.9/src/unix/bsd/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/Users/arielm/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.17/src/unix/bsd/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -397,6 +397,19 @@
 <span id="353">353</span>
 <span id="354">354</span>
 <span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>dox</span>::<span class='ident'>mem</span>;
 
@@ -520,7 +533,20 @@
     <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>fsid_t</span> {
         <span class='ident'>__fsid_val</span>: [::<span class='ident'>int32_t</span>; <span class='number'>2</span>],
     }
+
+    <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>if_nameindex</span> {
+        <span class='kw'>pub</span> <span class='ident'>if_index</span>: ::<span class='ident'>c_uint</span>,
+        <span class='kw'>pub</span> <span class='ident'>if_name</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_char</span>,
+    }
 }
+
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_ALL</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_COLLATE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>1</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_CTYPE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_MONETARY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_NUMERIC</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>4</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_TIME</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>5</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_MESSAGES</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>6</span>;
 
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>FIOCLEX</span>: ::<span class='ident'>c_ulong</span> <span class='op'>=</span> <span class='number'>0x20006601</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>FIONBIO</span>: ::<span class='ident'>c_ulong</span> <span class='op'>=</span> <span class='number'>0x8004667e</span>;
@@ -555,6 +581,7 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIGVTALRM</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>26</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIGPROF</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>27</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIGWINCH</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>28</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIGINFO</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>29</span>;
 
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIG_SETMASK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SIG_BLOCK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x1</span>;
@@ -564,36 +591,6 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>IPV6_V6ONLY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>27</span>;
 
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ST_RDONLY</span>: ::<span class='ident'>c_ulong</span> <span class='op'>=</span> <span class='number'>1</span>;
-
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CTL_HW</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>6</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>HW_NCPU</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
-
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_ADD</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x1</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_CLEAR</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x20</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_DELETE</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x2</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_DISABLE</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x8</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_ENABLE</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x4</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_EOF</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x8000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_ERROR</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x4000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_FLAG1</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x2000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_ONESHOT</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0x10</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EV_SYSFLAGS</span>: ::<span class='ident'>uint16_t</span> <span class='op'>=</span> <span class='number'>0xf000</span>;
-
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_ATTRIB</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x8</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_CHILD</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x4</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_DELETE</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x1</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_EXEC</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x20000000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_EXIT</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x80000000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_EXTEND</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x4</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_FORK</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x40000000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_LINK</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x10</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_LOWAT</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x1</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_PDATAMASK</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x000fffff</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_RENAME</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x20</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_REVOKE</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x40</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_TRACK</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x1</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_TRACKERR</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x2</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOTE_WRITE</span>: ::<span class='ident'>uint32_t</span> <span class='op'>=</span> <span class='number'>0x2</span>;
 
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NCCS</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>20</span>;
 
@@ -679,9 +676,18 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PENDIN</span>: ::<span class='ident'>tcflag_t</span> <span class='op'>=</span> <span class='number'>0x20000000</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NOFLSH</span>: ::<span class='ident'>tcflag_t</span> <span class='op'>=</span> <span class='number'>0x80000000</span>;
 
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>WNOHANG</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>1</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>WNOHANG</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x00000001</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>WUNTRACED</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x00000002</span>;
 
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RTLD_NOW</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RTLD_DEFAULT</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_void</span> <span class='op'>=</span> <span class='op'>-</span><span class='number'>2isize</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_void</span>;
+
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LOG_CRON</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>9</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LOG_AUTHPRIV</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>10</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LOG_FTP</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>11</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LOG_PERROR</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0x20</span>;
+
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PIPE_BUF</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>512</span>;
 
 <span class='macro'>f</span><span class='macro'>!</span> {
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>FD_CLR</span>(<span class='ident'>fd</span>: ::<span class='ident'>c_int</span>, <span class='ident'>set</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>fd_set</span>) <span class='op'>-&gt;</span> () {
@@ -710,32 +716,52 @@
         }
     }
 
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WTERMSIG</span>(<span class='ident'>status</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span> {
+        <span class='ident'>status</span> <span class='kw-2'>&amp;</span> <span class='number'>0o177</span>
+    }
+
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WIFEXITED</span>(<span class='ident'>status</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        (<span class='ident'>status</span> <span class='kw-2'>&amp;</span> <span class='number'>0x7f</span>) <span class='op'>==</span> <span class='number'>0</span>
+        (<span class='ident'>status</span> <span class='kw-2'>&amp;</span> <span class='number'>0o177</span>) <span class='op'>==</span> <span class='number'>0</span>
     }
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WEXITSTATUS</span>(<span class='ident'>status</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span> {
         <span class='ident'>status</span> <span class='op'>&gt;&gt;</span> <span class='number'>8</span>
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WTERMSIG</span>(<span class='ident'>status</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span> {
-        <span class='ident'>status</span> <span class='kw-2'>&amp;</span> <span class='number'>0o177</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WCOREDUMP</span>(<span class='ident'>status</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        (<span class='ident'>status</span> <span class='kw-2'>&amp;</span> <span class='number'>0o200</span>) <span class='op'>!=</span> <span class='number'>0</span>
     }
 }
 
 <span class='kw'>extern</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getifaddrs</span>(<span class='ident'>ifap</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>ifaddrs</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>freeifaddrs</span>(<span class='ident'>ifa</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>ifaddrs</span>);
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setgroups</span>(<span class='ident'>ngroups</span>: ::<span class='ident'>c_int</span>,
                      <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>gid_t</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ioctl</span>(<span class='ident'>fd</span>: ::<span class='ident'>c_int</span>, <span class='ident'>request</span>: ::<span class='ident'>c_ulong</span>, ...) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>kqueue</span>() <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unmount</span>(<span class='ident'>target</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>c_char</span>, <span class='ident'>arg</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>syscall</span>(<span class='ident'>num</span>: ::<span class='ident'>c_int</span>, ...) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>, <span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;__getpwnam_r50&quot;</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getpwnam_r</span>(<span class='ident'>name</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>c_char</span>,
+                      <span class='ident'>pwd</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>passwd</span>,
+                      <span class='ident'>buf</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_char</span>,
+                      <span class='ident'>buflen</span>: ::<span class='ident'>size_t</span>,
+                      <span class='ident'>result</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>passwd</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>, <span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;__getpwuid_r50&quot;</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getpwuid_r</span>(<span class='ident'>uid</span>: ::<span class='ident'>uid_t</span>,
                       <span class='ident'>pwd</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>passwd</span>,
                       <span class='ident'>buf</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_char</span>,
                       <span class='ident'>buflen</span>: ::<span class='ident'>size_t</span>,
                       <span class='ident'>result</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>passwd</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>, <span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;__getpwent50&quot;</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getpwent</span>() <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>passwd</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setpwent</span>();
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getprogname</span>() <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>c_char</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setprogname</span>(<span class='ident'>name</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>c_char</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>getloadavg</span>(<span class='ident'>loadavg</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_double</span>, <span class='ident'>nelem</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>if_nameindex</span>() <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>if_nameindex</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>if_freenameindex</span>(<span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>if_nameindex</span>);
 }
 
 <span class='macro'>cfg_if</span><span class='macro'>!</span> {
@@ -744,8 +770,8 @@
         <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>apple</span>::<span class='op'>*</span>;
     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;openbsd&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;netbsd&quot;</span>,
                         <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;bitrig&quot;</span>))]</span> {
-        <span class='kw'>mod</span> <span class='ident'>openbsdlike</span>;
-        <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>openbsdlike</span>::<span class='op'>*</span>;
+        <span class='kw'>mod</span> <span class='ident'>netbsdlike</span>;
+        <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>netbsdlike</span>::<span class='op'>*</span>;
     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;freebsd&quot;</span>, <span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;dragonfly&quot;</span>))]</span> {
         <span class='kw'>mod</span> <span class='ident'>freebsdlike</span>;
         <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>freebsdlike</span>::<span class='op'>*</span>;

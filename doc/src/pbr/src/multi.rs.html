@@ -290,8 +290,6 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>pb</span>::<span class='ident'>ProgressBar</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>from_utf8</span>;
@@ -384,8 +382,6 @@
     <span class='doccomment'>/// for example: you could add a header to your application,</span>
     <span class='doccomment'>/// or text separators between bars.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>///   /// Create a new MultiBar with stdout as a writer.</span>
-    <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```no_run</span>
@@ -419,8 +415,8 @@
     <span class='doccomment'>/// the first call, you get a progress bar in level 1, in the 2nd call,</span>
     <span class='doccomment'>/// you get a progress bar in level 2, and so on.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ProgressBar that finish its work, must call `finish()` to</span>
-    <span class='doccomment'>/// notify the MultiBar about it.</span>
+    <span class='doccomment'>/// ProgressBar that finish its work, must call `finish()` (or `finish_print`)</span>
+    <span class='doccomment'>/// to notify the `MultiBar` about it.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples</span>
     <span class='doccomment'>///</span>
@@ -459,8 +455,8 @@
 
     <span class='doccomment'>/// listen start listen to all bars changes.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ProgressBar that finish its work, must call `finish()` to</span>
-    <span class='doccomment'>/// notify the MultiBar about it.</span>
+    <span class='doccomment'>/// `ProgressBar` that finish its work, must call `finish()` (or `finish_print`)</span>
+    <span class='doccomment'>/// to notify the `MultiBar` about it.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This is a blocking operation and blocks until all bars will</span>
     <span class='doccomment'>/// finish.</span>

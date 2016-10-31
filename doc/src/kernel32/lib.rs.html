@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/Users/arielm/.cargo/registry/src/github.com-1ecc6299db9ec823/kernel32-sys-0.2.1/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/Users/arielm/.cargo/registry/src/github.com-1ecc6299db9ec823/kernel32-sys-0.2.2/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -3025,7 +3025,7 @@
         <span class='ident'>dwDesiredAccess</span>: <span class='ident'>DWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>HANDLE</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>CreateEventExW</span>(
-        <span class='ident'>lpEventAttributes</span>: <span class='ident'>LPSECURITY_ATTRIBUTES</span>, <span class='ident'>lpName</span>: <span class='ident'>LPWSTR</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>,
+        <span class='ident'>lpEventAttributes</span>: <span class='ident'>LPSECURITY_ATTRIBUTES</span>, <span class='ident'>lpName</span>: <span class='ident'>LPCWSTR</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>,
         <span class='ident'>dwDesiredAccess</span>: <span class='ident'>DWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>HANDLE</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>CreateFiber</span>(
@@ -3258,7 +3258,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DecodeSystemPointer</span>(<span class='ident'>Ptr</span>: <span class='ident'>PVOID</span>) <span class='op'>-&gt;</span> <span class='ident'>PVOID</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DefineDosDeviceA</span>(<span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpDeviceName</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>lpTargetPath</span>: <span class='ident'>LPCSTR</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DefineDosDeviceW</span>(<span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpDeviceName</span>: <span class='ident'>LPCWSTR</span>, <span class='ident'>lpTargetPath</span>: <span class='ident'>LPCWSTR</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DelayLoadFailureHook</span>(<span class='ident'>pszDllName</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>pszProcName</span>: <span class='ident'>LPCSTR</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DelayLoadFailureHook</span>(<span class='ident'>pszDllName</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>pszProcName</span>: <span class='ident'>LPCSTR</span>) <span class='op'>-&gt;</span> <span class='ident'>FARPROC</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DeleteAtom</span>(<span class='ident'>nAtom</span>: <span class='ident'>ATOM</span>) <span class='op'>-&gt;</span> <span class='ident'>ATOM</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DeleteBoundaryDescriptor</span>(<span class='ident'>BoundaryDescriptor</span>: <span class='ident'>HANDLE</span>);
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>DeleteCriticalSection</span>(<span class='ident'>lpCriticalSection</span>: <span class='ident'>LPCRITICAL_SECTION</span>);
@@ -4080,7 +4080,7 @@
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetProcessIoCounters</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpIoCounters</span>: <span class='ident'>PIO_COUNTERS</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetProcessMitigationPolicy</span>(
-        <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>MitigationPolicy</span>: <span class='ident'>PROCESS_MITIGATION_POLICY</span>, <span class='ident'>lpBuffer</span>: <span class='ident'>LPVOID</span>,
+        <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>MitigationPolicy</span>: <span class='ident'>PROCESS_MITIGATION_POLICY</span>, <span class='ident'>lpBuffer</span>: <span class='ident'>PVOID</span>,
         <span class='ident'>dwLength</span>: <span class='ident'>SIZE_T</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetProcessPreferredUILanguages</span>(
@@ -4183,7 +4183,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetSystemTimeAsFileTime</span>(<span class='ident'>lpSystemTimeAsFileTime</span>: <span class='ident'>LPFILETIME</span>);
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetSystemTimePreciseAsFileTime</span>(<span class='ident'>lpSystemTimeAsFileTime</span>: <span class='ident'>LPFILETIME</span>);
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetSystemTimes</span>(
-        <span class='ident'>lpIdleTime</span>: <span class='ident'>PFILETIME</span>, <span class='ident'>lpKernelTime</span>: <span class='ident'>PFILETIME</span>, <span class='ident'>lpUserTime</span>: <span class='ident'>PFILETIME</span>,
+        <span class='ident'>lpIdleTime</span>: <span class='ident'>LPFILETIME</span>, <span class='ident'>lpKernelTime</span>: <span class='ident'>LPFILETIME</span>, <span class='ident'>lpUserTime</span>: <span class='ident'>LPFILETIME</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetSystemWindowsDirectoryA</span>(<span class='ident'>lpBuffer</span>: <span class='ident'>LPSTR</span>, <span class='ident'>uSize</span>: <span class='ident'>UINT</span>) <span class='op'>-&gt;</span> <span class='ident'>UINT</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>GetSystemWindowsDirectoryW</span>(<span class='ident'>lpBuffer</span>: <span class='ident'>LPWSTR</span>, <span class='ident'>uSize</span>: <span class='ident'>UINT</span>) <span class='op'>-&gt;</span> <span class='ident'>UINT</span>;
@@ -4512,7 +4512,7 @@
         <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpWatchInfo</span>: <span class='ident'>PPSAPI_WS_WATCH_INFORMATION</span>, <span class='ident'>cb</span>: <span class='ident'>DWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>K32GetWsChangesEx</span>(
-        <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpWatchInfoEx</span>: <span class='ident'>PPSAPI_WS_WATCH_INFORMATION_EX</span>, <span class='ident'>cb</span>: <span class='ident'>DWORD</span>,
+        <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpWatchInfoEx</span>: <span class='ident'>PPSAPI_WS_WATCH_INFORMATION_EX</span>, <span class='ident'>cb</span>: <span class='ident'>PDWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>K32InitializeProcessForWsWatch</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>K32QueryWorkingSet</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>pv</span>: <span class='ident'>PVOID</span>, <span class='ident'>cb</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
@@ -4590,7 +4590,7 @@
         <span class='ident'>nndPreferred</span>: <span class='ident'>DWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>LPVOID</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>MapViewOfFileFromApp</span>(
-        <span class='ident'>hFileMappingObject</span>: <span class='ident'>HANDLE</span>, <span class='ident'>DesiredAccess</span>: <span class='ident'>DWORD</span>, <span class='ident'>FileOffset</span>: <span class='ident'>ULONG64</span>,
+        <span class='ident'>hFileMappingObject</span>: <span class='ident'>HANDLE</span>, <span class='ident'>DesiredAccess</span>: <span class='ident'>ULONG</span>, <span class='ident'>FileOffset</span>: <span class='ident'>ULONG64</span>,
         <span class='ident'>NumberOfBytesToMap</span>: <span class='ident'>SIZE_T</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>PVOID</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>Module32First</span>(<span class='ident'>hSnapshot</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpme</span>: <span class='ident'>LPMODULEENTRY32</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
@@ -4619,7 +4619,7 @@
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>MulDiv</span>(<span class='ident'>nNumber</span>: <span class='ident'>c_int</span>, <span class='ident'>nNumerator</span>: <span class='ident'>c_int</span>, <span class='ident'>nDenominator</span>: <span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>MultiByteToWideChar</span>(
-        <span class='ident'>CodePage</span>: <span class='ident'>UINT</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpMultiByteStr</span>: <span class='ident'>LPCCH</span>, <span class='ident'>cbMultiByte</span>: <span class='ident'>c_int</span>,
+        <span class='ident'>CodePage</span>: <span class='ident'>UINT</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpMultiByteStr</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>cbMultiByte</span>: <span class='ident'>c_int</span>,
         <span class='ident'>lpWideCharStr</span>: <span class='ident'>LPWSTR</span>, <span class='ident'>cchWideChar</span>: <span class='ident'>c_int</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>NeedCurrentDirectoryForExePathA</span>(<span class='ident'>ExeName</span>: <span class='ident'>LPCSTR</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
@@ -4724,7 +4724,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>PssWalkMarkerGetPosition</span>(<span class='ident'>WalkMarkerHandle</span>: <span class='ident'>HPSSWALK</span>, <span class='ident'>Position</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>ULONG_PTR</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
     <span class='comment'>// pub fn PssWalkMarkerRewind();</span>
     <span class='comment'>// pub fn PssWalkMarkerSeek();</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>PssWalkMarkerSeekToBeginning</span>(<span class='ident'>WalkMarkerHandle</span>: <span class='ident'>HPSSWALK</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>PssWalkMarkerSeekToBeginning</span>(<span class='ident'>WalkMarkerHandle</span>: <span class='ident'>HPSS</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>PssWalkMarkerSetPosition</span>(<span class='ident'>WalkMarkerHandle</span>: <span class='ident'>HPSSWALK</span>, <span class='ident'>Position</span>: <span class='ident'>ULONG_PTR</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
     <span class='comment'>// pub fn PssWalkMarkerTell();</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>PssWalkSnapshot</span>(
@@ -4778,7 +4778,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>QueryUmsThreadInformation</span>(
         <span class='ident'>UmsThread</span>: <span class='ident'>PUMS_CONTEXT</span>, <span class='ident'>UmsThreadInfoClass</span>: <span class='ident'>UMS_THREAD_INFO_CLASS</span>,
         <span class='ident'>UmsThreadInformation</span>: <span class='ident'>PVOID</span>, <span class='ident'>UmsThreadInformationLength</span>: <span class='ident'>ULONG</span>, <span class='ident'>ReturnLength</span>: <span class='ident'>PULONG</span>,
-    );
+    ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>QueryUnbiasedInterruptTime</span>(<span class='ident'>UnbiasedTime</span>: <span class='ident'>PULONGLONG</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>QueueUserAPC</span>(<span class='ident'>pfnAPC</span>: <span class='ident'>PAPCFUNC</span>, <span class='ident'>hThread</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwData</span>: <span class='ident'>ULONG_PTR</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>QueueUserWorkItem</span>(
@@ -5133,7 +5133,7 @@
         <span class='ident'>hNamedPipe</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpMode</span>: <span class='ident'>LPDWORD</span>, <span class='ident'>lpMaxCollectionCount</span>: <span class='ident'>LPDWORD</span>,
         <span class='ident'>lpCollectDataTimeout</span>: <span class='ident'>LPDWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetPriorityClass</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwPriorityClass</span>: <span class='ident'>DWORD</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetPriorityClass</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwPriorityClass</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetProcessAffinityMask</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwProcessAffinityMask</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetProcessAffinityUpdateMode</span>(<span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetProcessDEPPolicy</span>(<span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
@@ -5175,7 +5175,7 @@
         <span class='ident'>hDevice</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwPositionMethod</span>: <span class='ident'>DWORD</span>, <span class='ident'>dwPartition</span>: <span class='ident'>DWORD</span>,
         <span class='ident'>dwOffsetLow</span>: <span class='ident'>DWORD</span>, <span class='ident'>dwOffsetHigh</span>: <span class='ident'>DWORD</span>, <span class='ident'>bImmediate</span>: <span class='ident'>BOOL</span>
     ) <span class='op'>-&gt;</span> <span class='ident'>DWORD</span>;
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadAffinityMask</span>(<span class='ident'>hThread</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwThreadAffinityMask</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD_PTR</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadAffinityMask</span>(<span class='ident'>hThread</span>: <span class='ident'>HANDLE</span>, <span class='ident'>dwThreadAffinityMask</span>: <span class='ident'>DWORD_PTR</span>) <span class='op'>-&gt;</span> <span class='ident'>DWORD_PTR</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadContext</span>(<span class='ident'>hThread</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpContext</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>CONTEXT</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadErrorMode</span>(<span class='ident'>dwNewMode</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpOldMode</span>: <span class='ident'>LPDWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadExecutionState</span>(<span class='ident'>esFlags</span>: <span class='ident'>EXECUTION_STATE</span>) <span class='op'>-&gt;</span> <span class='ident'>EXECUTION_STATE</span>;
@@ -5204,7 +5204,7 @@
         <span class='ident'>ptpp</span>: <span class='ident'>PTP_POOL</span>, <span class='ident'>ptpsi</span>: <span class='ident'>PTP_POOL_STACK_INFORMATION</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadpoolThreadMaximum</span>(<span class='ident'>ptpp</span>: <span class='ident'>PTP_POOL</span>, <span class='ident'>cthrdMost</span>: <span class='ident'>DWORD</span>);
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadpoolThreadMinimum</span>(<span class='ident'>ptpp</span>: <span class='ident'>PTP_POOL</span>, <span class='ident'>cthrdMic</span>: <span class='ident'>DWORD</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadpoolThreadMinimum</span>(<span class='ident'>ptpp</span>: <span class='ident'>PTP_POOL</span>, <span class='ident'>cthrdMic</span>: <span class='ident'>DWORD</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>SetThreadpoolTimer</span>(
         <span class='ident'>pti</span>: <span class='ident'>PTP_TIMER</span>, <span class='ident'>pftDueTime</span>: <span class='ident'>PFILETIME</span>, <span class='ident'>msPeriod</span>: <span class='ident'>DWORD</span>, <span class='ident'>msWindowLength</span>: <span class='ident'>DWORD</span>,
     );
@@ -5365,7 +5365,7 @@
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>VirtualLock</span>(<span class='ident'>lpAddress</span>: <span class='ident'>LPVOID</span>, <span class='ident'>dwSize</span>: <span class='ident'>SIZE_T</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>VirtualProtect</span>(
-        <span class='ident'>lpAddress</span>: <span class='ident'>LPVOID</span>, <span class='ident'>dwSize</span>: <span class='ident'>SIZE_T</span>, <span class='ident'>flNewProtect</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpflOldProtect</span>: <span class='ident'>DWORD</span>,
+        <span class='ident'>lpAddress</span>: <span class='ident'>LPVOID</span>, <span class='ident'>dwSize</span>: <span class='ident'>SIZE_T</span>, <span class='ident'>flNewProtect</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpflOldProtect</span>: <span class='ident'>PDWORD</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>VirtualProtectEx</span>(
         <span class='ident'>hProcess</span>: <span class='ident'>HANDLE</span>, <span class='ident'>lpAddress</span>: <span class='ident'>LPVOID</span>, <span class='ident'>dwSize</span>: <span class='ident'>SIZE_T</span>, <span class='ident'>flNewProtect</span>: <span class='ident'>DWORD</span>,
@@ -5416,8 +5416,8 @@
     ) <span class='op'>-&gt;</span> <span class='ident'>HRESULT</span>;
     <span class='comment'>// pub fn WerpInitiateRemoteRecovery();</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WideCharToMultiByte</span>(
-      <span class='ident'>CodePage</span>: <span class='ident'>UINT</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpWideCharStr</span>: <span class='ident'>LPCWCH</span>, <span class='ident'>cchWideChar</span>: <span class='ident'>c_int</span>,
-      <span class='ident'>lpMultiByteStr</span>: <span class='ident'>LPSTR</span>, <span class='ident'>cbMultiByte</span>: <span class='ident'>c_int</span>, <span class='ident'>lpDefaultChar</span>: <span class='ident'>LPCCH</span>, <span class='ident'>lpUsedDefaultChar</span>: <span class='ident'>LPBOOL</span>,
+      <span class='ident'>CodePage</span>: <span class='ident'>UINT</span>, <span class='ident'>dwFlags</span>: <span class='ident'>DWORD</span>, <span class='ident'>lpWideCharStr</span>: <span class='ident'>LPCWSTR</span>, <span class='ident'>cchWideChar</span>: <span class='ident'>c_int</span>,
+      <span class='ident'>lpMultiByteStr</span>: <span class='ident'>LPSTR</span>, <span class='ident'>cbMultiByte</span>: <span class='ident'>c_int</span>, <span class='ident'>lpDefaultChar</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>lpUsedDefaultChar</span>: <span class='ident'>LPBOOL</span>,
     ) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>WinExec</span>(<span class='ident'>lpCmdLine</span>: <span class='ident'>LPCSTR</span>, <span class='ident'>uCmdShow</span>: <span class='ident'>UINT</span>) <span class='op'>-&gt;</span> <span class='ident'>UINT</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>Wow64DisableWow64FsRedirection</span>(<span class='ident'>OldValue</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>PVOID</span>) <span class='op'>-&gt;</span> <span class='ident'>BOOL</span>;
