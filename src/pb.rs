@@ -286,6 +286,21 @@ impl<T: Write> ProgressBar<T> {
         self.current
     }
 
+    /// Manually set the current value of the bar
+    /// 
+    /// # Examples
+    /// ```no_run
+    /// use pbr::ProgressBar;
+    /// 
+    /// let mut pb = ProgressBar::new(10);
+    /// pb.set(8);
+    /// pb.finish();
+    pub fn set(&mut self, i: u64) -> u64 {
+        self.current = i;
+        self.tick();
+        self.current
+    }
+
     /// Increment current value
     pub fn inc(&mut self) -> u64 {
         self.add(1)
