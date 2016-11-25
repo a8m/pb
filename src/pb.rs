@@ -1,9 +1,12 @@
+extern crate isatty;
+
 use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
 use std::io::Stdout;
 use tty::{Width, terminal_size};
+use isatty::stdout_isatty;
 
 macro_rules! kb_fmt {
     ($n: ident) => {{
@@ -307,93 +310,98 @@ impl<T: Write> ProgressBar<T> {
     }
 
     fn draw(&mut self) {
-        let now = SteadyTime::now();
-        if let Some(mrr) = self.max_refresh_rate {
-            if now - self.last_refresh_time < mrr {
-                return;
-            }
-        }
-
-        let time_elapsed = time_to_std(now - self.start_time);
-        let speed = self.current as f64 / fract_dur(time_elapsed);
-        let width = self.width();
-
-        let mut base = String::new();
-        let mut suffix = String::new();
-        let mut prefix = String::new();
-        let mut out;
-
-        // precent box
-        if self.show_percent {
-            let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix = suffix +
-                     &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
-        }
-        // speed box
-        if self.show_speed {
-            suffix = match self.units {
-                Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
-                Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
-            };
-        }
-        // time left box
-        if self.show_time_left && self.current > 0 {
-            if self.total > self.current {
-                let left = 1. / speed * (self.total - self.current) as f64;
-                if left < 60. {
-                    suffix = suffix + &format!("{:.0}s", left);
-                } else {
-                    suffix = suffix + &format!("{:.0}m", left / 60.);
+        if stdout_isatty() {
+            let now = SteadyTime::now();
+            if let Some(mrr) = self.max_refresh_rate {
+                if now - self.last_refresh_time < mrr {
+                    return;
                 }
             }
-        }
-        // message box
-        if self.show_message {
-            prefix = prefix + &format!("{}", self.message)
-        }
-        // counter box
-        if self.show_counter {
-            let (c, t) = (self.current as f64, self.total as f64);
-            prefix = prefix +
-                     &match self.units {
-                Units::Default => format!("{} / {} ", c, t),
-                Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
-            };
-        }
-        // tick box
-        if self.show_tick {
-            prefix = prefix + &format!("{} ", self.tick[self.tick_state]);
-        }
-        // bar box
-        if self.show_bar {
-            let p = prefix.len() + suffix.len() + 3;
-            if p < width {
-                let size = width - p;
-                let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
-                    .ceil() as usize;
-                if size >= curr_count {
-                    let rema_count = size - curr_count;
-                    base = self.bar_start.clone();
-                    if rema_count > 0 && curr_count > 0 {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
-                               &self.bar_current_n;
+
+            let time_elapsed = time_to_std(now - self.start_time);
+            let speed = self.current as f64 / fract_dur(time_elapsed);
+            let width = self.width();
+
+            let mut base = String::new();
+            let mut suffix = String::new();
+            let mut prefix = String::new();
+            let mut out;
+
+            // precent box
+            if self.show_percent {
+                let percent = self.current as f64 / (self.total as f64 / 100f64);
+                suffix = suffix +
+                    &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            }
+            // speed box
+            if self.show_speed {
+                suffix = match self.units {
+                    Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
+                    Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
+                };
+            }
+            // time left box
+            if self.show_time_left && self.current > 0 {
+                if self.total > self.current {
+                    let left = 1. / speed * (self.total - self.current) as f64;
+                    if left < 60. {
+                        suffix = suffix + &format!("{:.0}s", left);
                     } else {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        suffix = suffix + &format!("{:.0}m", left / 60.);
                     }
-                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
                 }
             }
-        }
-        out = prefix + &base + &suffix;
-        // pad
-        if out.len() < width {
-            let gap = width - out.len();
-            out = out + repeat!(" ", gap);
-        }
-        // print
-        printfl!(self.handle, "\r{}", out);
+            // message box
+            if self.show_message {
+                prefix = prefix + &format!("{}", self.message)
+            }
+            // counter box
+            if self.show_counter {
+                let (c, t) = (self.current as f64, self.total as f64);
+                prefix = prefix +
+                    &match self.units {
+                        Units::Default => format!("{} / {} ", c, t),
+                        Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
+                    };
+            }
+            // tick box
+            if self.show_tick {
+                prefix = prefix + &format!("{} ", self.tick[self.tick_state]);
+            }
+            // bar box
+            if self.show_bar {
+                let p = prefix.len() + suffix.len() + 3;
+                if p < width {
+                    let size = width - p;
+                    let curr_count = ((self.current as f64 / self.total as f64) * size as f64)
+                        .ceil() as usize;
+                    if size >= curr_count {
+                        let rema_count = size - curr_count;
+                        base = self.bar_start.clone();
+                        if rema_count > 0 && curr_count > 0 {
+                            base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
+                                &self.bar_current_n;
+                        } else {
+                            base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        }
+                        base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
+                    }
+                }
+            }
+            out = prefix + &base + &suffix;
+            // pad
+            if out.len() < width {
+                let gap = width - out.len();
+                out = out + repeat!(" ", gap);
+            }
+            // print
+            printfl!(self.handle, "\r{}", out);
 
-        self.last_refresh_time = SteadyTime::now();
+            self.last_refresh_time = SteadyTime::now();
+        } else {
+            let percent = (self.current as f64 / (self.total as f64 / 100f64)) as u64;
+            println!("{}%", percent);
+        }
     }
 
     // finish_draw ensure that the progress bar is reached to its end, and do the

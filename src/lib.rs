@@ -113,6 +113,7 @@ macro_rules! printfl {
 
 #[macro_use]
 extern crate time;
+extern crate isatty;
 mod tty;
 mod pb;
 mod multi;
