@@ -117,7 +117,7 @@ mod tty;
 mod pb;
 mod multi;
 pub use pb::{ProgressBar, Units};
-pub use multi::MultiBar;
+pub use multi::{MultiBar, Pipe};
 use std::io::{Write, Stdout, stdout};
 
 pub struct PbIter<T, I>
