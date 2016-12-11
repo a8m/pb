@@ -115,9 +115,9 @@ macro_rules! printfl {
 extern crate time;
 mod tty;
 mod pb;
-pub mod multi;
+mod multi;
 pub use pb::{ProgressBar, Units};
-pub use multi::MultiBar;
+pub use multi::{MultiBar, Pipe};
 use std::io::{Write, Stdout, stdout};
 
 pub struct PbIter<T, I>
