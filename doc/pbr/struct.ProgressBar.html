@@ -87,7 +87,7 @@
    <span class='ident'>pb</span>.<span class='ident'>inc</span>();
    <span class='ident'>thread</span>::<span class='ident'>sleep_ms</span>(<span class='number'>100</span>);
 }</pre>
-</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-90' class='srclink' href='../src/pbr/src/pb.rs.html#91-452' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-90' class='srclink' href='../src/pbr/src/pb.rs.html#91-467' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.on' class='method'><code>fn <a href='#method.on' class='fnname'>on</a>(handle: T, total: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;T&gt;</code></h4>
 <div class='docblock'><p>Create a new ProgressBar with default configuration but
 pass an arbitrary writer.</p>
@@ -195,6 +195,16 @@ in draw function.</p>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pb</span> <span class='op'>=</span> <span class='ident'>ProgressBar</span>::<span class='ident'>new</span>(<span class='number'>10</span>);
 <span class='ident'>pb</span>.<span class='ident'>add</span>(<span class='number'>5</span>);
 <span class='ident'>pb</span>.<span class='ident'>finish</span>();</pre>
+</div><h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;mut self, i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
+<div class='docblock'><p>Manually set the current value of the bar</p>
+
+<h1 id='examples-10' class='section-header'><a href='#examples-10'>Examples</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>pbr</span>::<span class='ident'>ProgressBar</span>;
+ 
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pb</span> <span class='op'>=</span> <span class='ident'>ProgressBar</span>::<span class='ident'>new</span>(<span class='number'>10</span>);
+<span class='ident'>pb</span>.<span class='ident'>set</span>(<span class='number'>8</span>);
+<span class='ident'>pb</span>.<span class='ident'>finish</span>();</pre>
 </div><h4 id='method.inc' class='method'><code>fn <a href='#method.inc' class='fnname'>inc</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Increment current value</p>
 </div><h4 id='method.finish' class='method'><code>fn <a href='#method.finish' class='fnname'>finish</a>(&amp;mut self)</code></h4>
@@ -207,7 +217,7 @@ the last time</p>
 
 <p>If the ProgressBar is part of MultiBar instance, you should use
 <code>finish_print</code> to print message.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a> for <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-275' class='srclink' href='../src/pbr/src/pb.rs.html#455-464' title='goto source code'>[src]</a></span></h3>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a> for <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-278' class='srclink' href='../src/pbr/src/pb.rs.html#470-479' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.write' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html#tymethod.write' class='fnname'>write</a>(&amp;mut self, buf: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h4>
 <div class='docblock'><p>Write a buffer into this object, returning how many bytes were written. <a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html#tymethod.write">Read more</a></p>
 </div><h4 id='method.flush' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html#tymethod.flush' class='fnname'>flush</a>(&amp;mut self) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>

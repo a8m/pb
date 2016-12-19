@@ -568,6 +568,21 @@
 <span id="524">524</span>
 <span id="525">525</span>
 <span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
@@ -853,6 +868,21 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>u64</span> {
         <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>+=</span> <span class='ident'>i</span>;
+        <span class='self'>self</span>.<span class='ident'>tick</span>();
+        <span class='self'>self</span>.<span class='ident'>current</span>
+    }
+
+    <span class='doccomment'>/// Manually set the current value of the bar</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// # Examples</span>
+    <span class='doccomment'>/// ```no_run</span>
+    <span class='doccomment'>/// use pbr::ProgressBar;</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// let mut pb = ProgressBar::new(10);</span>
+    <span class='doccomment'>/// pb.set(8);</span>
+    <span class='doccomment'>/// pb.finish();</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>u64</span> {
+        <span class='self'>self</span>.<span class='ident'>current</span> <span class='op'>=</span> <span class='ident'>i</span>;
         <span class='self'>self</span>.<span class='ident'>tick</span>();
         <span class='self'>self</span>.<span class='ident'>current</span>
     }

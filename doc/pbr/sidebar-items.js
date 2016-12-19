@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Units",""]],"struct":[["MultiBar",""],["PbIter",""],["ProgressBar",""]]});
+initSidebarItems({"enum":[["Units",""]],"struct":[["MultiBar",""],["PbIter",""],["Pipe",""],["ProgressBar",""]]});
