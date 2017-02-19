@@ -117,6 +117,7 @@ macro_rules! repeat {
     }}
 }
 
+const PBR_LOG_BOUNDARY: &'static str = "--PBR-LOG-BOUNDARY";
 
 #[macro_use]
 extern crate time;

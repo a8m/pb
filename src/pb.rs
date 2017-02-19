@@ -5,6 +5,8 @@ use time::{self, SteadyTime};
 use std::io::Stdout;
 use tty::{Width, terminal_size};
 
+use ::PBR_LOG_BOUNDARY;
+
 macro_rules! kb_fmt {
     ($n: ident) => {{
         let kb = 1024f64;
@@ -44,6 +46,7 @@ pub struct ProgressBar<T: Write> {
     tick_state: usize,
     width: Option<usize>,
     message: String,
+    log_line: Option<String>,
     last_refresh_time: SteadyTime,
     max_refresh_rate: Option<time::Duration>,
     pub is_finish: bool,
@@ -126,6 +129,7 @@ impl<T: Write> ProgressBar<T> {
             tick_state: 0,
             width: None,
             message: String::new(),
+            log_line: None,
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
             handle: handle,
@@ -384,6 +388,32 @@ impl<T: Write> ProgressBar<T> {
             let gap = width - out.len();
             out = out + repeat!(" ", gap);
         }
+
+        // handle a log line waiting to be printed
+        if let Some(ref log_line) = self.log_line {
+
+            // overwrite the current line with our log message + whitespace
+            let mut log_out = format!("\r{}", log_line);
+
+            if log_line.len() < width {
+                log_out += repeat!(" ", width - log_line.len());
+            };
+
+            // if writing to a MultiBar, use a boundary string to allow MultiBar to print the log
+            // and bar separately.
+            //
+            // otherwise print a newline to scroll the log message upward to prevent it from being
+            // overwritten by the progress bar
+            if self.is_multibar {
+                log_out = log_out + PBR_LOG_BOUNDARY;
+            } else {
+                log_out = log_out + "\n";
+            }
+
+            out = log_out + &out;
+        }
+        self.log_line = None;
+
         // print
         printfl!(self.handle, "\r{}", out);
 
@@ -404,6 +434,10 @@ impl<T: Write> ProgressBar<T> {
 
         if self.current < self.total {
             self.current = self.total;
+            redraw = true;
+        }
+
+        if let Some(_) = self.log_line {
             redraw = true;
         }
 
@@ -432,6 +466,19 @@ impl<T: Write> ProgressBar<T> {
         printfl!(self.handle, "\r{}", out);
         self.finish();
     }
+
+
+    /// Write string `s` above the progress bar for logging
+    ///
+    /// Log messages will appear to scroll upward while the progress bar(s) stay in place.
+    ///
+    /// Behavior should be the same whether the bar is part of a MultiBar or not
+    ///
+    pub fn log(&mut self, s: &str) {
+        self.log_line = Some(s.to_owned());
+        self.draw();
+    }
+
 
 
     /// Call finish and write string `s` below the progress bar.
