@@ -18,12 +18,6 @@ macro_rules! kb_fmt {
     }}
 }
 
-macro_rules! repeat {
-    ($s: expr, $n: expr) => {{
-        &repeat($s).take($n).collect::<String>()
-    }}
-}
-
 const FORMAT: &'static str = "[=>-]";
 const TICK_FORMAT: &'static str = "\\|/-";
 const NANOS_PER_SEC: u32 = 1_000_000_000;

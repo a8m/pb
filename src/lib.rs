@@ -111,6 +111,13 @@ macro_rules! printfl {
     }}
 }
 
+macro_rules! repeat {
+    ($s: expr, $n: expr) => {{
+        &repeat($s).take($n).collect::<String>()
+    }}
+}
+
+
 #[macro_use]
 extern crate time;
 mod tty;
