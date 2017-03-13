@@ -375,12 +375,12 @@ impl<T: Write> ProgressBar<T> {
                     let rema_count = size - curr_count;
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count - 1) +
+                        base = base + repeat!(self.bar_current.to_string(), curr_count - 1) +
                                &self.bar_current_n;
                     } else {
-                        base = base + repeat!(self.bar_current.as_ref(), curr_count);
+                        base = base + repeat!(self.bar_current.to_string(), curr_count);
                     }
-                    base = base + repeat!(self.bar_remain.as_ref(), rema_count) + &self.bar_end;
+                    base = base + repeat!(self.bar_remain.to_string(), rema_count) + &self.bar_end;
                 }
             }
         }
