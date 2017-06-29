@@ -107,3 +107,18 @@ fn npm_bar() {
     }
     pb.finish_println("done!");
 }
+
+#[test]
+// see: issue 45#
+fn final_redraw_max_refresh_rate() {
+    let count = 500;
+    let mut pb = ProgressBar::new(count);
+    pb.format("╢▌▌░╟");
+    pb.set_max_refresh_rate(Some(Duration::from_millis(100)));
+    for _ in 0..count {
+        pb.inc();
+        thread::sleep(Duration::from_millis(5));
+    }
+    pb.finish_println("done!");
+}
+

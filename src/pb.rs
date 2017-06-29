@@ -309,7 +309,7 @@ impl<T: Write> ProgressBar<T> {
     fn draw(&mut self) {
         let now = SteadyTime::now();
         if let Some(mrr) = self.max_refresh_rate {
-            if now - self.last_refresh_time < mrr {
+            if now - self.last_refresh_time < mrr && self.current < self.total {
                 return;
             }
         }
