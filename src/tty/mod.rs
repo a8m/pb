@@ -12,17 +12,12 @@ pub struct Width(pub u16);
 #[derive(Debug)]
 pub struct Height(pub u16);
 
-#[cfg(unix)]
+#[cfg(not(windows))]
 mod unix;
-#[cfg(unix)]
+#[cfg(not(windows))]
 pub use self::unix::*;
 
 #[cfg(windows)]
 mod windows;
 #[cfg(windows)]
 pub use self::windows::*;
-
-#[cfg(target_os = "redox")]
-mod redox;
-#[cfg(target_os = "redox")]
-pub use self::redox::*;
