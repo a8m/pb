@@ -22,7 +22,7 @@ impl MultiBar<Stdout> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use std::thread;
     /// use pbr::MultiBar;
     ///
@@ -91,7 +91,7 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
@@ -127,7 +127,7 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
@@ -171,8 +171,11 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
-    /// use pbr::MultiBar;
+    /// ```
+    /// # extern crate pbr;
+    /// # use std::thread;
+    /// # fn main() {
+    /// use ::pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
     ///
@@ -186,6 +189,7 @@ impl<T: Write> MultiBar<T> {
     /// });
     ///
     /// // ...
+    /// # }
     /// ```
     pub fn listen(&mut self) {
         let mut first = true;
