@@ -1,6 +1,7 @@
 use pb::ProgressBar;
+use std::str::from_utf8;
 use tty;
-use std::io::{Stdout, Write};
+use std::io::{self, Stdout, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 
@@ -158,6 +159,12 @@ impl<T: Write> MultiBar<T> {
         p
     }
 
+    pub fn create_log_target(&mut self) -> LogTarget {
+        LogTarget{
+            buf: Vec::new(),
+            chan: self.chan.0.clone(),
+        }
+    }
 
     /// listen start listen to all bars changes.
     ///
@@ -194,6 +201,8 @@ impl<T: Write> MultiBar<T> {
         let mut first = true;
         let mut nbars = self.nbars;
         while nbars > 0 {
+            let mut log_line = None;
+
             // receive message
             let msg = self.chan.1.recv().unwrap();
             match msg {
@@ -201,14 +210,20 @@ impl<T: Write> MultiBar<T> {
                     self.lines[level] = line;
                 },
                 WriteMsg::ProgressClear{level,line} => {
-                    self.lines[level] = tty::clear_current_line() + &line;
+                    self.lines[level] = tty::clear_until_newline() + &line;
                     nbars -= 1;
                 },
                 WriteMsg::ProgressFinish{level,line} => {
-                    // writing lines below progress not supported;
-                    // replace progress instead
-                    self.lines[level] = tty::clear_current_line() + &line;
+                    // writing lines below progress not supported; treat
+                    // as log message
+                    let _ = level;
                     nbars -= 1;
+                    if line.is_empty() { continue; }
+                    log_line = Some(line);
+                },
+                WriteMsg::Log{line} => {
+                    if line.is_empty() { continue; }
+                    log_line = Some(line);
                 },
             }
 
@@ -218,6 +233,12 @@ impl<T: Write> MultiBar<T> {
                 out += &tty::move_cursor_up(self.nlines);
             } else {
                 first = false;
+            }
+            if let Some(line) = log_line {
+                out += "\r";
+                out += &tty::clear_after_cursor();
+                out += &line;
+                out += "\n";
             }
             for l in self.lines.iter() {
                 out += "\r";
@@ -232,6 +253,43 @@ impl<T: Write> MultiBar<T> {
 pub struct Pipe {
     level: usize,
     chan: Sender<WriteMsg>,
+}
+
+pub struct LogTarget {
+    buf: Vec<u8>,
+    chan: Sender<WriteMsg>,
+}
+
+impl Write for LogTarget {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        use std::mem::replace;
+
+        self.buf.extend_from_slice(buf);
+        // find last newline and flush the part before it
+        for pos in (0..self.buf.len()).rev() {
+            if self.buf[pos] == b'\n' {
+                let rem = self.buf.split_off(pos+1);
+                let msg = replace(&mut self.buf, rem);
+                self.chan.send(WriteMsg::Log{
+                    line: from_utf8(&msg[..pos]).unwrap().to_owned(),
+                })
+                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+                break;
+            }
+        }
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        use std::mem::replace;
+
+        let msg = replace(&mut self.buf, Vec::new());
+        self.chan.send(WriteMsg::Log{
+            line: from_utf8(&msg).unwrap().to_owned(),
+        })
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        Ok(())
+    }
 }
 
 impl ::private::SealedProgressReceiver for Pipe {
@@ -276,6 +334,9 @@ enum WriteMsg {
     },
     ProgressFinish {
         level: usize,
+        line: String,
+    },
+    Log {
         line: String,
     },
 }

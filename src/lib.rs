@@ -116,7 +116,7 @@ mod tty;
 mod pb;
 mod multi;
 pub use pb::{ProgressBar, Units};
-pub use multi::{MultiBar, Pipe};
+pub use multi::{MultiBar, Pipe, LogTarget};
 use std::io::{Write, Stdout, stdout};
 
 pub struct PbIter<T, I>
@@ -189,14 +189,14 @@ pub trait ProgressReceiver: private::SealedProgressReceiver {
 
 impl<T: Write> private::SealedProgressReceiver for T {
     fn update_progress(&mut self, line: &str) {
-        self.write(tty::clear_current_line().as_bytes()).expect("write() fail");
         self.write(b"\r").expect("write() fail");
         self.write(line.as_bytes()).expect("write() fail");
         self.flush().expect("flush() fail");
     }
 
     fn clear_progress(&mut self, line: &str) {
-        self.write(tty::clear_current_line().as_bytes()).expect("write() fail");
+        self.write(b"\r").expect("write() fail");
+        self.write(tty::clear_until_newline().as_bytes()).expect("write() fail");
         self.write(line.as_bytes()).expect("write() fail");
         self.write(b"\n").expect("write() fail");
         self.flush().expect("flush() fail");
