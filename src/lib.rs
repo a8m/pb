@@ -189,13 +189,14 @@ pub trait ProgressReceiver: private::SealedProgressReceiver {
 
 impl<T: Write> private::SealedProgressReceiver for T {
     fn update_progress(&mut self, line: &str) {
+        self.write(tty::clear_current_line().as_bytes()).expect("write() fail");
         self.write(b"\r").expect("write() fail");
         self.write(line.as_bytes()).expect("write() fail");
         self.flush().expect("flush() fail");
     }
 
     fn clear_progress(&mut self, line: &str) {
-        self.write(b"\r").expect("write() fail");
+        self.write(tty::clear_current_line().as_bytes()).expect("write() fail");
         self.write(line.as_bytes()).expect("write() fail");
         self.write(b"\n").expect("write() fail");
         self.flush().expect("flush() fail");

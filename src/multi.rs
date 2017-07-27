@@ -201,13 +201,13 @@ impl<T: Write> MultiBar<T> {
                     self.lines[level] = line;
                 },
                 WriteMsg::ProgressClear{level,line} => {
-                    self.lines[level] = line;
+                    self.lines[level] = tty::clear_current_line() + &line;
                     nbars -= 1;
                 },
                 WriteMsg::ProgressFinish{level,line} => {
                     // writing lines below progress not supported;
                     // replace progress instead
-                    self.lines[level] = line;
+                    self.lines[level] = tty::clear_current_line() + &line;
                     nbars -= 1;
                 },
             }

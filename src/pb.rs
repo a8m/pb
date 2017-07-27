@@ -431,12 +431,7 @@ impl<T: ProgressReceiver> ProgressBar<T> {
     /// Call finish and write string `s` that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
         self.finish_draw();
-        let width = self.width();
-        let mut out = format!("{}", s);
-        if s.len() < width {
-            out += repeat!(" ", width - s.len());
-        };
-        self.handle.take().map(|mut h| h.clear_progress(&out));
+        self.handle.take().map(|mut h| h.clear_progress(s));
     }
 
 
@@ -445,11 +440,6 @@ impl<T: ProgressReceiver> ProgressBar<T> {
     /// If the ProgressBar is part of MultiBar instance, you should use
     /// `finish_print` to print message.
     pub fn finish_println(&mut self, s: &str) {
-        // `finish_println` does not allow in MultiBar mode, because printing
-        // new line will break the multiBar output.
-        if self.is_multibar {
-            return self.finish_print(s);
-        }
         self.finish_draw();
         self.handle.take().map(|mut h| h.finish_with(s));
     }
