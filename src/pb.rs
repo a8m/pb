@@ -61,7 +61,7 @@ pub struct ProgressBar<T: Write> {
     pub show_time_left: bool,
     pub show_tick: bool,
     pub show_message: bool,
-    handle: T,
+    handle: Option<T>,
 }
 
 impl ProgressBar<Stdout> {
@@ -134,7 +134,7 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
-            handle: handle,
+            handle: Some(handle),
         };
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);
@@ -264,7 +264,7 @@ impl<T: Write> ProgressBar<T> {
     /// ```
     pub fn tick(&mut self) {
         self.tick_state = (self.tick_state + 1) % self.tick.len();
-        if self.current <= self.total {
+        if self.handle.is_some() && self.current <= self.total {
             self.draw()
         }
     }
@@ -391,7 +391,7 @@ impl<T: Write> ProgressBar<T> {
             out = out + repeat!(" ", gap);
         }
         // print
-        printfl!(self.handle, "\r{}", out);
+        self.handle.as_mut().map(|h| printfl!(h, "\r{}", out));
 
         self.last_refresh_time = SteadyTime::now();
     }
@@ -413,7 +413,7 @@ impl<T: Write> ProgressBar<T> {
             redraw = true;
         }
 
-        if redraw {
+        if self.handle.is_some() && redraw {
             self.draw();
         }
         self.is_finish = true;
@@ -423,7 +423,7 @@ impl<T: Write> ProgressBar<T> {
     /// the last time
     pub fn finish(&mut self) {
         self.finish_draw();
-        printfl!(self.handle, "");
+        self.handle.take().map(|mut h| printfl!(h, ""));
     }
 
 
@@ -435,8 +435,7 @@ impl<T: Write> ProgressBar<T> {
         if s.len() < width {
             out += repeat!(" ", width - s.len());
         };
-        printfl!(self.handle, "\r{}", out);
-        self.finish();
+        self.handle.take().map(|mut h| printfl!(h, "\r{}", out));
     }
 
 
@@ -451,7 +450,7 @@ impl<T: Write> ProgressBar<T> {
             return self.finish_print(s);
         }
         self.finish_draw();
-        printfl!(self.handle, "\n{}", s);
+        self.handle.take().map(|mut h| printfl!(h, "\n{}", s));
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
