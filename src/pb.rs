@@ -37,6 +37,24 @@ pub enum Units {
     Bytes,
 }
 
+pub struct ProgressReceiverBox(Box<ProgressReceiver>);
+impl ::private::SealedProgressReceiver for ProgressReceiverBox {
+    fn update_progress(&mut self, line: &str) {
+        self.0.update_progress(line);
+    }
+
+    fn clear_progress(&mut self, line: &str) {
+        self.0.clear_progress(line);
+    }
+
+    fn finish_with(&mut self, line: &str) {
+        self.0.finish_with(line);
+    }
+}
+
+impl ProgressReceiver for ProgressReceiverBox {
+}
+
 pub struct ProgressBar<T: ProgressReceiver> {
     start_time: SteadyTime,
     units: Units,
@@ -140,6 +158,40 @@ impl<T: ProgressReceiver> ProgressBar<T> {
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);
         pb
+    }
+
+    pub fn to_box(mut self) -> ProgressBar<ProgressReceiverBox>
+    where
+        T: 'static,
+    {
+        let handle = self.handle.take().map(|h| ProgressReceiverBox(Box::new(h)));
+        ProgressBar{
+            total: self.total,
+            current: self.current,
+            start_time: self.start_time,
+            units: self.units,
+            is_finish: self.is_finish,
+            is_multibar: self.is_multibar,
+            show_bar: self.show_bar,
+            show_speed: self.show_speed,
+            show_percent: self.show_percent,
+            show_counter: self.show_counter,
+            show_time_left: self.show_time_left,
+            show_tick: self.show_tick,
+            show_message: self.show_message,
+            bar_start: self.bar_start,
+            bar_current: self.bar_current,
+            bar_current_n: self.bar_current_n,
+            bar_remain: self.bar_remain,
+            bar_end: self.bar_end,
+            tick: self.tick,
+            tick_state: self.tick_state,
+            width: self.width,
+            message: self.message,
+            last_refresh_time: self.last_refresh_time,
+            max_refresh_rate: self.max_refresh_rate,
+            handle: handle,
+        }
     }
 
     /// Set units, default is simple numbers
