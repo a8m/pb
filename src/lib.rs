@@ -168,3 +168,48 @@ impl<T, I> Iterator for PbIter<T, I>
         self.iter.size_hint()
     }
 }
+
+mod private {
+    pub trait SealedProgressReceiver {
+        // rewrite progress. cursor stays on progress line.
+        // line must not contain any newlines (`\r` or `\n`)
+        fn update_progress(&mut self, line: &str);
+        // replace progress with message. last call.
+        // line must not contain any newlines (`\r` or `\n`)
+        fn clear_progress(&mut self, line: &str);
+        // write below progress. last call.
+        // line must not contain any newlines (`\r` or `\n`)
+        // empty line doesn't produce a separate line of output
+        fn finish_with(&mut self, line: &str);
+    }
+}
+
+pub trait ProgressReceiver: private::SealedProgressReceiver {
+}
+
+impl<T: Write> private::SealedProgressReceiver for T {
+    fn update_progress(&mut self, line: &str) {
+        self.write(b"\r").expect("write() fail");
+        self.write(line.as_bytes()).expect("write() fail");
+        self.flush().expect("flush() fail");
+    }
+
+    fn clear_progress(&mut self, line: &str) {
+        self.write(b"\r").expect("write() fail");
+        self.write(line.as_bytes()).expect("write() fail");
+        self.write(b"\n").expect("write() fail");
+        self.flush().expect("flush() fail");
+    }
+
+    fn finish_with(&mut self, line: &str) {
+        self.write(b"\n").expect("write() fail");
+        if !line.is_empty() {
+            self.write(line.as_bytes()).expect("write() fail");
+            self.write(b"\n").expect("write() fail");
+        }
+        self.flush().expect("flush() fail");
+    }
+}
+
+impl<T: Write> ProgressReceiver for T {
+}

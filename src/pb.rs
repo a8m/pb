@@ -4,6 +4,7 @@ use std::time::Duration;
 use time::{self, SteadyTime};
 use std::io::Stdout;
 use tty::{Width, terminal_size};
+use ProgressReceiver;
 
 macro_rules! kb_fmt {
     ($n: ident) => {{
@@ -36,7 +37,7 @@ pub enum Units {
     Bytes,
 }
 
-pub struct ProgressBar<T: Write> {
+pub struct ProgressBar<T: ProgressReceiver> {
     start_time: SteadyTime,
     units: Units,
     pub total: u64,
@@ -88,7 +89,7 @@ impl ProgressBar<Stdout> {
     }
 }
 
-impl<T: Write> ProgressBar<T> {
+impl<T: ProgressReceiver> ProgressBar<T> {
     /// Create a new ProgressBar with default configuration but
     /// pass an arbitrary writer.
     ///
@@ -391,7 +392,7 @@ impl<T: Write> ProgressBar<T> {
             out = out + repeat!(" ", gap);
         }
         // print
-        self.handle.as_mut().map(|h| printfl!(h, "\r{}", out));
+        self.handle.as_mut().map(|h| h.update_progress(&out));
 
         self.last_refresh_time = SteadyTime::now();
     }
@@ -423,7 +424,7 @@ impl<T: Write> ProgressBar<T> {
     /// the last time
     pub fn finish(&mut self) {
         self.finish_draw();
-        self.handle.take().map(|mut h| printfl!(h, ""));
+        self.handle.take().map(|mut h| h.finish_with(""));
     }
 
 
@@ -435,10 +436,7 @@ impl<T: Write> ProgressBar<T> {
         if s.len() < width {
             out += repeat!(" ", width - s.len());
         };
-        self.handle.take().map(|mut h| {
-            printfl!(h, "\r{}", out);
-            printfl!(h, "");
-        });
+        self.handle.take().map(|mut h| h.clear_progress(&out));
     }
 
 
@@ -453,7 +451,7 @@ impl<T: Write> ProgressBar<T> {
             return self.finish_print(s);
         }
         self.finish_draw();
-        self.handle.take().map(|mut h| printfl!(h, "\n{}", s));
+        self.handle.take().map(|mut h| h.finish_with(s));
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
@@ -469,7 +467,7 @@ impl<T: Write> ProgressBar<T> {
 }
 
 // Implement io::Writer
-impl<T: Write> Write for ProgressBar<T> {
+impl<T: ProgressReceiver+Write> Write for ProgressBar<T> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let n = buf.len();
         self.add(n as u64);

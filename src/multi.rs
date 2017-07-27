@@ -1,7 +1,6 @@
 use pb::ProgressBar;
-use std::str::from_utf8;
 use tty;
-use std::io::{Stdout, Result, Write};
+use std::io::{Stdout, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 
@@ -195,14 +194,23 @@ impl<T: Write> MultiBar<T> {
         let mut first = true;
         let mut nbars = self.nbars;
         while nbars > 0 {
-
             // receive message
             let msg = self.chan.1.recv().unwrap();
-            if msg.done {
-                nbars -= 1;
-                continue;
+            match msg {
+                WriteMsg::ProgressUpdate{level,line} => {
+                    self.lines[level] = line;
+                },
+                WriteMsg::ProgressClear{level,line} => {
+                    self.lines[level] = line;
+                    nbars -= 1;
+                },
+                WriteMsg::ProgressFinish{level,line} => {
+                    // writing lines below progress not supported;
+                    // replace progress instead
+                    self.lines[level] = line;
+                    nbars -= 1;
+                },
             }
-            self.lines[msg.level] = msg.string;
 
             // and draw
             let mut out = String::new();
@@ -226,29 +234,48 @@ pub struct Pipe {
     chan: Sender<WriteMsg>,
 }
 
-impl Write for Pipe {
-    fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        let s = from_utf8(buf).unwrap().to_owned();
-        self.chan
-            .send(WriteMsg {
-                // finish method emit empty string
-                done: s == "",
-                level: self.level,
-                string: s,
-            })
-            .unwrap();
-        Ok(1)
+impl ::private::SealedProgressReceiver for Pipe {
+    fn update_progress(&mut self, line: &str) {
+        self.chan.send(WriteMsg::ProgressUpdate{
+            level: self.level,
+            line: line.to_string(),
+        })
+        .unwrap();
     }
 
-    fn flush(&mut self) -> Result<()> {
-        Ok(())
+    fn clear_progress(&mut self, line: &str) {
+        self.chan.send(WriteMsg::ProgressClear{
+            level: self.level,
+            line: line.to_string(),
+        })
+        .unwrap();
     }
+
+    fn finish_with(&mut self, line: &str) {
+        self.chan.send(WriteMsg::ProgressFinish{
+            level: self.level,
+            line: line.to_string(),
+        })
+        .unwrap();
+    }
+}
+
+impl ::ProgressReceiver for Pipe {
 }
 
 // WriteMsg is the message format used to communicate
 // between MultiBar and its bars
-struct WriteMsg {
-    done: bool,
-    level: usize,
-    string: String,
+enum WriteMsg {
+    ProgressUpdate {
+        level: usize,
+        line: String,
+    },
+    ProgressClear {
+        level: usize,
+        line: String,
+    },
+    ProgressFinish {
+        level: usize,
+        line: String,
+    },
 }
