@@ -212,7 +212,9 @@ impl<T: Write> MultiBar<T> {
                 first = false;
             }
             for l in self.lines.iter() {
-                out.push_str(&format!("\r{}\n", l));
+                out += "\r";
+                out += &l;
+                out += "\n";
             }
             printfl!(self.handle, "{}", out);
         }
