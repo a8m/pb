@@ -111,6 +111,14 @@ macro_rules! printfl {
     }}
 }
 
+macro_rules! repeat {
+    ($s: expr, $n: expr) => {{
+        &repeat($s).take($n).collect::<String>()
+    }}
+}
+
+const PBR_LOG_BOUNDARY: &'static str = "--PBR-LOG-BOUNDARY";
+
 #[macro_use]
 extern crate time;
 mod tty;

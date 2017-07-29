@@ -1,9 +1,12 @@
 use pb::ProgressBar;
 use std::str::from_utf8;
-use tty::move_cursor_up;
+use tty::{Width, terminal_size, move_cursor_up};
 use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
+use std::iter::repeat;
+
+use ::PBR_LOG_BOUNDARY;
 
 pub struct MultiBar<T: Write> {
     nlines: usize,
@@ -15,6 +18,8 @@ pub struct MultiBar<T: Write> {
     chan: (Sender<WriteMsg>, Receiver<WriteMsg>),
 
     handle: T,
+
+    width: Option<usize>,
 }
 
 impl MultiBar<Stdout> {
@@ -82,6 +87,7 @@ impl<T: Write> MultiBar<T> {
             lines: Vec::new(),
             chan: mpsc::channel(),
             handle: handle,
+            width: None,
         }
     }
 
@@ -112,7 +118,16 @@ impl<T: Write> MultiBar<T> {
     /// mb.listen();
     /// ```
     pub fn println(&mut self, s: &str) {
-        self.lines.push(s.to_owned());
+        let mut out = format!("{}", s);
+
+        let width = self.width();
+
+        if out.len() < width {
+            let gap = width - out.len();
+            out = out + repeat!(" ", gap);
+        }
+
+        self.lines.push(out);
         self.nlines += 1;
     }
 
@@ -154,6 +169,7 @@ impl<T: Write> MultiBar<T> {
                                         chan: self.chan.0.clone(),
                                     },
                                     total);
+        p.set_width(self.width);
         p.is_multibar = true;
         p.add(0);
         p
@@ -207,10 +223,40 @@ impl<T: Write> MultiBar<T> {
             } else {
                 first = false;
             }
+
+            // draw the log line if we have one & scroll the log message upward to prevent it from
+            // being overwritten by the progress bar(s) and message strings
+            if let Some(log_line) = msg.log_line {
+                out.push_str(&format!("\r{}\n", log_line));
+            }
+
             for l in self.lines.iter() {
                 out.push_str(&format!("\r{}\n", l));
             }
             printfl!(self.handle, "{}", out);
+        }
+    }
+
+    /// Set width, or `None` for default.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let mut mb = MultiBar::new(...);
+    /// mb.set_width(Some(80));
+    /// ```
+    pub fn set_width(&mut self, w: Option<usize>) {
+        self.width = w;
+    }
+
+    /// Get terminal width, from configuration, terminal size, or default(80)
+    fn width(&mut self) -> usize {
+        if let Some(w) = self.width {
+            w
+        } else if let Some((Width(w), _)) = terminal_size() {
+            w as usize
+        } else {
+            80
         }
     }
 }
@@ -223,12 +269,30 @@ pub struct Pipe {
 impl Write for Pipe {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
         let s = from_utf8(buf).unwrap().to_owned();
+
+        // check to see if ProgressBar set a logging boundary & split out the log if we find it
+        let (log_line, bar) = match s.contains(PBR_LOG_BOUNDARY) {
+            true => {
+                let v: Vec<&str> = s.split(PBR_LOG_BOUNDARY).collect();
+                let log_line = Some(v[0].to_owned());
+
+                let bar = v[1].to_owned();
+
+                (log_line, bar)
+            },
+            false => {
+                (None, s)
+            }
+
+        };
+
         self.chan
             .send(WriteMsg {
                 // finish method emit empty string
-                done: s == "",
+                done: bar == "",
                 level: self.level,
-                string: s,
+                string: bar,
+                log_line: log_line,
             })
             .unwrap();
         Ok(1)
@@ -245,4 +309,5 @@ struct WriteMsg {
     done: bool,
     level: usize,
     string: String,
+    log_line: Option<String>,
 }
