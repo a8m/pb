@@ -479,11 +479,13 @@ impl<T: Write> Write for ProgressBar<T> {
 }
 
 fn time_to_std(d: time::Duration) -> Duration {
-    assert!(d > time::Duration::zero());
-
-    let secs = d.num_seconds();
-    let nsecs = (d - time::Duration::seconds(secs)).num_nanoseconds().unwrap();
-    Duration::new(secs as u64, nsecs as u32)
+    if d > time::Duration::zero() {
+        let secs = d.num_seconds();
+        let nsecs = (d - time::Duration::seconds(secs)).num_nanoseconds().unwrap();
+        Duration::new(secs as u64, nsecs as u32)
+    } else {
+        Duration::new(0, 1)
+    }
 }
 
 fn fract_dur(d: Duration) -> f64 {
