@@ -435,7 +435,10 @@ impl<T: Write> ProgressBar<T> {
         if s.len() < width {
             out += repeat!(" ", width - s.len());
         };
-        self.handle.take().map(|mut h| printfl!(h, "\r{}", out));
+        self.handle.take().map(|mut h| {
+            printfl!(h, "\r{}", out);
+            printfl!(h, "");
+        });
     }
 
 

@@ -1,6 +1,6 @@
 extern crate pbr;
 
-use pbr::{ProgressBar, PbIter};
+use pbr::{ProgressBar, PbIter, MultiBar};
 use std::time::Duration;
 use std::thread;
 
@@ -106,4 +106,21 @@ fn npm_bar() {
         }
     }
     pb.finish_println("done!");
+}
+
+#[test]
+fn multi_finish_print() {
+    let count = 10;
+    let mut mb = MultiBar::new();
+    let mut pb = mb.create_bar(10);
+    pb.tick();
+    let t = thread::spawn(move || {
+        mb.listen();
+    });
+    for _ in 0..count {
+        thread::sleep(Duration::from_millis(30));
+        pb.tick();
+    }
+    pb.finish_print("done");
+    t.join().unwrap();
 }
