@@ -1,4 +1,3 @@
-use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
@@ -505,18 +504,6 @@ impl<T: ProgressReceiver> ProgressBar<T> {
         } else {
             80
         }
-    }
-}
-
-// Implement io::Writer
-impl<T: ProgressReceiver+Write> Write for ProgressBar<T> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        let n = buf.len();
-        self.add(n as u64);
-        Ok(n)
-    }
-    fn flush(&mut self) -> io::Result<()> {
-        Ok(())
     }
 }
 
