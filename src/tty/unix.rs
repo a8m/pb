@@ -1,40 +1,41 @@
+extern crate termion;
 extern crate libc;
 use super::{Width, Height};
 
 /// Returns the size of the terminal, if available.
 ///
 /// If STDOUT is not a tty, returns `None`
+#[cfg(target_os = "redox")]
 pub fn terminal_size() -> Option<(Width, Height)> {
-    use self::libc::{ioctl, isatty, STDOUT_FILENO, TIOCGWINSZ, winsize};
-    let is_tty: bool = unsafe { isatty(STDOUT_FILENO) == 1 };
-
-    if !is_tty {
-        return None;
+    match termion::terminal_size() {
+        Ok((cols, rows)) => Some((Width(cols), Height(rows))),
+        Err(..) => None
     }
+}
 
-    let (rows, cols) = unsafe {
-        let mut winsize = winsize {
-            ws_row: 0,
-            ws_col: 0,
-            ws_xpixel: 0,
-            ws_ypixel: 0,
-        };
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut winsize);
-        let rows = if winsize.ws_row > 0 {
-            winsize.ws_row
-        } else {
-            0
-        };
-        let cols = if winsize.ws_col > 0 {
-            winsize.ws_col
-        } else {
-            0
-        };
-        (rows as u16, cols as u16)
-    };
+#[cfg(not(target_os = "redox"))]
+fn terminal_size_fd(fd: libc::c_int) -> Option<(Width, Height)> {
+    use std::mem;
 
-    if rows > 0 && cols > 0 {
-        Some((Width(cols), Height(rows)))
+    unsafe {
+        let mut size: libc::winsize = mem::zeroed();
+        if libc::ioctl(fd, libc::TIOCGWINSZ, &mut size as *mut _) == 0 {
+            Some((Width(size.ws_col), Height(size.ws_row)))
+        } else {
+            None
+        }
+    }
+}
+
+/// Returns the size of the terminal, if available.
+///
+/// If neither STDOUT nor STDERR is a tty, returns `None`
+#[cfg(not(target_os = "redox"))]
+pub fn terminal_size() -> Option<(Width, Height)> {
+    if unsafe { libc::isatty(libc::STDOUT_FILENO) == 1 } {
+        terminal_size_fd(libc::STDOUT_FILENO)
+    } else if unsafe { libc::isatty(libc::STDERR_FILENO) == 1 }{
+        terminal_size_fd(libc::STDERR_FILENO)
     } else {
         None
     }
@@ -42,9 +43,11 @@ pub fn terminal_size() -> Option<(Width, Height)> {
 
 /// Return string that move the cursor `n` lines up.
 pub fn move_cursor_up(n: usize) -> String {
-    format!("\x1B[{}A", n)
+    assert!(n < 0x10000);
+    format!("{}", termion::cursor::Up(n as u16))
 }
 
+#[cfg(not(target_os = "redox"))]
 #[test]
 /// Compare with the output of `stty size`
 fn compare_with_stty() {

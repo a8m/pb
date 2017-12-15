@@ -1,6 +1,6 @@
 use pb::ProgressBar;
 use std::str::from_utf8;
-use tty::move_cursor_up;
+use tty;
 use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
@@ -22,7 +22,7 @@ impl MultiBar<Stdout> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use std::thread;
     /// use pbr::MultiBar;
     ///
@@ -91,7 +91,7 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
@@ -127,7 +127,7 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
+    /// ```ignore
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
@@ -171,8 +171,11 @@ impl<T: Write> MultiBar<T> {
     ///
     /// # Examples
     ///
-    /// ```no_run
-    /// use pbr::MultiBar;
+    /// ```
+    /// # extern crate pbr;
+    /// # use std::thread;
+    /// # fn main() {
+    /// use ::pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
     ///
@@ -186,6 +189,7 @@ impl<T: Write> MultiBar<T> {
     /// });
     ///
     /// // ...
+    /// # }
     /// ```
     pub fn listen(&mut self) {
         let mut first = true;
@@ -203,12 +207,14 @@ impl<T: Write> MultiBar<T> {
             // and draw
             let mut out = String::new();
             if !first {
-                out += &move_cursor_up(self.nlines);
+                out += &tty::move_cursor_up(self.nlines);
             } else {
                 first = false;
             }
             for l in self.lines.iter() {
-                out.push_str(&format!("\r{}\n", l));
+                out += "\r";
+                out += &l;
+                out += "\n";
             }
             printfl!(self.handle, "{}", out);
         }
