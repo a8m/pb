@@ -1,9 +1,9 @@
-use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
 use std::io::Stdout;
 use tty::{Width, terminal_size};
+use ProgressReceiver;
 
 macro_rules! kb_fmt {
     ($n: ident) => {{
@@ -36,7 +36,25 @@ pub enum Units {
     Bytes,
 }
 
-pub struct ProgressBar<T: Write> {
+pub struct ProgressReceiverBox(Box<ProgressReceiver>);
+impl ::private::SealedProgressReceiver for ProgressReceiverBox {
+    fn update_progress(&mut self, line: &str) {
+        self.0.update_progress(line);
+    }
+
+    fn clear_progress(&mut self, line: &str) {
+        self.0.clear_progress(line);
+    }
+
+    fn finish_with(&mut self, line: &str) {
+        self.0.finish_with(line);
+    }
+}
+
+impl ProgressReceiver for ProgressReceiverBox {
+}
+
+pub struct ProgressBar<T: ProgressReceiver> {
     start_time: SteadyTime,
     units: Units,
     pub total: u64,
@@ -61,7 +79,7 @@ pub struct ProgressBar<T: Write> {
     pub show_time_left: bool,
     pub show_tick: bool,
     pub show_message: bool,
-    handle: T,
+    handle: Option<T>,
 }
 
 impl ProgressBar<Stdout> {
@@ -88,7 +106,7 @@ impl ProgressBar<Stdout> {
     }
 }
 
-impl<T: Write> ProgressBar<T> {
+impl<T: ProgressReceiver> ProgressBar<T> {
     /// Create a new ProgressBar with default configuration but
     /// pass an arbitrary writer.
     ///
@@ -134,11 +152,45 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
-            handle: handle,
+            handle: Some(handle),
         };
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);
         pb
+    }
+
+    pub fn to_box(mut self) -> ProgressBar<ProgressReceiverBox>
+    where
+        T: 'static,
+    {
+        let handle = self.handle.take().map(|h| ProgressReceiverBox(Box::new(h)));
+        ProgressBar{
+            total: self.total,
+            current: self.current,
+            start_time: self.start_time,
+            units: self.units,
+            is_finish: self.is_finish,
+            is_multibar: self.is_multibar,
+            show_bar: self.show_bar,
+            show_speed: self.show_speed,
+            show_percent: self.show_percent,
+            show_counter: self.show_counter,
+            show_time_left: self.show_time_left,
+            show_tick: self.show_tick,
+            show_message: self.show_message,
+            bar_start: self.bar_start,
+            bar_current: self.bar_current,
+            bar_current_n: self.bar_current_n,
+            bar_remain: self.bar_remain,
+            bar_end: self.bar_end,
+            tick: self.tick,
+            tick_state: self.tick_state,
+            width: self.width,
+            message: self.message,
+            last_refresh_time: self.last_refresh_time,
+            max_refresh_rate: self.max_refresh_rate,
+            handle: handle,
+        }
     }
 
     /// Set units, default is simple numbers
@@ -264,7 +316,7 @@ impl<T: Write> ProgressBar<T> {
     /// ```
     pub fn tick(&mut self) {
         self.tick_state = (self.tick_state + 1) % self.tick.len();
-        if self.current <= self.total {
+        if self.handle.is_some() && self.current <= self.total {
             self.draw()
         }
     }
@@ -391,7 +443,7 @@ impl<T: Write> ProgressBar<T> {
             out = out + repeat!(" ", gap);
         }
         // print
-        printfl!(self.handle, "\r{}", out);
+        self.handle.as_mut().map(|h| h.update_progress(&out));
 
         self.last_refresh_time = SteadyTime::now();
     }
@@ -413,7 +465,7 @@ impl<T: Write> ProgressBar<T> {
             redraw = true;
         }
 
-        if redraw {
+        if self.handle.is_some() && redraw {
             self.draw();
         }
         self.is_finish = true;
@@ -423,20 +475,14 @@ impl<T: Write> ProgressBar<T> {
     /// the last time
     pub fn finish(&mut self) {
         self.finish_draw();
-        printfl!(self.handle, "");
+        self.handle.take().map(|mut h| h.finish_with(""));
     }
 
 
     /// Call finish and write string `s` that will replace the progress bar.
     pub fn finish_print(&mut self, s: &str) {
         self.finish_draw();
-        let width = self.width();
-        let mut out = format!("{}", s);
-        if s.len() < width {
-            out += repeat!(" ", width - s.len());
-        };
-        printfl!(self.handle, "\r{}", out);
-        self.finish();
+        self.handle.take().map(|mut h| h.clear_progress(s));
     }
 
 
@@ -445,13 +491,8 @@ impl<T: Write> ProgressBar<T> {
     /// If the ProgressBar is part of MultiBar instance, you should use
     /// `finish_print` to print message.
     pub fn finish_println(&mut self, s: &str) {
-        // `finish_println` does not allow in MultiBar mode, because printing
-        // new line will break the multiBar output.
-        if self.is_multibar {
-            return self.finish_print(s);
-        }
         self.finish_draw();
-        printfl!(self.handle, "\n{}", s);
+        self.handle.take().map(|mut h| h.finish_with(s));
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
@@ -463,18 +504,6 @@ impl<T: Write> ProgressBar<T> {
         } else {
             80
         }
-    }
-}
-
-// Implement io::Writer
-impl<T: Write> Write for ProgressBar<T> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        let n = buf.len();
-        self.add(n as u64);
-        Ok(n)
-    }
-    fn flush(&mut self) -> io::Result<()> {
-        Ok(())
     }
 }
 

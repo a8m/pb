@@ -4,15 +4,18 @@ use rand::Rng;
 use pbr::MultiBar;
 use std::thread;
 use std::time::Duration;
+use std::io::Write;
 
 fn main() {
     let mut mb = MultiBar::new();
+    mb.println("---");
     mb.println("Your Application Header:");
     mb.println("");
 
     for i in 1..6 {
         let count = 100 * i;
         let mut pb = mb.create_bar(count);
+        let mut logger = mb.create_log_target();
         pb.tick_format("▏▎▍▌▋▊▉██▉▊▋▌▍▎▏");
         pb.show_message = true;
         thread::spawn(move || {
@@ -34,6 +37,7 @@ fn main() {
                 thread::sleep(Duration::from_millis(100));
                 pb.tick();
             }
+            writeln!(logger, "debug: Pull {} complete", i).unwrap();
             pb.finish_print(&format!("{}: Pull complete", rand_string()));
         });
     }
@@ -46,12 +50,14 @@ fn main() {
     for i in 1..4 {
         let count = 100 * i;
         let mut pb = mb.create_bar(count);
+        let mut logger = mb.create_log_target();
         thread::spawn(move || {
             for _ in 0..count {
                 pb.inc();
                 let n = rand::thread_rng().gen_range(0, 100);
                 thread::sleep(Duration::from_millis(n));
             }
+            writeln!(logger, "debug: sleep {} finished", i).unwrap();
             pb.finish();
         });
     }
