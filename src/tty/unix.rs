@@ -1,6 +1,14 @@
 extern crate libc;
 use super::{Width, Height};
 
+// We need to convert from c_int to c_ulong at least on DragonFly and FreeBSD.
+#[cfg(any(target_os = "dragonfly", target_os = "freebsd"))]
+fn ioctl_conv<T: Into<libc::c_ulong>>(v: T) -> libc::c_ulong { v.into() }
+
+// No-op on any other operating system.
+#[cfg(not(any(target_os = "dragonfly", target_os = "freebsd")))]
+fn ioctl_conv<T: Copy>(v: T) -> T { v }
+
 /// Returns the size of the terminal, if available.
 ///
 /// If STDOUT is not a tty, returns `None`
@@ -19,7 +27,7 @@ pub fn terminal_size() -> Option<(Width, Height)> {
             ws_xpixel: 0,
             ws_ypixel: 0,
         };
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut winsize);
+        ioctl(STDOUT_FILENO, ioctl_conv(TIOCGWINSZ), &mut winsize);
         let rows = if winsize.ws_row > 0 {
             winsize.ws_row
         } else {
