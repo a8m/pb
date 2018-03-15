@@ -462,7 +462,7 @@ impl<T: Write> ProgressBar<T> {
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
-    fn width(&mut self) -> usize {
+    pub fn width(&mut self) -> usize {
         if let Some(w) = self.width {
             w
         } else if let Some((Width(w), _)) = terminal_size() {
