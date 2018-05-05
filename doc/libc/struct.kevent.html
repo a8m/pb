@@ -47,25 +47,38 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1747' class='srclink' href='../src/libc/macros.rs.html#42' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct kevent {
+               </span><a class='srclink' href='../src/libc/macros.rs.html#42' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'><div class="docblock attributes">#[repr(C)]
+</div>pub struct kevent {
     pub ident: <a class='type' href='../libc/type.uintptr_t.html' title='libc::uintptr_t'>uintptr_t</a>,
     pub filter: <a class='type' href='../libc/type.int16_t.html' title='libc::int16_t'>int16_t</a>,
     pub flags: <a class='type' href='../libc/type.uint16_t.html' title='libc::uint16_t'>uint16_t</a>,
     pub fflags: <a class='type' href='../libc/type.uint32_t.html' title='libc::uint32_t'>uint32_t</a>,
     pub data: <a class='type' href='../libc/type.intptr_t.html' title='libc::intptr_t'>intptr_t</a>,
     pub udata: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut </a><a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a>,
-}</pre><h2 class='fields'>Fields</h2><span id='structfield.ident' class='structfield'><code>ident: <a class='type' href='../libc/type.uintptr_t.html' title='libc::uintptr_t'>uintptr_t</a></code>
-                           </span><span class='stab '></span><span id='structfield.filter' class='structfield'><code>filter: <a class='type' href='../libc/type.int16_t.html' title='libc::int16_t'>int16_t</a></code>
-                           </span><span class='stab '></span><span id='structfield.flags' class='structfield'><code>flags: <a class='type' href='../libc/type.uint16_t.html' title='libc::uint16_t'>uint16_t</a></code>
-                           </span><span class='stab '></span><span id='structfield.fflags' class='structfield'><code>fflags: <a class='type' href='../libc/type.uint32_t.html' title='libc::uint32_t'>uint32_t</a></code>
-                           </span><span class='stab '></span><span id='structfield.data' class='structfield'><code>data: <a class='type' href='../libc/type.intptr_t.html' title='libc::intptr_t'>intptr_t</a></code>
-                           </span><span class='stab '></span><span id='structfield.udata' class='structfield'><code>udata: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut </a><a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></code>
-                           </span><span class='stab '></span><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1754' class='srclink' href='../src/libc/macros.rs.html#44' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1755' class='srclink' href='../src/libc/macros.rs.html#45-47' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></h4>
+}</pre><h2 class='fields'>Fields</h2><span id='structfield.ident' class='structfield'>
+                           <span id='ident.v' class='invisible'>
+                           <code>ident: <a class='type' href='../libc/type.uintptr_t.html' title='libc::uintptr_t'>uintptr_t</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.filter' class='structfield'>
+                           <span id='filter.v' class='invisible'>
+                           <code>filter: <a class='type' href='../libc/type.int16_t.html' title='libc::int16_t'>int16_t</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.flags' class='structfield'>
+                           <span id='flags.v' class='invisible'>
+                           <code>flags: <a class='type' href='../libc/type.uint16_t.html' title='libc::uint16_t'>uint16_t</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.fflags' class='structfield'>
+                           <span id='fflags.v' class='invisible'>
+                           <code>fflags: <a class='type' href='../libc/type.uint32_t.html' title='libc::uint32_t'>uint32_t</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.data' class='structfield'>
+                           <span id='data.v' class='invisible'>
+                           <code>data: <a class='type' href='../libc/type.intptr_t.html' title='libc::intptr_t'>intptr_t</a></code>
+                           </span></span><span class='stab '></span><span id='structfield.udata' class='structfield'>
+                           <span id='udata.v' class='invisible'>
+                           <code>udata: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut </a><a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></code>
+                           </span></span><span class='stab '></span><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libc/macros.rs.html#44' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libc/macros.rs.html#45-47' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../libc/struct.kevent.html' title='libc::kevent'>kevent</a></code></span></h4>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
-</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+</div><h4 id='method.clone_from' class='method'><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -123,11 +136,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "libc";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
     <script defer src="../search-index.js"></script>
 </body>
 </html>

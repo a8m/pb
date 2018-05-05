@@ -47,11 +47,9 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-300' class='srclink' href='../src/pbr/src/multi.rs.html#8-18' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct MultiBar&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; {
-    // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/stdio/struct.Stdout.html' title='std::io::stdio::Stdout'>Stdout</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-307' class='srclink' href='../src/pbr/src/multi.rs.html#20-62' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/stdio/struct.Stdout.html' title='std::io::stdio::Stdout'>Stdout</a>&gt;</code></h4>
+               </span><a class='srclink' href='../src/pbr/multi.rs.html#8-18' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct MultiBar&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; { /* fields omitted */ }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/stdio/struct.Stdout.html' title='std::io::stdio::Stdout'>Stdout</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/pbr/multi.rs.html#20-62' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/stdio/struct.Stdout.html' title='std::io::stdio::Stdout'>Stdout</a>&gt;</code></span></h4>
 <div class='docblock'><p>Create a new MultiBar with stdout as a writer.</p>
 
 <h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
@@ -88,8 +86,8 @@
 <span class='comment'>// this is a blocking operation, until all bars will finish.</span>
 <span class='comment'>// to ignore blocking, you can run it in a different thread.</span>
 <span class='ident'>mb</span>.<span class='ident'>listen</span>();</pre>
-</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-309' class='srclink' href='../src/pbr/src/multi.rs.html#64-216' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.on' class='method'><code>fn <a href='#method.on' class='fnname'>on</a>(handle: T) -&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></h4>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/pbr/multi.rs.html#64-216' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.on' class='method'><span id='on.v' class='invisible'><code>fn <a href='#method.on' class='fnname'>on</a>(handle: T) -&gt; <a class='struct' href='../pbr/struct.MultiBar.html' title='pbr::MultiBar'>MultiBar</a>&lt;T&gt;</code></span></h4>
 <div class='docblock'><p>Create a new MultiBar with an arbitrary writer.</p>
 
 <h1 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h1>
@@ -101,7 +99,7 @@
 <span class='comment'>// ...</span>
 <span class='comment'>// see full example in `MultiBar::new`</span>
 <span class='comment'>// ...</span></pre>
-</div><h4 id='method.println' class='method'><code>fn <a href='#method.println' class='fnname'>println</a>(&amp;mut self, s: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.println' class='method'><span id='println.v' class='invisible'><code>fn <a href='#method.println' class='fnname'>println</a>(&amp;mut self, s: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></span></h4>
 <div class='docblock'><p>println used to add text lines between the bars.
 for example: you could add a header to your application,
 or text separators between bars.</p>
@@ -126,7 +124,7 @@ or text separators between bars.</p>
 <span class='comment'>// ...</span>
 <span class='comment'>// ...</span>
 <span class='ident'>mb</span>.<span class='ident'>listen</span>();</pre>
-</div><h4 id='method.create_bar' class='method'><code>fn <a href='#method.create_bar' class='fnname'>create_bar</a>(&amp;mut self, total: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;<a class='struct' href='../pbr/struct.Pipe.html' title='pbr::Pipe'>Pipe</a>&gt;</code></h4>
+</div><h4 id='method.create_bar' class='method'><span id='create_bar.v' class='invisible'><code>fn <a href='#method.create_bar' class='fnname'>create_bar</a>(&amp;mut self, total: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='struct' href='../pbr/struct.ProgressBar.html' title='pbr::ProgressBar'>ProgressBar</a>&lt;<a class='struct' href='../pbr/struct.Pipe.html' title='pbr::Pipe'>Pipe</a>&gt;</code></span></h4>
 <div class='docblock'><p>create_bar creates new <code>ProgressBar</code> with <code>Pipe</code> as the writer.</p>
 
 <p>The ordering of the method calls is important. it means that in
@@ -155,7 +153,7 @@ to notify the <code>MultiBar</code> about it.</p>
 
 <span class='comment'>// ...</span>
 <span class='ident'>mb</span>.<span class='ident'>listen</span>();</pre>
-</div><h4 id='method.listen' class='method'><code>fn <a href='#method.listen' class='fnname'>listen</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.listen' class='method'><span id='listen.v' class='invisible'><code>fn <a href='#method.listen' class='fnname'>listen</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>listen start listen to all bars changes.</p>
 
 <p><code>ProgressBar</code> that finish its work, must call <code>finish()</code> (or <code>finish_print</code>)
@@ -237,11 +235,9 @@ To ignore blocking, you can run it in a different thread.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "pbr";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
     <script defer src="../search-index.js"></script>
 </body>
 </html>

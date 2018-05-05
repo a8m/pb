@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/Users/arielm/.cargo/registry/src/github.com-1ecc6299db9ec823/time-0.1.35/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/Users/arielmashraki/.cargo/registry/src/github.com-1ecc6299db9ec823/time-0.1.36/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -1317,6 +1317,8 @@
 <span id="1273">1273</span>
 <span id="1274">1274</span>
 <span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -1356,6 +1358,7 @@
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>trivial_numeric_casts</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>deny</span>(<span class='ident'>warnings</span>))]</span>
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;redox&quot;</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>syscall</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>unix</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>windows</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>kernel32</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>windows</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>winapi</span>;
@@ -2467,6 +2470,7 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>test_timespec_hash</span>() {
         <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>Hash</span>, <span class='ident'>Hasher</span>};
 
@@ -2650,11 +2654,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "time";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>
