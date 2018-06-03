@@ -70,7 +70,7 @@ fn main() {
 }
 ```
 
-3. Broadcast writing(simple file copying)
+3. Broadcast writing (simple file copying)
 
 ```rust
 #![feature(io)]
