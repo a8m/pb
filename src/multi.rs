@@ -25,10 +25,12 @@ impl MultiBar<Stdout> {
     /// ```no_run
     /// use std::thread;
     /// use pbr::MultiBar;
+    /// use std::time::Duration;
     ///
     /// let mut mb = MultiBar::new();
     /// mb.println("Application header:");
     ///
+    /// # let count = 250;
     /// let mut p1 = mb.create_bar(count);
     /// let _ = thread::spawn(move || {
     ///     for _ in 0..count {
@@ -97,12 +99,13 @@ impl<T: Write> MultiBar<T> {
     /// let mut mb = MultiBar::new();
     /// mb.println("Application header:");
     ///
-    /// let mut p1 = MultiBar::create_bar(count);
+    /// # let count = 250;
+    /// let mut p1 = mb.create_bar(count);
     /// // ...
     ///
     /// mb.println("Text line between bar1 and bar2");
     ///
-    /// let mut p2 = MultiBar::create_bar(count);
+    /// let mut p2 = mb.create_bar(count);
     /// // ...
     ///
     /// mb.println("Text line between bar2 and bar3");
@@ -131,17 +134,18 @@ impl<T: Write> MultiBar<T> {
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
+    /// # let (count1, count2, count3) = (250, 62500, 15625000);
     ///
     /// // progress bar in level 1
-    /// let mut p1 = MultiBar::create_bar(count1);
+    /// let mut p1 = mb.create_bar(count1);
     /// // ...
     ///
     /// // progress bar in level 2
-    /// let mut p2 = MultiBar::create_bar(count2);
+    /// let mut p2 = mb.create_bar(count2);
     /// // ...
     ///
     /// // progress bar in level 3
-    /// let mut p3 = MultiBar::create_bar(count3);
+    /// let mut p3 = mb.create_bar(count3);
     ///
     /// // ...
     /// mb.listen();
@@ -172,6 +176,7 @@ impl<T: Write> MultiBar<T> {
     /// # Examples
     ///
     /// ```no_run
+    /// use std::thread;
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
