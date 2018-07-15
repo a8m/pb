@@ -20,4 +20,4 @@ kernel32-sys = "0.2"
 termion = "1.4"
 
 [dev-dependencies]
-rand = "0.3.14"
+rand = "0.5"
