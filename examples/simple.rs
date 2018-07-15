@@ -1,6 +1,6 @@
 extern crate rand;
 extern crate pbr;
-use rand::Rng;
+use rand::prelude::*;
 use pbr::ProgressBar;
 use std::thread;
 use std::time::Duration;
@@ -11,7 +11,7 @@ fn main() {
     pb.format("╢▌▌░╟");
     for _ in 0..count {
         pb.inc();
-        let n = rand::thread_rng().gen_range(0, 100);
+        let n = thread_rng().gen_range(0, 100);
         thread::sleep(Duration::from_millis(n));
     }
     pb.finish_println("done!");
