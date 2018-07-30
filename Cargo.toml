@@ -6,6 +6,7 @@ description = "Console progress bar for Rust"
 documentation = "http://a8m.github.io/pb/doc/pbr/index.html"
 repository = "https://github.com/a8m/pb"
 keywords = ["cli", "progress", "terminal", "pb"]
+exclude = ["gif/**"]
 license = "MIT"
 
 [dependencies]
@@ -13,7 +14,7 @@ libc = "0.2"
 time = "0.1.35"
 
 [target.'cfg(target_os = "windows")'.dependencies]
-winapi = "0.2"
+winapi = "0.3"
 kernel32-sys = "0.2"
 
 [target.'cfg(target_os = "redox")'.dependencies]
