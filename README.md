@@ -1,5 +1,8 @@
 # Terminal progress bar for Rust
 
+[![Latest version](https://img.shields.io/crates/v/pbr.svg)](https://crates.io/crates/pbr)
+[![License](https://img.shields.io/crates/l/pbr.svg)](https://github.com/a8m/pb/blob/master/LICENSE.md)
+
 Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb), support and 
 tested on MacOS, Linux and Windows
 
