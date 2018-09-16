@@ -8,7 +8,7 @@ tested on MacOS, Linux and Windows
 
 ![Screenshot](https://github.com/a8m/pb/blob/master/gif/rec_v3.gif)
 
-[Documentation](http://a8m.github.io/pb/doc/pbr/index.html)
+[Documentation](https://a8m.github.io/pb/doc/pbr/index.html)
 
 ### Examples
 1. simple example
