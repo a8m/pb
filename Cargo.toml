@@ -12,9 +12,9 @@ license = "MIT"
 libc = "0.2"
 time = "0.1.35"
 
-[target.'cfg(target_os = "windows")'.dependencies]
-winapi = "0.2"
-kernel32-sys = "0.2"
+[target.'cfg(target_os = "windows")'.dependencies.winapi]
+version = "0.3"
+features = ["wincon", "processenv", "winbase"]
 
 [target.'cfg(target_os = "redox")'.dependencies]
 termion = "1.4"
