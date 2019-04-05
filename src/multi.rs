@@ -4,17 +4,28 @@ use tty::move_cursor_up;
 use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
+use std::collections::HashMap;
+
+pub enum FinishMethod {
+    Graduate,
+    Remove,
+    Keep,
+}
 
 pub struct MultiBar<T: Write> {
     nlines: usize,
 
     lines: Vec<String>,
 
-    nbars: usize,
+    bar_id: u64,
+
+    bars: HashMap<u64, usize>,
 
     chan: (Sender<WriteMsg>, Receiver<WriteMsg>),
 
     handle: T,
+
+    finish: FinishMethod,
 }
 
 impl MultiBar<Stdout> {
@@ -80,11 +91,34 @@ impl<T: Write> MultiBar<T> {
     pub fn on(handle: T) -> MultiBar<T> {
         MultiBar {
             nlines: 0,
-            nbars: 0,
+            bar_id: 0,
             lines: Vec::new(),
+            bars: HashMap::new(),
             chan: mpsc::channel(),
             handle: handle,
+            finish: FinishMethod::Keep,
         }
+    }
+
+    /// Set finish method
+    /// FinishMethod::Keep => keep the bar when finishing
+    /// FinishMethod::Remove => remove the bar when finishing
+    /// FinishMethod::Graduate => graduate the bar when finishing
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use pbr::{MultiBar, FinishMethod};
+    /// use std::io::stderr;
+    ///
+    /// let mut mb = MultiBar::on(stderr());
+    /// mb.set_finish(FinishMethod::Remove);
+    /// // ...
+    /// // see full example in `MultiBar::new`
+    /// // ...
+    /// ```
+    pub fn set_finish(&mut self, finish: FinishMethod) {
+        self.finish = finish
     }
 
     /// println used to add text lines between the bars.
@@ -151,18 +185,40 @@ impl<T: Write> MultiBar<T> {
     /// mb.listen();
     /// ```
     pub fn create_bar(&mut self, total: u64) -> ProgressBar<Pipe> {
-        self.println("");
-        self.nbars += 1;
+        let bar_id = self.bar_id;
+        self.bars.insert(bar_id, self.nlines);
         let mut p = ProgressBar::on(Pipe {
-                                        level: self.nlines - 1,
+                                        bar_id: bar_id,
                                         chan: self.chan.0.clone(),
                                     },
                                     total);
+        self.println(&format!("bar_{}", bar_id));
+        self.bar_id += 1;
         p.is_multibar = true;
         p.add(0);
         p
     }
 
+    fn bar_finish(&mut self, bar_id: u64) -> String {
+        let result = match self.finish {
+            FinishMethod::Keep => String::new(),
+            FinishMethod::Remove | FinishMethod::Graduate => {
+                for (&i, v) in self.bars.iter_mut() {
+                    if i > bar_id {
+                        *v -= 1;
+                    }
+                }
+                self.nlines -= 1;
+                self.lines.remove(self.bars[&bar_id])
+            }
+        };
+        self.bars.remove(&bar_id);
+        if let FinishMethod::Graduate = self.finish {
+            format!("\r{}\n", result)
+        } else {
+            String::new()
+        }
+    }
 
     /// listen start listen to all bars changes.
     ///
@@ -194,28 +250,32 @@ impl<T: Write> MultiBar<T> {
     /// ```
     pub fn listen(&mut self) {
         let mut first = true;
-        let mut nbars = self.nbars;
-        while nbars > 0 {
+        let mut nlines = self.nlines;
+        let mut graduate = String::new();
+        while self.bars.len() > 0 {
 
             // receive message
             let msg = self.chan.1.recv().unwrap();
             if msg.done {
-                nbars -= 1;
+                graduate.push_str(&self.bar_finish(msg.bar_id));
                 continue;
             }
-            self.lines[msg.level] = msg.string;
+            self.lines[self.bars[&msg.bar_id]] = msg.string;
 
             // and draw
             let mut out = String::new();
             if !first {
-                out += &move_cursor_up(self.nlines);
+                out += &move_cursor_up(nlines);
             } else {
                 first = false;
             }
+            out.push_str(&graduate);
+            graduate = String::new();
             for l in self.lines.iter() {
                 out.push_str(&format!("\r{}\n", l));
             }
             printfl!(self.handle, "{}", out);
+            nlines = self.nlines;
         }
     }
 
@@ -237,19 +297,19 @@ impl<T: Write> MultiBar<T> {
     /// // create some bars here
     /// // ...
     ///
-    /// mb.flush(false);
+    /// let nlines = mb.flush(None);
     ///
     /// // ...
     /// // change bars here
     /// // ...
     ///
-    /// mb.flush(true);
+    /// mb.flush(Some(nlines));
     ///
     /// // ...
     /// ```
-    pub fn flush(&mut self, move_up: bool) {
-        let mut nbars = self.nbars;
-        if nbars > 0 {
+    pub fn flush(&mut self, nlines: Option<usize>) -> usize {
+        if self.bars.len() > 0 {
+            let mut graduate = String::new();
 
             // receive message
             loop {
@@ -259,59 +319,29 @@ impl<T: Write> MultiBar<T> {
                     break;
                 };
                 if msg.done {
-                    nbars -= 1;
+                    graduate.push_str(&self.bar_finish(msg.bar_id));
                     continue;
                 }
-                self.lines[msg.level] = msg.string;
-                break;
+                self.lines[self.bars[&msg.bar_id]] = msg.string;
             }
 
             // and draw
             let mut out = String::new();
-            if move_up {
-                out += &move_cursor_up(self.nlines);
+            if nlines.is_some() {
+                out += &move_cursor_up(nlines.unwrap());
             }
+            out.push_str(&graduate);
             for l in self.lines.iter() {
                 out.push_str(&format!("\r{}\n", l));
             }
             printfl!(self.handle, "{}", out);
         }
-    }
-
-    /// reset output cursor.
-    ///
-    /// see also `flush()`
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use std::thread;
-    /// use pbr::MultiBar;
-    ///
-    /// let mut mb = MultiBar::new();
-    ///
-    /// // ...
-    /// // create some bars here
-    /// // ...
-    ///
-    /// mb.flush(false);
-    ///
-    /// // ...
-    /// // change bars here
-    /// // ...
-    ///
-    /// mb.reset();
-    /// mb.flush(false);
-    ///
-    /// // ...
-    /// ```
-    pub fn reset(&mut self) {
-        printfl!(self.handle, "{}", move_cursor_up(self.nlines));
+        self.nlines
     }
 }
 
 pub struct Pipe {
-    level: usize,
+    bar_id: u64,
     chan: Sender<WriteMsg>,
 }
 
@@ -322,7 +352,7 @@ impl Write for Pipe {
             .send(WriteMsg {
                 // finish method emit empty string
                 done: s == "",
-                level: self.level,
+                bar_id: self.bar_id,
                 string: s,
             })
             .unwrap();
@@ -338,6 +368,6 @@ impl Write for Pipe {
 // between MultiBar and its bars
 struct WriteMsg {
     done: bool,
-    level: usize,
+    bar_id: u64,
     string: String,
 }
