@@ -218,6 +218,96 @@ impl<T: Write> MultiBar<T> {
             printfl!(self.handle, "{}", out);
         }
     }
+
+    /// flush all bars.
+    ///
+    /// see also `listen()`
+    ///
+    /// This is a non-blocking operation.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use std::thread;
+    /// use pbr::MultiBar;
+    ///
+    /// let mut mb = MultiBar::new();
+    ///
+    /// // ...
+    /// // create some bars here
+    /// // ...
+    ///
+    /// mb.flush(false);
+    ///
+    /// // ...
+    /// // change bars here
+    /// // ...
+    ///
+    /// mb.flush(true);
+    ///
+    /// // ...
+    /// ```
+    pub fn flush(&mut self, move_up: bool) {
+        let mut nbars = self.nbars;
+        if nbars > 0 {
+
+            // receive message
+            loop {
+                let msg = if let Ok(msg) = self.chan.1.try_recv() {
+                    msg
+                } else  {
+                    break;
+                };
+                if msg.done {
+                    nbars -= 1;
+                    continue;
+                }
+                self.lines[msg.level] = msg.string;
+                break;
+            }
+
+            // and draw
+            let mut out = String::new();
+            if move_up {
+                out += &move_cursor_up(self.nlines);
+            }
+            for l in self.lines.iter() {
+                out.push_str(&format!("\r{}\n", l));
+            }
+            printfl!(self.handle, "{}", out);
+        }
+    }
+
+    /// reset output cursor.
+    ///
+    /// see also `flush()`
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use std::thread;
+    /// use pbr::MultiBar;
+    ///
+    /// let mut mb = MultiBar::new();
+    ///
+    /// // ...
+    /// // create some bars here
+    /// // ...
+    ///
+    /// mb.flush(false);
+    ///
+    /// // ...
+    /// // change bars here
+    /// // ...
+    ///
+    /// mb.reset();
+    /// mb.flush(false);
+    ///
+    /// // ...
+    /// ```
+    pub fn reset(&mut self) {
+        printfl!(self.handle, "{}", move_cursor_up(self.nlines));
+    }
 }
 
 pub struct Pipe {
