@@ -322,38 +322,41 @@ impl<T: Write> ProgressBar<T> {
         let speed = self.current as f64 / fract_dur(time_elapsed);
         let width = self.width();
 
-        let mut base = String::new();
-        let mut suffix = String::new();
-        let mut prefix = String::new();
         let mut out;
+        let mut parts = Vec::new();
+        let mut base = String::new();
+        let mut prefix = String::new();
+        let mut suffix = String::from(" ");
 
         // precent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
-            suffix =
-                suffix + &format!(" {:.*} % ", 2, if percent.is_nan() { 0.0 } else { percent });
+            parts.push(format!(
+                "{:.*} %",
+                2,
+                if percent.is_nan() { 0.0 } else { percent }
+            ));
         }
         // speed box
         if self.show_speed {
-            suffix = match self.units {
-                Units::Default => suffix + &format!("{:.*}/s ", 2, speed),
-                Units::Bytes => suffix + &format!("{}/s ", kb_fmt!(speed)),
+            match self.units {
+                Units::Default => parts.push(format!("{:.*}/s", 2, speed)),
+                Units::Bytes => parts.push(format!("{}/s", kb_fmt!(speed))),
             };
         }
         // time left box
-        if self.show_time_left && self.current > 0 {
-            if self.total > self.current {
-                let left = 1. / speed * (self.total - self.current) as f64;
-                if left < 60. {
-                    suffix = suffix + &format!("{:.0}s", left);
-                } else {
-                    suffix = suffix + &format!("{:.0}m", left / 60.);
-                }
-            }
+        if self.show_time_left && self.current > 0 && self.total > self.current {
+            let left = 1. / speed * (self.total - self.current) as f64;
+            if left < 60. {
+                parts.push(format!("{:.0}s", left));
+            } else {
+                parts.push(format!("{:.0}m", left / 60.));
+            };
         }
+        suffix += &parts.join(" ");
         // message box
         if self.show_message {
-            prefix = prefix + &format!("{}", self.message)
+            prefix = prefix + &format!("{}", self.message);
         }
         // counter box
         if self.show_counter {
@@ -370,7 +373,7 @@ impl<T: Write> ProgressBar<T> {
         }
         // bar box
         if self.show_bar {
-            let p = prefix.len() + suffix.len() + 3;
+            let p = prefix.chars().count() + suffix.chars().count() + 3;
             if p < width {
                 let size = width - p;
                 let curr_count =
@@ -499,7 +502,7 @@ fn fract_dur(d: Duration) -> f64 {
 
 #[cfg(test)]
 mod test {
-    use pb::ProgressBar;
+    use pb::{ProgressBar, Units};
 
     #[test]
     fn add() {
@@ -548,5 +551,64 @@ mod test {
         assert_eq!(kb_fmt!(mb), "1.00 MB");
         assert_eq!(kb_fmt!(gb), "1.00 GB");
         assert_eq!(kb_fmt!(tb), "1.00 TB");
+    }
+
+    #[test]
+    fn disable_speed_percent() {
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.show_speed = false;
+        pb.show_percent = false;
+        pb.set_width(Some(80));
+        pb.add(2);
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r2 / 10 [=============>-----------------------------------------------------] 0s ",
+        );
+    }
+
+    #[test]
+    fn disable_speed_time_left() {
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.show_speed = false;
+        pb.show_time_left = false;
+        pb.set_width(Some(65));
+        pb.add(1);
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r1 / 10 [====>------------------------------------------] 10.00 % ",
+        );
+    }
+
+    #[test]
+    fn disable_percent_time_left() {
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.show_percent = false;
+        pb.show_time_left = false;
+        pb.set_units(Units::Bytes);
+        pb.set_width(Some(65));
+        pb.draw();
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r0 B / 10 B [---------------------------------------------] 0 B/s ",
+        );
+    }
+
+    #[test]
+    fn disable_suffix() {
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.show_speed = false;
+        pb.show_percent = false;
+        pb.show_time_left = false;
+        pb.set_units(Units::Bytes);
+        pb.set_width(Some(65));
+        pb.draw();
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r0 B / 10 B [--------------------------------------------------]  ",
+        );
     }
 }
