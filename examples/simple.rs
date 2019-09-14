@@ -1,7 +1,7 @@
-extern crate rand;
 extern crate pbr;
-use rand::prelude::*;
+extern crate rand;
 use pbr::ProgressBar;
+use rand::prelude::*;
 use std::thread;
 use std::time::Duration;
 

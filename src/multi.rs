@@ -1,9 +1,9 @@
 use pb::ProgressBar;
+use std::io::{Result, Stdout, Write};
 use std::str::from_utf8;
-use tty::move_cursor_up;
-use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
-use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc::{Receiver, Sender};
+use tty::move_cursor_up;
 
 pub struct MultiBar<T: Write> {
     nlines: usize,
@@ -153,16 +153,17 @@ impl<T: Write> MultiBar<T> {
     pub fn create_bar(&mut self, total: u64) -> ProgressBar<Pipe> {
         self.println("");
         self.nbars += 1;
-        let mut p = ProgressBar::on(Pipe {
-                                        level: self.nlines - 1,
-                                        chan: self.chan.0.clone(),
-                                    },
-                                    total);
+        let mut p = ProgressBar::on(
+            Pipe {
+                level: self.nlines - 1,
+                chan: self.chan.0.clone(),
+            },
+            total,
+        );
         p.is_multibar = true;
         p.add(0);
         p
     }
-
 
     /// listen start listen to all bars changes.
     ///
@@ -196,7 +197,6 @@ impl<T: Write> MultiBar<T> {
         let mut first = true;
         let mut nbars = self.nbars;
         while nbars > 0 {
-
             // receive message
             let msg = self.chan.1.recv().unwrap();
             if msg.done {

@@ -1,7 +1,7 @@
-extern crate rand;
 extern crate pbr;
-use rand::prelude::*;
+extern crate rand;
 use pbr::MultiBar;
+use rand::prelude::*;
 use std::thread;
 use std::time::Duration;
 
@@ -37,7 +37,6 @@ fn main() {
             pb.finish_print(&format!("{}: Pull complete", rand_string()));
         });
     }
-
 
     mb.println("");
     mb.println("Text lines separate between two sections: ");

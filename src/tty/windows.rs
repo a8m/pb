@@ -1,6 +1,6 @@
 extern crate winapi;
 
-use super::{Width, Height};
+use super::{Height, Width};
 
 /// Returns the size of the terminal, if available.
 ///
@@ -22,21 +22,28 @@ pub fn move_cursor_up(n: usize) -> String {
     use self::winapi::um::wincon::{SetConsoleCursorPosition, COORD};
     if let Some((hand, csbi)) = get_csbi() {
         unsafe {
-            SetConsoleCursorPosition(hand,
-                                     COORD {
-                                         X: 0,
-                                         Y: csbi.dwCursorPosition.Y - n as i16,
-                                     });
+            SetConsoleCursorPosition(
+                hand,
+                COORD {
+                    X: 0,
+                    Y: csbi.dwCursorPosition.Y - n as i16,
+                },
+            );
         }
     }
     "".to_string()
 }
 
-fn get_csbi() -> Option<(self::winapi::shared::ntdef::HANDLE, self::winapi::um::wincon::CONSOLE_SCREEN_BUFFER_INFO)> {
+fn get_csbi() -> Option<(
+    self::winapi::shared::ntdef::HANDLE,
+    self::winapi::um::wincon::CONSOLE_SCREEN_BUFFER_INFO,
+)> {
     use self::winapi::shared::ntdef::HANDLE;
     use self::winapi::um::processenv::GetStdHandle;
     use self::winapi::um::winbase::STD_OUTPUT_HANDLE;
-    use self::winapi::um::wincon::{GetConsoleScreenBufferInfo, CONSOLE_SCREEN_BUFFER_INFO, COORD, SMALL_RECT};
+    use self::winapi::um::wincon::{
+        GetConsoleScreenBufferInfo, CONSOLE_SCREEN_BUFFER_INFO, COORD, SMALL_RECT,
+    };
 
     let hand: HANDLE = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
