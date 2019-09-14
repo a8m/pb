@@ -1,8 +1,8 @@
 extern crate pbr;
 
-use pbr::{ProgressBar, PbIter};
-use std::time::Duration;
+use pbr::{PbIter, ProgressBar};
 use std::thread;
+use std::time::Duration;
 
 #[test]
 fn simple_example() {
@@ -62,7 +62,6 @@ fn timeout_example() {
     }
     pb.finish_println("done!");
 }
-
 
 #[test]
 // see: issue #11
