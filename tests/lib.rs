@@ -120,4 +120,3 @@ fn final_redraw_max_refresh_rate() {
     }
     pb.finish_println("done!");
 }
-
