@@ -14,4 +14,6 @@ matrix:
 script:
  - cargo test --all --verbose
  - rustup component add rustfmt-preview
- - cargo fmt -- --check
+ # disable it until the formatting will be
+ # consistent between stable, beta and nightly.
+ # - cargo fmt -- --check
