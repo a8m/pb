@@ -1,7 +1,7 @@
-extern crate rand;
 extern crate pbr;
-use rand::Rng;
+extern crate rand;
 use pbr::MultiBar;
+use rand::prelude::*;
 use std::thread;
 use std::time::Duration;
 
@@ -23,7 +23,7 @@ fn main() {
                     pb.tick();
                 }
                 for _ in 0..20 {
-                    let n = rand::thread_rng().gen_range(0, 100);
+                    let n = thread_rng().gen_range(0, 100);
                     pb.message("Connected: ");
                     thread::sleep(Duration::from_millis(n));
                     pb.inc();
@@ -38,7 +38,6 @@ fn main() {
         });
     }
 
-
     mb.println("");
     mb.println("Text lines separate between two sections: ");
     mb.println("");
@@ -49,7 +48,7 @@ fn main() {
         thread::spawn(move || {
             for _ in 0..count {
                 pb.inc();
-                let n = rand::thread_rng().gen_range(0, 100);
+                let n = thread_rng().gen_range(0, 100);
                 thread::sleep(Duration::from_millis(n));
             }
             pb.finish();
@@ -64,7 +63,7 @@ fn main() {
 fn rand_string() -> String {
     let mut v = Vec::new();
     while v.len() < 12 {
-        let b = rand::random::<u8>();
+        let b = random::<u8>();
         // [0-9a-f]
         if b > 47 && b < 58 || b > 96 && b < 103 {
             v.push(b);

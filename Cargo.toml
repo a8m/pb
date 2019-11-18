@@ -1,21 +1,24 @@
 [package]
 name = "pbr"
-version = "1.0.0"
+version = "1.0.2"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>", "Steven Fackler <sfackler@gmail.com>"]
 description = "Console progress bar for Rust"
 documentation = "http://a8m.github.io/pb/doc/pbr/index.html"
 repository = "https://github.com/a8m/pb"
+exclude = ["gif/", ".travis.yml"]
 keywords = ["cli", "progress", "terminal", "pb"]
 license = "MIT"
 
 [dependencies]
-libc = "0.2.9"
+libc = "0.2"
 time = "0.1.35"
-winapi = "0.2"
-kernel32-sys = "0.2"
+
+[target.'cfg(target_os = "windows")'.dependencies.winapi]
+version = "0.3"
+features = ["wincon", "processenv", "winbase"]
 
 [target.'cfg(target_os = "redox")'.dependencies]
 termion = "1.4"
 
 [dev-dependencies]
-rand = "0.3.14"
+rand = "0.5"

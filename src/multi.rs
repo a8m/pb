@@ -1,9 +1,9 @@
 use pb::ProgressBar;
+use std::io::{Result, Stdout, Write};
 use std::str::from_utf8;
-use tty::move_cursor_up;
-use std::io::{Stdout, Result, Write};
 use std::sync::mpsc;
-use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc::{Receiver, Sender};
+use tty::move_cursor_up;
 
 pub struct MultiBar<T: Write> {
     nlines: usize,
@@ -25,10 +25,12 @@ impl MultiBar<Stdout> {
     /// ```no_run
     /// use std::thread;
     /// use pbr::MultiBar;
+    /// use std::time::Duration;
     ///
     /// let mut mb = MultiBar::new();
     /// mb.println("Application header:");
     ///
+    /// # let count = 250;
     /// let mut p1 = mb.create_bar(count);
     /// let _ = thread::spawn(move || {
     ///     for _ in 0..count {
@@ -97,12 +99,13 @@ impl<T: Write> MultiBar<T> {
     /// let mut mb = MultiBar::new();
     /// mb.println("Application header:");
     ///
-    /// let mut p1 = MultiBar::create_bar(count);
+    /// # let count = 250;
+    /// let mut p1 = mb.create_bar(count);
     /// // ...
     ///
     /// mb.println("Text line between bar1 and bar2");
     ///
-    /// let mut p2 = MultiBar::create_bar(count);
+    /// let mut p2 = mb.create_bar(count);
     /// // ...
     ///
     /// mb.println("Text line between bar2 and bar3");
@@ -131,17 +134,18 @@ impl<T: Write> MultiBar<T> {
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
+    /// # let (count1, count2, count3) = (250, 62500, 15625000);
     ///
     /// // progress bar in level 1
-    /// let mut p1 = MultiBar::create_bar(count1);
+    /// let mut p1 = mb.create_bar(count1);
     /// // ...
     ///
     /// // progress bar in level 2
-    /// let mut p2 = MultiBar::create_bar(count2);
+    /// let mut p2 = mb.create_bar(count2);
     /// // ...
     ///
     /// // progress bar in level 3
-    /// let mut p3 = MultiBar::create_bar(count3);
+    /// let mut p3 = mb.create_bar(count3);
     ///
     /// // ...
     /// mb.listen();
@@ -149,16 +153,17 @@ impl<T: Write> MultiBar<T> {
     pub fn create_bar(&mut self, total: u64) -> ProgressBar<Pipe> {
         self.println("");
         self.nbars += 1;
-        let mut p = ProgressBar::on(Pipe {
-                                        level: self.nlines - 1,
-                                        chan: self.chan.0.clone(),
-                                    },
-                                    total);
+        let mut p = ProgressBar::on(
+            Pipe {
+                level: self.nlines - 1,
+                chan: self.chan.0.clone(),
+            },
+            total,
+        );
         p.is_multibar = true;
         p.add(0);
         p
     }
-
 
     /// listen start listen to all bars changes.
     ///
@@ -172,6 +177,7 @@ impl<T: Write> MultiBar<T> {
     /// # Examples
     ///
     /// ```no_run
+    /// use std::thread;
     /// use pbr::MultiBar;
     ///
     /// let mut mb = MultiBar::new();
@@ -191,7 +197,6 @@ impl<T: Write> MultiBar<T> {
         let mut first = true;
         let mut nbars = self.nbars;
         while nbars > 0 {
-
             // receive message
             let msg = self.chan.1.recv().unwrap();
             if msg.done {

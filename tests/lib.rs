@@ -1,8 +1,8 @@
 extern crate pbr;
 
-use pbr::{ProgressBar, PbIter};
-use std::time::Duration;
+use pbr::{PbIter, ProgressBar};
 use std::thread;
+use std::time::Duration;
 
 #[test]
 fn simple_example() {
@@ -63,7 +63,6 @@ fn timeout_example() {
     pb.finish_println("done!");
 }
 
-
 #[test]
 // see: issue #11
 fn tick_before_start() {
@@ -104,6 +103,20 @@ fn npm_bar() {
             thread::sleep(Duration::from_millis(80));
             pb.inc();
         }
+    }
+    pb.finish_println("done!");
+}
+
+#[test]
+// see: issue 45#
+fn final_redraw_max_refresh_rate() {
+    let count = 500;
+    let mut pb = ProgressBar::new(count);
+    pb.format("╢▌▌░╟");
+    pb.set_max_refresh_rate(Some(Duration::from_millis(100)));
+    for _ in 0..count {
+        pb.inc();
+        thread::sleep(Duration::from_millis(5));
     }
     pb.finish_println("done!");
 }

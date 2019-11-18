@@ -1,11 +1,17 @@
 # Terminal progress bar for Rust
 
+[![Latest version](https://img.shields.io/crates/v/pbr.svg)](https://crates.io/crates/pbr)
+[![License](https://img.shields.io/crates/l/pbr.svg)](https://github.com/a8m/pb/blob/master/LICENSE.md)
+[![Docs](https://img.shields.io/badge/docs-reference-blue.svg)](https://a8m.github.io/pb/doc/pbr/index.html)
+[![Build Status](https://travis-ci.org/a8m/pb.svg?branch=master)](https://travis-ci.org/a8m/pb)
+[![Gitter](https://badges.gitter.im/a8m/pb.svg)](https://gitter.im/a8m/pb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 Console progress bar for Rust Inspired from [pb](http://github.com/cheggaaa/pb), support and 
 tested on MacOS, Linux and Windows
 
 ![Screenshot](https://github.com/a8m/pb/blob/master/gif/rec_v3.gif)
 
-[Documentation](http://a8m.github.io/pb/doc/pbr/index.html)
+[Documentation](https://a8m.github.io/pb/doc/pbr/index.html)
 
 ### Examples
 1. simple example
@@ -70,7 +76,7 @@ fn main() {
 }
 ```
 
-3. Broadcast writing(simple file copying)
+3. Broadcast writing (simple file copying)
 
 ```rust
 #![feature(io)]
