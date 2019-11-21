@@ -17,6 +17,11 @@ mod unix;
 #[cfg(unix)]
 pub use self::unix::*;
 
+#[cfg(target_os="wasi")]
+mod wasi;
+#[cfg(target_os="wasi")]
+pub use self::wasi::*;
+
 #[cfg(windows)]
 mod windows;
 #[cfg(windows)]
