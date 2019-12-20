@@ -1,20 +1,21 @@
+use crossbeam_channel::{unbounded, Sender, Receiver};
 use pb::ProgressBar;
 use std::io::{Result, Stdout, Write};
 use std::str::from_utf8;
-use std::sync::mpsc;
-use std::sync::mpsc::{Receiver, Sender};
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use tty::move_cursor_up;
 
 pub struct MultiBar<T: Write> {
-    nlines: usize,
-
-    lines: Vec<String>,
-
-    nbars: usize,
-
+    state: Mutex<State<T>>,
     chan: (Sender<WriteMsg>, Receiver<WriteMsg>),
+    nbars: AtomicUsize,
+}
 
-    handle: T,
+struct State<T: Write> {
+    lines: Vec<String>,
+    nlines: usize,
+    handle: T
 }
 
 impl MultiBar<Stdout> {
@@ -79,11 +80,13 @@ impl<T: Write> MultiBar<T> {
     /// ```
     pub fn on(handle: T) -> MultiBar<T> {
         MultiBar {
-            nlines: 0,
-            nbars: 0,
-            lines: Vec::new(),
-            chan: mpsc::channel(),
-            handle: handle,
+            state: Mutex::new(State {
+                lines: Vec::new(),
+                handle: handle,
+                nlines: 0,
+            }),
+            chan: unbounded(),
+            nbars: AtomicUsize::new(0),
         }
     }
 
@@ -114,9 +117,10 @@ impl<T: Write> MultiBar<T> {
     /// // ...
     /// mb.listen();
     /// ```
-    pub fn println(&mut self, s: &str) {
-        self.lines.push(s.to_owned());
-        self.nlines += 1;
+    pub fn println(&self, s: &str) {
+        let mut state = self.state.lock().unwrap();
+        state.lines.push(s.to_owned());
+        state.nlines += 1;
     }
 
     /// create_bar creates new `ProgressBar` with `Pipe` as the writer.
@@ -150,16 +154,22 @@ impl<T: Write> MultiBar<T> {
     /// // ...
     /// mb.listen();
     /// ```
-    pub fn create_bar(&mut self, total: u64) -> ProgressBar<Pipe> {
-        self.println("");
-        self.nbars += 1;
+    pub fn create_bar(&self, total: u64) -> ProgressBar<Pipe> {
+        let mut state = self.state.lock().unwrap();
+        
+        state.lines.push(String::new());
+        state.nlines += 1;
+
+        self.nbars.fetch_add(1, Ordering::SeqCst);
+
         let mut p = ProgressBar::on(
             Pipe {
-                level: self.nlines - 1,
+                level: state.nlines - 1,
                 chan: self.chan.0.clone(),
             },
             total,
         );
+        
         p.is_multibar = true;
         p.add(0);
         p
@@ -193,29 +203,34 @@ impl<T: Write> MultiBar<T> {
     ///
     /// // ...
     /// ```
-    pub fn listen(&mut self) {
+    pub fn listen(&self) {
         let mut first = true;
-        let mut nbars = self.nbars;
-        while nbars > 0 {
+        let mut out = String::new();
+
+        while self.nbars.load(Ordering::SeqCst) > 0 {
             // receive message
             let msg = self.chan.1.recv().unwrap();
             if msg.done {
-                nbars -= 1;
+                self.nbars.fetch_sub(1, Ordering::SeqCst);
                 continue;
             }
-            self.lines[msg.level] = msg.string;
+
+            out.clear();
+            let mut state = self.state.lock().unwrap();
+            state.lines[msg.level] = msg.string;
 
             // and draw
-            let mut out = String::new();
             if !first {
-                out += &move_cursor_up(self.nlines);
+                out += &move_cursor_up(state.nlines);
             } else {
                 first = false;
             }
-            for l in self.lines.iter() {
+
+            for l in state.lines.iter() {
                 out.push_str(&format!("\r{}\n", l));
             }
-            printfl!(self.handle, "{}", out);
+
+            printfl!(state.handle, "{}", out);
         }
     }
 }

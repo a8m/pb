@@ -6,7 +6,7 @@ use std::thread;
 use std::time::Duration;
 
 fn main() {
-    let mut mb = MultiBar::new();
+    let mb = MultiBar::new();
     mb.println("Your Application Header:");
     mb.println("");
 
