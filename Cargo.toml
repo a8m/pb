@@ -18,8 +18,5 @@ crossbeam-channel = "0.4"
 version = "0.3"
 features = ["wincon", "processenv", "winbase"]
 
-[target.'cfg(target_os = "redox")'.dependencies]
-termion = "1.5"
-
 [dev-dependencies]
 rand = "0.7"
