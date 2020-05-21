@@ -57,6 +57,7 @@ pub fn move_cursor_up(n: usize) -> String {
     format!("\x1B[{}A", n)
 }
 
+#[cfg(not(target_os = "redox"))]
 #[test]
 /// Compare with the output of `stty size`
 fn compare_with_stty() {
