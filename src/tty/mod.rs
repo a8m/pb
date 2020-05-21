@@ -26,8 +26,3 @@ pub use self::wasi::*;
 mod windows;
 #[cfg(windows)]
 pub use self::windows::*;
-
-#[cfg(target_os = "redox")]
-mod redox;
-#[cfg(target_os = "redox")]
-pub use self::redox::*;
