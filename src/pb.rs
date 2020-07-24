@@ -310,7 +310,7 @@ impl<T: Write> ProgressBar<T> {
         self.add(1)
     }
 
-    fn draw(&mut self) {
+    pub fn draw(&mut self) {
         let now = SteadyTime::now();
         if let Some(mrr) = self.max_refresh_rate {
             if now - self.last_refresh_time < mrr && self.current < self.total {
@@ -404,6 +404,13 @@ impl<T: Write> ProgressBar<T> {
         self.last_refresh_time = SteadyTime::now();
     }
 
+    /// Print a line above the progress bar
+    pub fn writeln(&mut self, s: &str) {
+        printfl!(self.handle, "\r\x1B[2K{}\n", s);
+        self.draw();
+    }
+
+
     // finish_draw ensure that the progress bar is reached to its end, and do the
     // last drawing if needed.
     fn finish_draw(&mut self) {
@@ -461,7 +468,7 @@ impl<T: Write> ProgressBar<T> {
     }
 
     /// Get terminal width, from configuration, terminal size, or default(80)
-    fn width(&mut self) -> usize {
+    pub fn width(&mut self) -> usize {
         if let Some(w) = self.width {
             w
         } else if let Some((Width(w), _)) = terminal_size() {
