@@ -311,8 +311,6 @@ impl<T: Write> ProgressBar<T> {
     }
 
     /// Resets the start time to now
-    ///
-    /// This allows you to set up the bar some time before it is needed and have the speed and time indications be correct
     pub fn reset_start_time(&mut self) {
         self.start_time = SteadyTime::now();
     }
