@@ -2,6 +2,7 @@
 name = "pbr"
 version = "1.0.3"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>", "Steven Fackler <sfackler@gmail.com>"]
+edition = "2018"
 description = "Console progress bar for Rust"
 documentation = "http://a8m.github.io/pb/doc/pbr/index.html"
 repository = "https://github.com/a8m/pb"

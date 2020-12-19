@@ -1,9 +1,9 @@
+use crate::tty::{terminal_size, Width};
 use std::io::Stdout;
 use std::io::{self, Write};
 use std::iter::repeat;
 use std::time::Duration;
 use time::{self, SteadyTime};
-use tty::{terminal_size, Width};
 
 macro_rules! kb_fmt {
     ($n: ident) => {{
@@ -314,7 +314,7 @@ impl<T: Write> ProgressBar<T> {
     pub fn reset_start_time(&mut self) {
         self.start_time = SteadyTime::now();
     }
-    
+
     fn draw(&mut self) {
         let now = SteadyTime::now();
         if let Some(mrr) = self.max_refresh_rate {
@@ -507,7 +507,7 @@ fn fract_dur(d: Duration) -> f64 {
 
 #[cfg(test)]
 mod test {
-    use pb::{ProgressBar, Units};
+    use crate::{ProgressBar, Units};
     use std::time::Duration;
 
     #[test]
@@ -636,15 +636,11 @@ mod test {
             .split('\r');
         assert_eq!(
             split.next(),
-            Some(
-                "250 / 500 ╢▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╟ 50.00 %"
-            )
+            Some("250 / 500 ╢▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╟ 50.00 %")
         );
         assert_eq!(
             split.next(),
-            Some(
-                "500 / 500 ╢▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌╟ 100.00 %"
-            )
+            Some("500 / 500 ╢▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌╟ 100.00 %")
         );
     }
 }
