@@ -49,6 +49,8 @@ pub struct ProgressBar<T: Write> {
     tick: Vec<String>,
     tick_state: usize,
     width: Option<usize>,
+    margin_left: usize,
+    margin_right: usize,
     message: String,
     last_refresh_time: SteadyTime,
     max_refresh_rate: Option<time::Duration>,
@@ -131,6 +133,8 @@ impl<T: Write> ProgressBar<T> {
             tick: Vec::new(),
             tick_state: 0,
             width: None,
+            margin_left: 0,
+            margin_right: 0,
             message: String::new(),
             last_refresh_time: SteadyTime::now(),
             max_refresh_rate: None,
@@ -233,6 +237,33 @@ impl<T: Write> ProgressBar<T> {
         self.width = w;
     }
 
+    /// Set margin_left, or 0 for default.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.set_margin_left(2);
+    /// ```
+    pub fn set_margin_left(&mut self, ml: usize) {
+        self.margin_left= ml;
+    }
+
+    /// Set margin_right, or 0 for default.
+    ///
+    /// This doesn't work for MultiBar
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let mut pb = ProgressBar::new(...);
+    /// pb.set_margin_right(2);
+    /// ```
+    pub fn set_margin_right(&mut self, mr: usize) {
+        self.margin_right = mr;
+    }
+
+    /// Set max refresh rate, above which the progress bar will not redraw, or `None` for none.
     /// Set max refresh rate, above which the progress bar will not redraw, or `None` for none.
     ///
     /// # Examples
@@ -325,7 +356,9 @@ impl<T: Write> ProgressBar<T> {
 
         let time_elapsed = time_to_std(now - self.start_time);
         let speed = self.current as f64 / fract_dur(time_elapsed);
-        let width = self.width();
+        // NOTE:
+        // margin_right doesn't work with multibar
+        let width = self.width() - self.margin_left - self.margin_right;
 
         let mut out;
         let mut parts = Vec::new();
@@ -333,7 +366,7 @@ impl<T: Write> ProgressBar<T> {
         let mut prefix = String::new();
         let mut suffix = String::from(" ");
 
-        // precent box
+        // percent box
         if self.show_percent {
             let percent = self.current as f64 / (self.total as f64 / 100f64);
             parts.push(format!(
@@ -398,6 +431,13 @@ impl<T: Write> ProgressBar<T> {
             }
         }
         out = prefix + &base + &suffix;
+
+        // left margin
+        if self.margin_left > 0 {
+            let tmp: String = repeat!(" ", self.margin_left).to_string();
+            out = tmp + &out;
+        }
+
         // pad
         if out.len() < width {
             let gap = width - out.len();
