@@ -246,7 +246,7 @@ impl Write for Pipe {
         self.chan
             .send(WriteMsg {
                 // finish method emit empty string
-                done: s == "",
+                done: s.is_empty(),
                 level: self.level,
                 string: s,
             })
