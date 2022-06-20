@@ -2,8 +2,7 @@ use crate::tty::{terminal_size, Width};
 use std::io::Stdout;
 use std::io::{self, Write};
 use std::iter::repeat;
-use std::time::Duration;
-use time::{self, SteadyTime};
+use std::time::{Duration, Instant};
 
 macro_rules! kb_fmt {
     ($n: ident) => {{
@@ -37,7 +36,7 @@ pub enum Units {
 }
 
 pub struct ProgressBar<T: Write> {
-    start_time: SteadyTime,
+    start_time: Instant,
     units: Units,
     pub total: u64,
     current: u64,
@@ -50,8 +49,8 @@ pub struct ProgressBar<T: Write> {
     tick_state: usize,
     width: Option<usize>,
     message: String,
-    last_refresh_time: SteadyTime,
-    max_refresh_rate: Option<time::Duration>,
+    last_refresh_time: Instant,
+    max_refresh_rate: Option<Duration>,
     pub is_finish: bool,
     pub is_multibar: bool,
     pub show_bar: bool,
@@ -112,7 +111,7 @@ impl<T: Write> ProgressBar<T> {
         let mut pb = ProgressBar {
             total: total,
             current: 0,
-            start_time: SteadyTime::now(),
+            start_time: Instant::now(),
             units: Units::Default,
             is_finish: false,
             is_multibar: false,
@@ -132,7 +131,7 @@ impl<T: Write> ProgressBar<T> {
             tick_state: 0,
             width: None,
             message: String::new(),
-            last_refresh_time: SteadyTime::now(),
+            last_refresh_time: Instant::now(),
             max_refresh_rate: None,
             handle: handle,
         };
@@ -242,7 +241,7 @@ impl<T: Write> ProgressBar<T> {
     /// pb.set_max_refresh_rate(Some(Duration::from_millis(100)));
     /// ```
     pub fn set_max_refresh_rate(&mut self, w: Option<Duration>) {
-        self.max_refresh_rate = w.map(time::Duration::from_std).map(Result::unwrap);
+        self.max_refresh_rate = w;
         if let Some(dur) = self.max_refresh_rate {
             self.last_refresh_time = self.last_refresh_time - dur;
         }
@@ -312,18 +311,21 @@ impl<T: Write> ProgressBar<T> {
 
     /// Resets the start time to now
     pub fn reset_start_time(&mut self) {
-        self.start_time = SteadyTime::now();
+        self.start_time = Instant::now();
     }
 
     fn draw(&mut self) {
-        let now = SteadyTime::now();
+        let now = Instant::now();
         if let Some(mrr) = self.max_refresh_rate {
             if now - self.last_refresh_time < mrr && self.current < self.total {
                 return;
             }
         }
 
-        let time_elapsed = time_to_std(now - self.start_time);
+        let mut time_elapsed = now - self.start_time;
+        if time_elapsed.is_zero() {
+            time_elapsed = Duration::from_nanos(1);
+        }
         let speed = self.current as f64 / fract_dur(time_elapsed);
         let width = self.width();
 
@@ -406,7 +408,7 @@ impl<T: Write> ProgressBar<T> {
         // print
         printfl!(self.handle, "\r{}", out);
 
-        self.last_refresh_time = SteadyTime::now();
+        self.last_refresh_time = Instant::now();
     }
 
     // finish_draw ensure that the progress bar is reached to its end, and do the
@@ -415,7 +417,7 @@ impl<T: Write> ProgressBar<T> {
         let mut redraw = false;
 
         if let Some(mrr) = self.max_refresh_rate {
-            if SteadyTime::now() - self.last_refresh_time < mrr {
+            if Instant::now() - self.last_refresh_time < mrr {
                 self.max_refresh_rate = None;
                 redraw = true;
             }
@@ -486,18 +488,6 @@ impl<T: Write> Write for ProgressBar<T> {
     }
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
-    }
-}
-
-fn time_to_std(d: time::Duration) -> Duration {
-    if d > time::Duration::zero() {
-        let secs = d.num_seconds();
-        let nsecs = (d - time::Duration::seconds(secs))
-            .num_nanoseconds()
-            .unwrap();
-        Duration::new(secs as u64, nsecs as u32)
-    } else {
-        Duration::new(0, 1)
     }
 }
 

@@ -112,7 +112,6 @@ macro_rules! printfl {
 }
 
 extern crate crossbeam_channel;
-extern crate time;
 mod multi;
 mod pb;
 mod tty;
