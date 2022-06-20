@@ -101,7 +101,7 @@ impl<T: Write> ProgressBar<T> {
     /// ```
     pub fn on(handle: T, total: u64) -> ProgressBar<T> {
         let mut pb = ProgressBar {
-            total: total,
+            total,
             current: 0,
             start_time: Instant::now(),
             units: Units::Default,
@@ -125,7 +125,7 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: Instant::now(),
             max_refresh_rate: None,
-            handle: handle,
+            handle,
         };
         pb.format(FORMAT);
         pb.tick_format(TICK_FORMAT);

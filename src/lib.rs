@@ -138,7 +138,7 @@ where
     pub fn on(handle: T, iter: I) -> Self {
         let size = iter.size_hint().0;
         PbIter {
-            iter: iter,
+            iter,
             progress_bar: ProgressBar::on(handle, size as u64),
         }
     }
