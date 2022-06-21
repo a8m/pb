@@ -16,8 +16,8 @@ macro_rules! kb_fmt {
     }};
 }
 
-const FORMAT: &'static str = "[=>-]";
-const TICK_FORMAT: &'static str = "\\|/-";
+const FORMAT: &str = "[=>-]";
+const TICK_FORMAT: &str = "\\|/-";
 
 // Output type format, indicate which format wil be used in
 // the speed box.
