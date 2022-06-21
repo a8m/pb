@@ -1,5 +1,3 @@
-extern crate pbr;
-
 use pbr::MultiBar;
 use std::{
     sync::{atomic::{AtomicBool, Ordering}, Arc},

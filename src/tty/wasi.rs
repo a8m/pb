@@ -1,4 +1,3 @@
-extern crate libc;
 use super::{Width, Height};
 
 /// For WASI so far it will return none

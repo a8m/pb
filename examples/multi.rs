@@ -1,5 +1,3 @@
-extern crate pbr;
-extern crate rand;
 use pbr::MultiBar;
 use rand::prelude::*;
 use std::thread;

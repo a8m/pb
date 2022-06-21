@@ -1,4 +1,3 @@
-extern crate libc;
 use super::{Height, Width};
 
 // We need to convert from c_int to c_ulong at least on DragonFly and FreeBSD.
@@ -17,7 +16,7 @@ fn ioctl_conv<T: Copy>(v: T) -> T {
 ///
 /// If STDOUT is not a tty, returns `None`
 pub fn terminal_size() -> Option<(Width, Height)> {
-    use self::libc::{ioctl, isatty, winsize, STDOUT_FILENO, TIOCGWINSZ};
+    use libc::{ioctl, isatty, winsize, STDOUT_FILENO, TIOCGWINSZ};
     let is_tty: bool = unsafe { isatty(STDOUT_FILENO) == 1 };
 
     if !is_tty {

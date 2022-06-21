@@ -1,5 +1,3 @@
-extern crate winapi;
-
 use super::{Height, Width};
 
 /// Returns the size of the terminal, if available.
