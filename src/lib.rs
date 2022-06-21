@@ -106,7 +106,7 @@
 // ```
 macro_rules! printfl {
    ($w:expr, $($tt:tt)*) => {{
-        $w.write(&format!($($tt)*).as_bytes()).ok().expect("write() fail");
+        $w.write_all(&format!($($tt)*).as_bytes()).ok().expect("write() fail");
         $w.flush().ok().expect("flush() fail");
     }}
 }
