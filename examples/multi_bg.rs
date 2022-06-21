@@ -1,6 +1,9 @@
 use pbr::MultiBar;
 use std::{
-    sync::{atomic::{AtomicBool, Ordering}, Arc},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
     thread,
     time::Duration,
 };
@@ -23,7 +26,7 @@ fn main() {
                         for _ in 0..100 {
                             thread::sleep(Duration::from_millis(50));
                             bar.inc();
-                        } 
+                        }
 
                         bar.finish_print(&format!("Task {} Complete", task));
                     }
