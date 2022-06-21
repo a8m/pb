@@ -1,7 +1,6 @@
 use crate::tty::{terminal_size, Width};
 use std::io::Stdout;
 use std::io::{self, Write};
-use std::iter::repeat;
 use std::time::{Duration, Instant};
 
 macro_rules! kb_fmt {
@@ -14,12 +13,6 @@ macro_rules! kb_fmt {
             $n if $n >= kb => format!("{:.*} KB", 2, $n / kb),
             _ => format!("{:.*} B", 0, $n),
         }
-    }};
-}
-
-macro_rules! repeat {
-    ($s: expr, $n: expr) => {{
-        &repeat($s).take($n).collect::<String>()
     }};
 }
 
@@ -390,12 +383,12 @@ impl<T: Write> ProgressBar<T> {
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
                         base = base
-                            + repeat!(self.bar_current.to_string(), curr_count - 1)
+                            + &self.bar_current.repeat(curr_count - 1)
                             + &self.bar_current_n;
                     } else {
-                        base = base + repeat!(self.bar_current.to_string(), curr_count);
+                        base = base + &self.bar_current.repeat(curr_count);
                     }
-                    base = base + repeat!(self.bar_remain.to_string(), rema_count) + &self.bar_end;
+                    base = base + &self.bar_remain.repeat(rema_count) + &self.bar_end;
                 }
             }
         }
@@ -403,7 +396,7 @@ impl<T: Write> ProgressBar<T> {
         // pad
         if out.len() < width {
             let gap = width - out.len();
-            out = out + repeat!(" ", gap);
+            out = out + &" ".repeat(gap);
         }
         // print
         printfl!(self.handle, "\r{}", out);
@@ -447,7 +440,7 @@ impl<T: Write> ProgressBar<T> {
         let width = self.width();
         let mut out = format!("{}", s);
         if s.len() < width {
-            out += repeat!(" ", width - s.len());
+            out += &" ".repeat(width - s.len());
         };
         printfl!(self.handle, "\r{}", out);
         self.finish();
