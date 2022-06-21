@@ -18,7 +18,6 @@ macro_rules! kb_fmt {
 
 const FORMAT: &'static str = "[=>-]";
 const TICK_FORMAT: &'static str = "\\|/-";
-const NANOS_PER_SEC: u32 = 1_000_000_000;
 
 // Output type format, indicate which format wil be used in
 // the speed box.
@@ -319,7 +318,7 @@ impl<T: Write> ProgressBar<T> {
         if time_elapsed.is_zero() {
             time_elapsed = Duration::from_nanos(1);
         }
-        let speed = self.current as f64 / fract_dur(time_elapsed);
+        let speed = self.current as f64 / time_elapsed.as_secs_f64();
         let width = self.width();
 
         let mut out;
@@ -482,10 +481,6 @@ impl<T: Write> Write for ProgressBar<T> {
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
-}
-
-fn fract_dur(d: Duration) -> f64 {
-    d.as_secs() as f64 + d.subsec_nanos() as f64 / NANOS_PER_SEC as f64
 }
 
 #[cfg(test)]
