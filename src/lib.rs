@@ -11,8 +11,6 @@
 //! 1. simple example
 //!
 //! ```ignore
-//! extern crate pbr;
-//!
 //! use pbr::ProgressBar;
 //! use std::thread;
 //!
@@ -31,8 +29,6 @@
 //! 2. MultiBar example. see full example [here](https://github.com/a8m/pb/blob/master/examples/multi.rs)
 //!
 //! ```ignore
-//! extern crate pbr;
-//!
 //! use std::thread;
 //! use pbr::MultiBar;
 //! use std::time::Duration;
@@ -75,8 +71,6 @@
 //!
 //! ```ignore
 //! #![feature(io)]
-//! extern crate pbr;
-//!
 //! use std::io::copy;
 //! use std::io::prelude::*;
 //! use std::fs::File;
@@ -111,7 +105,6 @@ macro_rules! printfl {
     }}
 }
 
-extern crate crossbeam_channel;
 mod multi;
 mod pb;
 mod tty;

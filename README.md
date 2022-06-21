@@ -17,8 +17,6 @@ tested on MacOS, Linux and Windows
 1. simple example
 
 ```rust
-extern crate pbr;
-
 use pbr::ProgressBar;
 use std::thread;
 
@@ -36,8 +34,6 @@ fn main() {
 
 2. MultiBar example. see full example [here](https://github.com/a8m/pb/blob/master/examples/multi.rs)
 ```rust
-extern crate pbr;
-
 use std::thread;
 use pbr::MultiBar;
 use std::time::Duration;
@@ -80,8 +76,6 @@ fn main() {
 
 ```rust
 #![feature(io)]
-extern crate pbr;
-
 use std::io::copy;
 use std::io::prelude::*;
 use std::fs::File;

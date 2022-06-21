@@ -1,4 +1,3 @@
-extern crate pbr;
 use pbr::ProgressBar;
 use std::thread;
 use std::time::Duration;
