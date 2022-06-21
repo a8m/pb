@@ -194,7 +194,7 @@ impl<T: Write> ProgressBar<T> {
     ///
     /// ```
     pub fn message(&mut self, message: &str) {
-        self.message = message.to_owned().replace("\n", " ").replace("\r", " ")
+        self.message = message.replace(['\n', '\r'], " ")
     }
 
     /// Set tick format for the progressBar, default is \\|/-
