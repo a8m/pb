@@ -355,7 +355,7 @@ impl<T: Write> ProgressBar<T> {
         suffix += &parts.join(" ");
         // message box
         if self.show_message {
-            prefix = prefix + &format!("{}", self.message);
+            prefix = prefix + &self.message;
         }
         // counter box
         if self.show_counter {
@@ -437,7 +437,7 @@ impl<T: Write> ProgressBar<T> {
     pub fn finish_print(&mut self, s: &str) {
         self.finish_draw();
         let width = self.width();
-        let mut out = format!("{}", s);
+        let mut out = s.to_owned();
         if s.len() < width {
             out += &" ".repeat(width - s.len());
         };
