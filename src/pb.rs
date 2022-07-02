@@ -208,7 +208,7 @@ impl<T: Write> ProgressBar<T> {
         self.tick = tick_fmt
             .split("")
             .map(|x| x.to_owned())
-            .filter(|x| x != "")
+            .filter(|x| !x.is_empty())
             .collect();
     }
 
