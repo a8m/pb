@@ -19,4 +19,4 @@ version = "0.3"
 features = ["wincon", "processenv", "winbase"]
 
 [dev-dependencies]
-rand = "0.7"
+rand = "0.8"

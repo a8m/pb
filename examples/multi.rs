@@ -21,7 +21,7 @@ fn main() {
                     pb.tick();
                 }
                 for _ in 0..20 {
-                    let n = thread_rng().gen_range(0, 100);
+                    let n = thread_rng().gen_range(0..100);
                     pb.message("Connected: ");
                     thread::sleep(Duration::from_millis(n));
                     pb.inc();
@@ -46,7 +46,7 @@ fn main() {
         thread::spawn(move || {
             for _ in 0..count {
                 pb.inc();
-                let n = thread_rng().gen_range(0, 100);
+                let n = thread_rng().gen_range(0..100);
                 thread::sleep(Duration::from_millis(n));
             }
             pb.finish();
