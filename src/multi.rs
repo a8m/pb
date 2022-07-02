@@ -82,7 +82,7 @@ impl<T: Write> MultiBar<T> {
         MultiBar {
             state: Mutex::new(State {
                 lines: Vec::new(),
-                handle: handle,
+                handle,
                 nlines: 0,
             }),
             chan: unbounded(),
