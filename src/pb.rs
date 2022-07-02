@@ -381,9 +381,8 @@ impl<T: Write> ProgressBar<T> {
                     let rema_count = size - curr_count;
                     base = self.bar_start.clone();
                     if rema_count > 0 && curr_count > 0 {
-                        base = base
-                            + &self.bar_current.repeat(curr_count - 1)
-                            + &self.bar_current_n;
+                        base =
+                            base + &self.bar_current.repeat(curr_count - 1) + &self.bar_current_n;
                     } else {
                         base = base + &self.bar_current.repeat(curr_count);
                     }
