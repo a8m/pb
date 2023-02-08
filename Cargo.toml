@@ -1,6 +1,6 @@
 [package]
 name = "pbr"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Ariel Mashraki <ariel@mashraki.co.il>", "Steven Fackler <sfackler@gmail.com>"]
 edition = "2018"
 description = "Console progress bar for Rust"
