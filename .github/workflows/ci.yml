@@ -1,0 +1,45 @@
+name: CI
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+        rust: ["stable", "1.58"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ matrix.rust }}
+    - name: Build
+      run: cargo build
+    - name: Build examples
+      run: cargo build --examples
+    - name: Install faketty
+      if: matrix.rust == 'stable' && matrix.os != 'windows-latest'
+      run: |
+        cargo install faketty
+        echo "fake_tty=faketty" >> $GITHUB_ENV
+    - name: Test
+      if: env.fake_tty || matrix.os == 'windows-latest'
+      run: ${{ env.fake_tty }} cargo test --workspace
+
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Run rustfmt check
+        run: cargo fmt --check
