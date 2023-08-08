@@ -251,7 +251,7 @@ impl Write for Pipe {
                 string: s,
             })
             .unwrap();
-        Ok(1)
+        Ok(buf.len())
     }
 
     fn flush(&mut self) -> Result<()> {

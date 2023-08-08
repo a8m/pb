@@ -429,7 +429,7 @@ impl<T: Write> ProgressBar<T> {
     /// the last time
     pub fn finish(&mut self) {
         self.finish_draw();
-        printfl!(self.handle, "");
+        self.handle.write(b"").expect("write() failed");
     }
 
     /// Call finish and write string `s` that will replace the progress bar.
