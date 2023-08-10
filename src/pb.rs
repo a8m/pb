@@ -25,6 +25,10 @@ const TICK_FORMAT: &str = "\\|/-";
 pub enum Units {
     Default,
     Bytes,
+    Custom {
+        unit: String,
+        speed_formatter: Option<fn(f64) -> String>,
+    },
 }
 
 pub struct ProgressBar<T: Write> {
@@ -338,9 +342,19 @@ impl<T: Write> ProgressBar<T> {
         }
         // speed box
         if self.show_speed {
-            match self.units {
+            match &self.units {
                 Units::Default => parts.push(format!("{:.*}/s", 2, speed)),
                 Units::Bytes => parts.push(format!("{}/s", kb_fmt!(speed))),
+                Units::Custom {
+                    unit,
+                    speed_formatter,
+                } => {
+                    if let Some(speed_formatter) = speed_formatter {
+                        parts.push(format!("{} {}/s", speed_formatter(speed), unit))
+                    } else {
+                        parts.push(format!("{:.*} {}/s", 2, speed, unit))
+                    }
+                }
             };
         }
         // time left box
@@ -361,9 +375,10 @@ impl<T: Write> ProgressBar<T> {
         if self.show_counter {
             let (c, t) = (self.current as f64, self.total as f64);
             prefix = prefix
-                + &match self.units {
+                + &match &self.units {
                     Units::Default => format!("{} / {} ", c, t),
                     Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
+                    Units::Custom { .. } => format!("{} / {} ", c, t),
                 };
         }
         // tick box
@@ -534,6 +549,44 @@ mod test {
         assert_eq!(kb_fmt!(mb), "1.00 MB");
         assert_eq!(kb_fmt!(gb), "1.00 GB");
         assert_eq!(kb_fmt!(tb), "1.00 TB");
+    }
+
+    #[test]
+    fn custom_units() {
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.units = Units::Custom {
+            unit: "unit".into(),
+            speed_formatter: None,
+        };
+        pb.show_percent = false;
+        pb.set_width(Some(80));
+        pb.draw();
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r0 / 10 [----------------------------------------------------------] 0.00 unit/s ",
+        );
+    }
+
+    #[test]
+    fn custom_units_with_formatter() {
+        fn format_speed(speed: f64) -> String {
+            format!("{}", speed.round() as i64)
+        }
+
+        let mut out = Vec::new();
+        let mut pb = ProgressBar::on(&mut out, 10);
+        pb.units = Units::Custom {
+            unit: "unit".into(),
+            speed_formatter: Some(format_speed),
+        };
+        pb.show_percent = false;
+        pb.set_width(Some(80));
+        pb.draw();
+        assert_eq!(
+            std::str::from_utf8(&out).unwrap(),
+            "\r0 / 10 [-------------------------------------------------------------] 0 unit/s ",
+        );
     }
 
     #[test]
