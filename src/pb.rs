@@ -52,6 +52,7 @@ pub struct ProgressBar<T: Write> {
     pub show_time_left: bool,
     pub show_tick: bool,
     pub show_message: bool,
+    pub show_total: bool,
     handle: T,
 }
 
@@ -125,6 +126,7 @@ impl<T: Write> ProgressBar<T> {
             message: String::new(),
             last_refresh_time: Instant::now(),
             max_refresh_rate: None,
+            show_total: true,
             handle,
         };
         pb.format(FORMAT);
@@ -318,7 +320,11 @@ impl<T: Write> ProgressBar<T> {
         if time_elapsed.is_zero() {
             time_elapsed = Duration::from_nanos(1);
         }
-        let speed = self.current as f64 / time_elapsed.as_secs_f64();
+        let speed = if time_elapsed.as_secs_f64() > 0.0 {
+            self.current as f64 / time_elapsed.as_secs_f64()
+        } else {
+            0.0
+        };
         let width = self.width();
 
         let mut out;
@@ -359,12 +365,23 @@ impl<T: Write> ProgressBar<T> {
         }
         // counter box
         if self.show_counter {
-            let (c, t) = (self.current as f64, self.total as f64);
-            prefix = prefix
-                + &match self.units {
-                    Units::Default => format!("{} / {} ", c, t),
-                    Units::Bytes => format!("{} / {} ", kb_fmt!(c), kb_fmt!(t)),
-                };
+            let c = self.current as f64;
+            let counter_str = match self.units {
+                Units::Default => format!("{} ", c),
+                Units::Bytes => format!("{} ", kb_fmt!(c)),
+            };
+    
+            let total_str = if self.show_total {
+                let t = self.total as f64;
+                match self.units {
+                    Units::Default => format!("/ {} ", t),
+                    Units::Bytes => format!("/ {} ", kb_fmt!(t)),
+                }
+            } else {
+                String::new()
+            };
+    
+            prefix = prefix + &counter_str + &total_str;
         }
         // tick box
         if self.show_tick {
