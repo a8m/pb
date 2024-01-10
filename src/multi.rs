@@ -160,7 +160,7 @@ impl<T: Write> MultiBar<T> {
         state.lines.push(String::new());
         state.nlines += 1;
 
-        self.nbars.fetch_add(1, Ordering::SeqCst);
+        self.nbars.fetch_add(1, Ordering::Release);
 
         let mut p = ProgressBar::on(
             Pipe {
@@ -207,11 +207,11 @@ impl<T: Write> MultiBar<T> {
         let mut first = true;
         let mut out = String::new();
 
-        while self.nbars.load(Ordering::SeqCst) > 0 {
+        while self.nbars.load(Ordering::Acquire) > 0 {
             // receive message
             let msg = self.chan.1.recv().unwrap();
             if msg.done {
-                self.nbars.fetch_sub(1, Ordering::SeqCst);
+                self.nbars.fetch_sub(1, Ordering::Relaxed);
                 continue;
             }
 
